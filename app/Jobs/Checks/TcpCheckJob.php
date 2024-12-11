@@ -14,7 +14,7 @@ class TcpCheckJob extends CheckJob
             $this->monitor->port ?? 80,
             $errno,
             $errstr,
-            30
+            timeout: 5
         );
 
         if (!$socket) {

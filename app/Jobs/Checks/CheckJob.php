@@ -64,6 +64,8 @@ abstract class CheckJob implements ShouldQueue
         ]);
 
         $this->monitor->checks()->save($check);
+
+        $this->monitor->update(['status' => $status]);
     }
 
     protected function calculateResponseTime(float $startTime, float $endTime): float

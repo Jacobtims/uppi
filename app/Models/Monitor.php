@@ -23,6 +23,11 @@ class Monitor extends Model
         return $this->belongsToMany(Alert::class);
     }
 
+    public function anomalies(): HasMany
+    {
+        return $this->hasMany(Anomaly::class);
+    }
+
     public function checks(): HasMany
     {
         return $this->hasMany(Check::class);

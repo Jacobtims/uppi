@@ -25,45 +25,49 @@ class TriggerAlertJob implements ShouldQueue
     {
         $monitor = $this->check->monitor;
 
-        // Check if we need to create a new anomaly
-        if ($this->check->status === Status::FAIL) {
-            // Check if there's already an active anomaly
-            $activeAnomaly = $monitor->anomalies()
-                ->whereNull('ended_at')
-                ->first();
+        // Process each alert attached to the monitor
+        foreach ($monitor->alerts as $alert) {
+            if ($this->check->status === Status::FAIL) {
+                // Check if there's already an active anomaly for this alert
+                $activeAnomaly = $monitor->anomalies()
+                    ->where('alert_id', $alert->id)
+                    ->whereNull('ended_at')
+                    ->first();
 
-            if (!$activeAnomaly) {
-                // Create new anomaly if none exists
-                $anomaly = new Anomaly([
-                    'started_at' => now(),
-                    'monitor_id' => $monitor->id,
-                    'alert_id' => $monitor->alert_id,
-                ]);
-                $anomaly->save();
+                if (!$activeAnomaly) {
+                    // Create new anomaly if none exists
+                    $anomaly = new Anomaly([
+                        'started_at' => now(),
+                        'monitor_id' => $monitor->id,
+                        'alert_id' => $alert->id,
+                    ]);
+                    $anomaly->save();
 
-                // Associate check with anomaly
-                $this->check->anomaly()->associate($anomaly);
-                $this->check->save();
+                    // Associate check with anomaly
+                    $this->check->anomaly()->associate($anomaly);
+                    $this->check->save();
 
-                // Dispatch notification job
-                SendAlertNotificationJob::dispatch($anomaly);
+                    // Dispatch notification job
+                    SendAlertNotificationJob::dispatch($anomaly);
+                } else {
+                    // Associate check with existing anomaly
+                    $this->check->anomaly()->associate($activeAnomaly);
+                    $this->check->save();
+                }
             } else {
-                // Associate check with existing anomaly
-                $this->check->anomaly()->associate($activeAnomaly);
-                $this->check->save();
-            }
-        } else {
-            // If status is UP, check if we need to close any anomalies
-            $activeAnomaly = $monitor->anomalies()
-                ->whereNull('ended_at')
-                ->first();
+                // If status is OK, check if we need to close any anomalies for this alert
+                $activeAnomaly = $monitor->anomalies()
+                    ->where('alert_id', $alert->id)
+                    ->whereNull('ended_at')
+                    ->first();
 
-            if ($activeAnomaly) {
-                $activeAnomaly->ended_at = now();
-                $activeAnomaly->save();
+                if ($activeAnomaly) {
+                    $activeAnomaly->ended_at = now();
+                    $activeAnomaly->save();
 
-                // Dispatch recovery notification
-                SendRecoveryNotificationJob::dispatch($activeAnomaly);
+                    // Dispatch recovery notification
+                    SendRecoveryNotificationJob::dispatch($activeAnomaly);
+                }
             }
         }
     }

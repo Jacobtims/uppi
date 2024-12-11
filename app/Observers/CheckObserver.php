@@ -12,6 +12,11 @@ class CheckObserver
      */
     public function created(Check $check): void
     {
+        // Update monitor status
+        $check->monitor->update([
+            'status' => $check->status,
+        ]);
+
         // Dispatch job to handle alert triggering
         TriggerAlertJob::dispatch($check);
     }
