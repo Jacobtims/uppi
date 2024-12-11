@@ -22,6 +22,7 @@ return new class extends Migration
             $table->boolean('is_enabled')->default(true);
             $table->integer('interval')->default(1);
             $table->string('status')->default(Status::UNKNOWN);
+            $table->timestamp('last_checked_at')->nullable();
             $table->timestamps();
         });
     }

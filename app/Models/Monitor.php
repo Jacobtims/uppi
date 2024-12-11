@@ -15,6 +15,7 @@ class Monitor extends Model
     protected $casts = [
         'is_enabled' => 'boolean',
         'type' => MonitorType::class,
+        'last_checked_at' => 'datetime',
     ];
 
     public function alerts(): BelongsToMany

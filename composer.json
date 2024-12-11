@@ -9,6 +9,7 @@
         "php": "^8.2",
         "filament/filament": "^3.2",
         "laravel/framework": "^11.31",
+        "laravel/slack-notification-channel": "^3.4",
         "laravel/tinker": "^2.9"
     },
     "require-dev": {
