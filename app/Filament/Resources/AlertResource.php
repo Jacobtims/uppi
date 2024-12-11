@@ -32,7 +32,6 @@ class AlertResource extends Resource
                 ->required()
                 ->inline()
                 ->live()
-                ->default(AlertType::EMAIL)
                 ->columnSpanFull(),
                 Forms\Components\TextInput::make('name')
                     ->required()
@@ -40,19 +39,21 @@ class AlertResource extends Resource
 
                 Forms\Components\TextInput::make('destination')
                     ->helperText(function (Get $get) {
-                        return match ($get('type')) {
-                            AlertType::EMAIL->value => 'The email address to send the alert to.',
-                            AlertType::SLACK->value => 'The Slack channel to send the alert to.',
-                            AlertType::BIRD->value => 'The phone number to send the alert to.',
+                        return match (AlertType::tryFrom($get('type'))) {
+                            AlertType::EMAIL => 'The email address to send the alert to.',
+                            AlertType::SLACK => 'The Slack channel to send the alert to.',
+                            AlertType::BIRD => 'The phone number to send the alert to.',
                             default => null,
                         };
                     })
-                    ->prefix(fn (Get $get) => $get('type') === AlertType::SLACK->value ? '#' : null)
+                    ->prefix(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::SLACK ? '#' : null)
                     ->live()
-                    ->email(fn (Get $get) => $get('type') === AlertType::EMAIL->value)
+                    ->visible(fn (Get $get) => !empty($get('type')))
+                    ->email(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::EMAIL)
                     ->required(),
                 Forms\Components\Toggle::make('is_enabled')
                     ->required()
+                    ->default(true)
                     ->columnSpanFull(),
                 Forms\Components\Section::make([
                     Forms\Components\TextInput::make('config.slack_token')
@@ -60,8 +61,8 @@ class AlertResource extends Resource
                         ->required(),
                 ])
                 ->columnSpanFull()
-                ->inlineLabel()
-                ->visible(fn (Get $get) => $get('type') === AlertType::SLACK->value),
+                ->live()
+                ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::SLACK),
 
                 Forms\Components\Section::make([
                     Forms\Components\TextInput::make('config.bird_api_key')
@@ -75,8 +76,8 @@ class AlertResource extends Resource
                         ->required(),
                 ])
                 ->columnSpanFull()
-                ->inlineLabel()
-                ->visible(fn (Get $get) => $get('type') === AlertType::BIRD->value),
+                ->live()
+                ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::BIRD),
             ]);
     }
 

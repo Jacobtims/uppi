@@ -56,6 +56,7 @@ class MonitorResource extends Resource
                             ->live(),
                         Forms\Components\Toggle::make('is_enabled')
                             ->required()
+                            ->default(true)
                             ->columnSpanFull(),
                     ])->columns(2),
 
