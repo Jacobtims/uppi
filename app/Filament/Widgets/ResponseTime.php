@@ -24,6 +24,7 @@ class ResponseTime extends ChartWidget
     {
         $monitors = Monitor::all();
         $datasets = [];
+        $checks = collect();
 
         foreach ($monitors as $monitor) {
             $checks = Check::query()
