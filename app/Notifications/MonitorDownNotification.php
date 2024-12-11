@@ -6,7 +6,7 @@ use App\Models\Anomaly;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Messages\SlackMessage;
+use Illuminate\Notifications\Slack\SlackMessage;
 use Illuminate\Notifications\Notification;
 
 class MonitorDownNotification extends Notification implements ShouldQueue
@@ -30,7 +30,7 @@ class MonitorDownNotification extends Notification implements ShouldQueue
             ->error()
             ->subject("🔴 Monitor Down: {$monitor->name}")
             ->line("The monitor {$monitor->name} is currently DOWN.")
-            ->line("Target: {$monitor->target}")
+            ->line("Target: {$monitor->address}")
             ->line("Last check output: {$this->anomaly->checks->last()?->output}")
             ->line("Down since: {$this->anomaly->started_at->format('Y-m-d H:i:s')}")
             ->action('View Monitor', url("/monitors/{$monitor->id}"));
@@ -47,7 +47,7 @@ class MonitorDownNotification extends Notification implements ShouldQueue
                 $attachment
                     ->title($monitor->name)
                     ->fields([
-                        'Target' => $monitor->target,
+                        'Target' => $monitor->address,
                         'Last Output' => $this->anomaly->checks->last()?->output,
                         'Down Since' => $this->anomaly->started_at->format('Y-m-d H:i:s'),
                     ]);

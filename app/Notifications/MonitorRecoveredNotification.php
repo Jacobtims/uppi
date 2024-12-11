@@ -6,7 +6,7 @@ use App\Models\Anomaly;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Messages\SlackMessage;
+use Illuminate\Notifications\Slack\SlackMessage;
 use Illuminate\Notifications\Notification;
 
 class MonitorRecoveredNotification extends Notification implements ShouldQueue
@@ -31,7 +31,7 @@ class MonitorRecoveredNotification extends Notification implements ShouldQueue
             ->success()
             ->subject("✅ Monitor Recovered: {$monitor->name}")
             ->line("The monitor {$monitor->name} is back UP!")
-            ->line("Target: {$monitor->target}")
+            ->line("Target: {$monitor->address}")
             ->line("Downtime duration: {$duration}")
             ->line("Recovered at: {$this->anomaly->ended_at->format('Y-m-d H:i:s')}")
             ->action('View Monitor', url("/monitors/{$monitor->id}"));
@@ -49,7 +49,7 @@ class MonitorRecoveredNotification extends Notification implements ShouldQueue
                 $attachment
                     ->title($monitor->name)
                     ->fields([
-                        'Target' => $monitor->target,
+                        'Target' => $monitor->address,
                         'Downtime Duration' => $duration,
                         'Recovered At' => $this->anomaly->ended_at->format('Y-m-d H:i:s'),
                     ]);
