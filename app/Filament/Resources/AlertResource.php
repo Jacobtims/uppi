@@ -25,7 +25,7 @@ class AlertResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('type')
-                    ->enum(AlertType::class)
+                    ->options(AlertType::class)
                     ->required(),
                 Forms\Components\TextInput::make('destination')
                     ->required(),

@@ -2,7 +2,10 @@
 
 namespace App\Enums\Types;
 
-enum AlertType: string implements \Filament\Support\Contracts\HasLabel, \Filament\Support\Contracts\HasColor
+use Filament\Support\Contracts\HasColor;
+use Filament\Support\Contracts\HasLabel;
+
+enum AlertType: string implements HasLabel, HasColor
 {
     case EMAIL = 'email';
 

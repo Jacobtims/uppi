@@ -17,12 +17,11 @@ return new class extends Migration
             $table->string('type');
             $table->string('address')->index();
             $table->string('name');
-            $table->text('body');
-            $table->string('expects');
+            $table->text('body')->nullable();
+            $table->string('expects')->nullable();
             $table->boolean('is_enabled')->default(true);
             $table->integer('interval')->default(1);
             $table->string('status')->default(Status::UNKNOWN);
-            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->timestamps();
         });
     }
