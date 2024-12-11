@@ -57,7 +57,7 @@ class ResponseTime extends ChartWidget
         }
 
         return [
-            'labels' => $checks->keys()->toArray(),
+            'labels' => $checks ? $checks->keys()->toArray() : [],
             'datasets' => $datasets,
         ];
 
