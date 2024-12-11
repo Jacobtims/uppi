@@ -14,6 +14,7 @@ return new class extends Migration
     {
         Schema::create('monitors', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('type');
             $table->string('address')->index();
             $table->integer('port')->nullable();

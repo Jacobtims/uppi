@@ -27,12 +27,15 @@ class DatabaseSeeder extends Seeder
             'email' => 'janyk@webmethod.nl',
         ]);
 
+        $user = User::first();
+
         Monitor::create([
             'name' => 'Google',
             'type' => MonitorType::HTTP,
             'address' => 'google.com',
             'is_enabled' => true,
             'interval' => 1,
+            'user_id' => $user->id,
         ]);
 
         Monitor::create([
@@ -41,6 +44,7 @@ class DatabaseSeeder extends Seeder
             'address' => 'hello.nonexistant',
             'is_enabled' => true,
             'interval' => 1,
+            'user_id' => $user->id,
         ]);
 
         Monitor::create([
