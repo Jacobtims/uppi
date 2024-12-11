@@ -10,7 +10,7 @@ use Filament\Widgets\TableWidget as BaseWidget;
 class ActiveAnomalies extends BaseWidget
 {
 
-    protected int|string|array $columnSpan = 4;
+    protected int|string|array $columnSpan = 12;
     public function table(Table $table): Table
     {
         return $table
@@ -23,13 +23,17 @@ class ActiveAnomalies extends BaseWidget
             ->columns([
                 Tables\Columns\TextColumn::make('monitor.name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('alert.name')
+                Tables\Columns\TextColumn::make('monitor.address')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable(),
             ])
-            ->searchable(false);
+            ->searchable(false)
+            ->emptyStateIcon('heroicon-o-face-smile')
+            ->emptyStateHeading('No anomalies found')
+            ->emptyStateDescription('All systems are running smoothly')
+            ->paginated(false);
     }
 
 }

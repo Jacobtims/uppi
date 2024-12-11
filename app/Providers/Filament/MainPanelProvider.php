@@ -3,6 +3,8 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Widgets\ActiveAnomalies;
+use App\Filament\Widgets\IncidentsPerMonitor;
+use App\Filament\Widgets\ResponseTime;
 use App\Filament\Widgets\StatusWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -37,11 +39,11 @@ class MainPanelProvider extends PanelProvider
             ->pages([
                 Pages\Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
                 StatusWidget::class,
                 ActiveAnomalies::class,
+                ResponseTime::class,
+                IncidentsPerMonitor::class,
             ])
             ->middleware([
                 EncryptCookies::class,

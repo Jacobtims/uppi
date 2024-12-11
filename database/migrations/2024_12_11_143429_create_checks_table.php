@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('monitor_id')->constrained()->cascadeOnDelete();
             $table->string('status')->default(App\Enums\Checks\Status::UNKNOWN)->index();
-            $table->float('response_time');
+            $table->float('response_time')->nullable();
             $table->integer('response_code')->nullable()->index();
             $table->text('output')->nullable();
             $table->timestamp('checked_at')->index();
