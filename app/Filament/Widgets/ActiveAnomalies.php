@@ -7,7 +7,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
 
-class RecentAnomalies extends BaseWidget
+class ActiveAnomalies extends BaseWidget
 {
 
     protected int|string|array $columnSpan = 4;

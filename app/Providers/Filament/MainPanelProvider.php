@@ -2,7 +2,7 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Widgets\RecentAnomalies;
+use App\Filament\Widgets\ActiveAnomalies;
 use App\Filament\Widgets\StatusWidget;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -41,7 +41,7 @@ class MainPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 StatusWidget::class,
-                RecentAnomalies::class,
+                ActiveAnomalies::class,
             ])
             ->middleware([
                 EncryptCookies::class,
