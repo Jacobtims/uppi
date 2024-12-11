@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\Monitors\MonitorType;
+use App\Enums\Checks\Status;
 use App\Jobs\Checks\CheckJob;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -15,6 +16,7 @@ class Monitor extends Model
     protected $casts = [
         'is_enabled' => 'boolean',
         'type' => MonitorType::class,
+        'status' => Status::class,
         'last_checked_at' => 'datetime',
     ];
 

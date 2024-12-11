@@ -18,6 +18,8 @@ class AlertResource extends Resource
 {
     protected static ?string $model = Alert::class;
 
+    protected static ?string $navigationGroup = 'Monitors';
+
     protected static ?string $navigationIcon = 'heroicon-o-bell';
 
     public static function form(Form $form): Form

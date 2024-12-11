@@ -20,6 +20,11 @@ class MonitorResource extends Resource
 {
     protected static ?string $model = Monitor::class;
 
+    protected static ?string $navigationGroup = 'Monitors';
+
+    protected static ?int $navigationSort = -999;
+
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
@@ -55,7 +60,6 @@ class MonitorResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('type')
-                    ->badge()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('address')
                     ->searchable(),
