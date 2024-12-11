@@ -11,9 +11,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 
 class Monitor extends Model
 {
+    use HasUlids;
+
     protected $guarded = [];
 
     protected $casts = [
@@ -25,15 +28,17 @@ class Monitor extends Model
 
     protected static function booted()
     {
-        static::addGlobalScope('user', function (Builder $builder) {
-            $builder->where('user_id', Auth::id());
-        });
+        if (Auth::hasUser()) {
+            static::addGlobalScope('user', function (Builder $builder) {
+                $builder->where('user_id', Auth::id());
+            });
 
-        static::creating(function ($monitor) {
-            if (!$monitor->user_id) {
-                $monitor->user_id = Auth::id();
-            }
-        });
+            static::creating(function ($monitor) {
+                if (!$monitor->user_id) {
+                    $monitor->user_id = Auth::id();
+                }
+            });
+        }
     }
 
     public function alerts(): BelongsToMany

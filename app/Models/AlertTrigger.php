@@ -5,9 +5,12 @@ namespace App\Models;
 use App\Enums\AlertTriggerType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 
 class AlertTrigger extends Model
 {
+    use HasUlids;
+
     protected $fillable = [
         'anomaly_id',
         'alert_id',

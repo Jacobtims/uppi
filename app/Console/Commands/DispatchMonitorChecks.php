@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Monitor;
+use App\Models\User;
 use Illuminate\Console\Command;
 
 class DispatchMonitorChecks extends Command
@@ -12,7 +13,7 @@ class DispatchMonitorChecks extends Command
      *
      * @var string
      */
-    protected $signature = 'monitors:check {--monitor-id= : ID of a specific monitor to check} {--force : Force the check to run even if the monitor is not due}';
+    protected $signature = 'monitors:check {--monitor-id= : ID of a specific monitor to check} {--force : Force the check to run even if the monitor is not due} {--user-id= : Run checks for a specific user}';
 
     /**
      * The console command description.
@@ -27,7 +28,13 @@ class DispatchMonitorChecks extends Command
     public function handle(): void
     {
         $query = Monitor::query()
-            ->where('is_enabled', true);
+            ->where('is_enabled', true)
+            ->when($this->option('user-id'), function ($query, $userId) {
+                $query->where('user_id', $userId);
+            }, function ($query) {
+                // If no user-id specified, remove the global scope and get all monitors
+                $query->withoutGlobalScope('user');
+            });
 
         if (!$this->option('force')) {
             $query = $query->where(function ($query) {

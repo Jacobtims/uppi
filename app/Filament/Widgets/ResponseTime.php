@@ -63,8 +63,10 @@ class ResponseTime extends ChartWidget
 
     }
 
-    public static function generatePastelColorBasedOnMonitorId(int $monitorId): string
+    public static function generatePastelColorBasedOnMonitorId(string $monitorId): string
     {
+        // string to int
+        $monitorId = crc32($monitorId);
         // Use monitor ID as seed for consistent color per monitor
         srand($monitorId);
 

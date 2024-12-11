@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('alert_monitor', function (Blueprint $table) {
-            $table->foreignId('alert_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('monitor_id')->constrained()->cascadeOnDelete();
+            $table->foreignUlid('alert_id')->constrained()->cascadeOnDelete();
+            $table->foreignUlid('monitor_id')->constrained()->cascadeOnDelete();
             $table->primary(['alert_id', 'monitor_id']);
         });
     }

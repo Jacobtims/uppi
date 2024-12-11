@@ -22,12 +22,16 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
+        $user =User::factory()->create([
             'name' => 'Janyk Steenbeek',
             'email' => 'janyk@webmethod.nl',
         ]);
 
-        $user = User::first();
+       $user2 = User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test@test.com',
+        ]);
+
 
         Monitor::create([
             'name' => 'Google',
@@ -35,7 +39,7 @@ class DatabaseSeeder extends Seeder
             'address' => 'google.com',
             'is_enabled' => true,
             'interval' => 1,
-            'user_id' => $user->id,
+            'user_id' => $user2->id,
         ]);
 
         Monitor::create([
@@ -54,6 +58,7 @@ class DatabaseSeeder extends Seeder
             'port' => 53,
             'is_enabled' => true,
             'interval' => 5,
+            'user_id' => $user->id,
         ]);
 
         $alert = Alert::create([

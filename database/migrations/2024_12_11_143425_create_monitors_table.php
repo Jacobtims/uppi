@@ -13,8 +13,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('monitors', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->ulid('id')->primary();
+            $table->foreignUlid('user_id')->constrained()->cascadeOnDelete();
             $table->string('type');
             $table->string('address')->index();
             $table->integer('port')->nullable();

@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('alert_triggers', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('anomaly_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('alert_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('monitor_id')->constrained()->cascadeOnDelete();
+            $table->ulid('id')->primary();
+            $table->foreignUlid('anomaly_id')->constrained()->cascadeOnDelete();
+            $table->foreignUlid('alert_id')->constrained()->cascadeOnDelete();
+            $table->foreignUlid('monitor_id')->constrained()->cascadeOnDelete();
             $table->string('type')->index(); // 'down' or 'recovery'
             $table->json('channels_notified'); // List of notification channels that were notified
             $table->json('metadata')->nullable(); // Additional data about the trigger
