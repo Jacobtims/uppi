@@ -29,11 +29,12 @@ class MonitorDownNotification extends Notification implements ShouldQueue
         return (new MailMessage)
             ->error()
             ->subject("🔴 Monitor Down: {$monitor->name}")
-            ->line("The monitor {$monitor->name} is currently DOWN.")
+            ->greeting("The monitor {$monitor->name} is currently DOWN.")
             ->line("Target: {$monitor->address}")
-            ->line("Last check output: {$this->anomaly->checks->last()?->output}")
             ->line("Down since: {$this->anomaly->started_at->format('Y-m-d H:i:s')}")
-            ->action('Open ' . config('app.name'), url("/"));
+            ->line("Last check output: {$this->anomaly->checks->last()?->output}")
+            ->action('Open ' . config('app.name'), url("/"))
+            ->line('Thank you for using ' . config('app.name') . '!');
     }
 
     public function toSlack(object $notifiable): SlackMessage

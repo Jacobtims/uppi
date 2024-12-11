@@ -9,6 +9,7 @@
         "php": "^8.2",
         "acamposm/ping": "^2.1",
         "filament/filament": "^3.2",
+        "laravel-notification-channels/messagebird": "dev-master",
         "laravel/framework": "^11.31",
         "laravel/slack-notification-channel": "^3.4",
         "laravel/tinker": "^2.9"
@@ -35,6 +36,12 @@
             "Tests\\": "tests/"
         }
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/janyksteenbeek/laravel-messagebird-notifications.git"
+        }
+    ],
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

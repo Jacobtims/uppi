@@ -7,9 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Slack\SlackRoute;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use InvalidArgumentException;
+use NotificationChannels\Messagebird\MessagebirdRoute;
 
 class Alert extends Model
 {
@@ -20,6 +24,7 @@ class Alert extends Model
     protected $casts = [
         'is_enabled' => 'boolean',
         'type' => AlertType::class,
+        'config' => 'array',
     ];
 
     protected static function booted()
@@ -45,11 +50,40 @@ class Alert extends Model
 
     public function routeNotificationForMail(): string
     {
+        if ($this->type !== AlertType::EMAIL) {
+            return null;
+        }
+
         return $this->destination;
     }
 
-    public function routeNotificationForSlack(): string
+    public function routeNotificationForSlack(Notification $notification): mixed
     {
-        return $this->destination;
+        if ($this->type !== AlertType::SLACK) {
+            return null;
+        }
+
+        if (!isset($this->config['slack_token'])) {
+            throw new InvalidArgumentException('Slack token and channel are required');
+        }
+
+        return SlackRoute::make($this->destination, $this->config['slack_token']);
+    }
+
+    public function routeNotificationForBird(Notification $notification): mixed
+    {
+        if ($this->type !== AlertType::BIRD) {
+            return null;
+        }
+
+        if (!isset($this->config['bird_api_key']) || !isset($this->config['bird_originator'])) {
+            throw new InvalidArgumentException('Bird API key and originator are required');
+        }
+
+        if (empty($this->destination)) {
+            throw new InvalidArgumentException('Destination is required');
+        }
+
+        return MessagebirdRoute::make([$this->destination], $this->config['bird_api_key'], $this->config['bird_originator']);
     }
 }

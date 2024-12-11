@@ -8,6 +8,7 @@ use App\Filament\Resources\AlertResource\RelationManagers;
 use App\Models\Alert;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -26,15 +27,54 @@ class AlertResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\ToggleButtons::make('type')
+                ->options(AlertType::class)
+                ->required()
+                ->inline()
+                ->live()
+                ->columnSpanFull(),
                 Forms\Components\TextInput::make('name')
-                    ->required(),
-                Forms\Components\Select::make('type')
-                    ->options(AlertType::class)
-                    ->required(),
+                    ->required()
+                    ->columnSpanFull(),
+
                 Forms\Components\TextInput::make('destination')
+                    ->helperText(function (Get $get) {
+                        return match ($get('type')) {
+                            AlertType::EMAIL->value => 'The email address to send the alert to.',
+                            AlertType::SLACK->value => 'The Slack channel to send the alert to.',
+                            AlertType::BIRD->value => 'The phone number to send the alert to.',
+                        };
+                    })
+                    ->prefix(fn (Get $get) => $get('type') === AlertType::SLACK->value ? '#' : null)
+                    ->live()
+                    ->email(fn (Get $get) => $get('type') === AlertType::EMAIL->value)
                     ->required(),
                 Forms\Components\Toggle::make('is_enabled')
-                    ->required(),
+                    ->required()
+                    ->columnSpanFull(),
+                Forms\Components\Section::make([
+                    Forms\Components\TextInput::make('config.slack_token')
+                        ->label('Slack Bot OAuth Token')
+                        ->required(),
+                ])
+                ->columnSpanFull()
+                ->inlineLabel()
+                ->visible(fn (Get $get) => $get('type') === AlertType::SLACK->value),
+
+                Forms\Components\Section::make([
+                    Forms\Components\TextInput::make('config.bird_api_key')
+                        ->required()
+                        ->password()
+                        ->label('API Key')
+                        ->helperText('The API key for the MessageBird API.'),
+                    Forms\Components\TextInput::make('config.bird_originator')
+                        ->label('Originator')
+                        ->helperText('The originator of the message. This is the name that will be displayed on the recipient\'s phone.')
+                        ->required(),
+                ])
+                ->columnSpanFull()
+                ->inlineLabel()
+                ->visible(fn (Get $get) => $get('type') === AlertType::BIRD->value),
             ]);
     }
 

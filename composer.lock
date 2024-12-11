@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d5cfd5f2e8703379037c8bc053a96259",
+    "content-hash": "5cdb5dc9fa46a2449b53e34c19b25fa3",
     "packages": [
         {
             "name": "acamposm/ping",
@@ -2090,6 +2090,74 @@
                 "source": "https://github.com/kirschbaum-development/eloquent-power-joins/tree/4.0.1"
             },
             "time": "2024-11-26T13:22:08+00:00"
+        },
+        {
+            "name": "laravel-notification-channels/messagebird",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/janyksteenbeek/laravel-messagebird-notifications.git",
+                "reference": "b85a41871c41e3012928699aa70a62b03ddbe863"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/janyksteenbeek/laravel-messagebird-notifications/zipball/b85a41871c41e3012928699aa70a62b03ddbe863",
+                "reference": "b85a41871c41e3012928699aa70a62b03ddbe863",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "guzzlehttp/guzzle": "^7.2",
+                "illuminate/notifications": "^9.0|^10.0|^11.0",
+                "illuminate/queue": "^9.0|^10.0|^11.0",
+                "illuminate/support": "^9.0|^10.0|^11.0",
+                "php": "^8.0|^8.1"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.4.4",
+                "phpunit/phpunit": "^9.5.10|^10.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "NotificationChannels\\Messagebird\\MessagebirdServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "NotificationChannels\\Messagebird\\": "src"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "NotificationChannels\\Messagebird\\Test\\": "tests"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/phpunit"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Peter Steenbergen",
+                    "email": "psteenbergen@gmail.com",
+                    "homepage": "https://3ws.nl",
+                    "role": "Developer"
+                }
+            ],
+            "description": "MessageBird notification channel for Laravel 5.x",
+            "homepage": "https://github.com/laravel-notification-channels/messagebird",
+            "support": {
+                "source": "https://github.com/janyksteenbeek/laravel-messagebird-notifications/tree/master"
+            },
+            "time": "2024-12-11T23:14:56+00:00"
         },
         {
             "name": "laravel/framework",
@@ -10763,7 +10831,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "laravel-notification-channels/messagebird": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

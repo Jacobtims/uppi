@@ -30,11 +30,12 @@ class MonitorRecoveredNotification extends Notification implements ShouldQueue
         return (new MailMessage)
             ->success()
             ->subject("✅ Monitor Recovered: {$monitor->name}")
-            ->line("The monitor {$monitor->name} is back UP!")
+            ->greeting("The monitor {$monitor->name} is back UP!")
             ->line("Target: {$monitor->address}")
             ->line("Downtime duration: {$duration}")
             ->line("Recovered at: {$this->anomaly->ended_at->format('Y-m-d H:i:s')}")
-            ->action('Open ' . config('app.name'), url("/"));
+            ->action('Open ' . config('app.name'), url("/"))
+            ->line('Thank you for using ' . config('app.name') . '!');
     }
 
     public function toSlack(object $notifiable): SlackMessage
