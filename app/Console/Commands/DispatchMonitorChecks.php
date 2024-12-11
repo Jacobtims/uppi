@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Models\Monitor;
-use App\Models\User;
 use Illuminate\Console\Command;
 
 class DispatchMonitorChecks extends Command
@@ -13,7 +12,7 @@ class DispatchMonitorChecks extends Command
      *
      * @var string
      */
-    protected $signature = 'monitors:check {--monitor-id= : ID of a specific monitor to check} {--force : Force the check to run even if the monitor is not due} {--user-id= : Run checks for a specific user}';
+    protected $signature = 'monitors:check {--monitor-id= : ID of a specific monitor to check} {--force : Force the check to run even if the monitor is not due}';
 
     /**
      * The console command description.
@@ -27,33 +26,27 @@ class DispatchMonitorChecks extends Command
      */
     public function handle(): void
     {
-        $query = Monitor::query()
+        $monitors = Monitor::query()
             ->where('is_enabled', true)
-            ->when($this->option('user-id'), function ($query, $userId) {
-                $query->where('user_id', $userId);
-            }, function ($query) {
-                // If no user-id specified, remove the global scope and get all monitors
-                $query->withoutGlobalScope('user');
-            });
+            ->when(!$this->option('force'), function ($query) {
+                $query->where(function ($query) {
+                    $query->whereNull('last_checked_at')
+                        ->orWhereRaw('last_checked_at <= DATE_SUB(NOW(), INTERVAL `interval` MINUTE)');
+                });
+            })
+            ->when($this->option('monitor-id'), function ($query, $monitorId) {
+                $query->where('id', $monitorId);
+            })
+            ->withoutGlobalScope('user')
+            ->get();
 
-        if (!$this->option('force')) {
-            $query = $query->where(function ($query) {
-                $query->whereNull('last_checked_at')
-                    ->orWhereRaw('last_checked_at <= datetime(?, -interval || ? )', [now(), ' minutes']);
-            });
-        }
-
-        if ($monitorId = $this->option('monitor-id')) {
-            $query->where('id', $monitorId);
-        }
-
-        $monitors = $query->get();
-
+        $count = 0;
         foreach ($monitors as $monitor) {
             dispatch($monitor->makeCheckJob());
             $monitor->update(['last_checked_at' => now()]);
+            $count++;
         }
 
-        $this->info("Dispatched checks for {$monitors->count()} monitor(s).");
+        $this->info("Dispatched checks for {$count} monitor(s).");
     }
 }
