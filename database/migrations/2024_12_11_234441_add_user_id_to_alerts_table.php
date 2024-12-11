@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::table('alerts', function (Blueprint $table) {
             $table->foreignUlid('user_id')->after('id')->constrained()->cascadeOnDelete();
         });
+        Schema::enableForeignKeyConstraints();
     }
 
     /**
