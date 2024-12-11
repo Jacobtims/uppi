@@ -46,7 +46,7 @@ class ResponseTime extends ChartWidget
 
             $datasets[] = [
                 'label' => $monitor->name,
-                'data' => $checks->values()->toArray(),
+                'data' => $checks?->values()?->toArray(),
                 'type' => 'line',
                 'backgroundColor' => $color,
                 'borderColor' => $color,
@@ -57,7 +57,7 @@ class ResponseTime extends ChartWidget
         }
 
         return [
-            'labels' => $checks ? $checks->keys()->toArray() : [],
+            'labels' => $checks?->keys()?->toArray(),
             'datasets' => $datasets,
         ];
 
