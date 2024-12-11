@@ -60,7 +60,7 @@ class Alert extends Model
 
     public function routeNotificationForMail(): string
     {
-        if ($this->type !== AlertType::EMAIL) {
+        if (AlertType::tryFrom($this->type) !== AlertType::EMAIL) {
             return null;
         }
 
@@ -69,7 +69,7 @@ class Alert extends Model
 
     public function routeNotificationForSlack(Notification $notification): mixed
     {
-        if ($this->type !== AlertType::SLACK) {
+        if (AlertType::tryFrom($this->type) !== AlertType::SLACK) {
             return null;
         }
 
@@ -82,7 +82,7 @@ class Alert extends Model
 
     public function routeNotificationForBird(Notification $notification): mixed
     {
-        if ($this->type !== AlertType::BIRD) {
+        if (AlertType::tryFrom($this->type) !== AlertType::BIRD) {
             return null;
         }
 
