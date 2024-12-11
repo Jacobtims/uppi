@@ -2,12 +2,8 @@
 
 namespace App\Jobs\Checks;
 
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
-
-class IpCheckJob implements ShouldQueue
+class IpCheckJob extends CheckJob
 {
-    use Queueable;
 
     /**
      * Create a new job instance.
