@@ -39,6 +39,10 @@ class MainPanelProvider extends PanelProvider
             ->pages([
                 Pages\Dashboard::class,
             ])
+            ->registration()
+            ->profile()
+            ->passwordReset()
+            ->emailVerification()
             ->widgets([
                 StatusWidget::class,
                 ActiveAnomalies::class,
