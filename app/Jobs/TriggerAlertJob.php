@@ -31,7 +31,7 @@ class TriggerAlertJob implements ShouldQueue
                 continue;
             }
 
-            if ($this->check->status === Status::FAIL) {
+            if ($this->check->status === Status::DOWN) {
                 $this->handleMonitorDown($monitor, $alert);
             } else {
                 $this->handleMonitorRecovery($monitor, $alert);

@@ -6,7 +6,6 @@ use App\Enums\Types\AlertType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 
 class Anomaly extends Model
@@ -25,8 +24,13 @@ class Anomaly extends Model
         return $this->belongsTo(Monitor::class);
     }
 
-    public function notificationChannels(): array
+    public function alert(): BelongsTo
     {
-        return $this->monitor->alerts->pluck('type')->map(fn (AlertType $type) => $type->toNotificationChannel())->toArray();
+        return $this->belongsTo(Alert::class);
+    }
+
+    public function checks(): HasMany
+    {
+        return $this->hasMany(Check::class);
     }
 }

@@ -24,13 +24,11 @@ class SendAlertNotificationJob implements ShouldQueue
     {
         $monitor = $this->anomaly->monitor;
         $alert = $this->anomaly->alert;
+        $user = $monitor->user;
 
         if (!$alert || !$alert->is_enabled) {
             return;
         }
-
-        // Get list of notification channels
-        $channels = $alert->notificationChannels;
 
         // Create alert trigger record
         $trigger = new AlertTrigger([
@@ -38,19 +36,17 @@ class SendAlertNotificationJob implements ShouldQueue
             'alert_id' => $alert->id,
             'monitor_id' => $monitor->id,
             'type' => AlertTriggerType::DOWN,
-            'channels_notified' => $channels->pluck('type')->toArray(),
+            'channels_notified' => [$alert->type],
             'metadata' => [
                 'monitor_name' => $monitor->name,
-                'monitor_target' => $monitor->target,
+                'monitor_target' => $monitor->address,
                 'last_check_output' => $this->anomaly->checks->last()?->output,
             ],
             'triggered_at' => now(),
         ]);
         $trigger->save();
 
-        // Send notification to all alert channels
-        $channels->each(function ($channel) {
-            $channel->notify(new MonitorDownNotification($this->anomaly));
-        });
+        // Send notification to the user
+        $user->notify(new MonitorDownNotification($this->anomaly));
     }
 }

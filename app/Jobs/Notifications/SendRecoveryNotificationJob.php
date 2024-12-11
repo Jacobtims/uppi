@@ -24,13 +24,11 @@ class SendRecoveryNotificationJob implements ShouldQueue
     {
         $monitor = $this->anomaly->monitor;
         $alert = $this->anomaly->alert;
+        $user = $monitor->user;
 
         if (!$alert || !$alert->is_enabled) {
             return;
         }
-
-        // Get list of notification channels
-        $channels = $alert->notificationChannels;
 
         // Calculate downtime duration
         $duration = $this->anomaly->started_at->diffForHumans($this->anomaly->ended_at, true);
@@ -41,10 +39,10 @@ class SendRecoveryNotificationJob implements ShouldQueue
             'alert_id' => $alert->id,
             'monitor_id' => $monitor->id,
             'type' => AlertTriggerType::RECOVERY,
-            'channels_notified' => $channels->pluck('type')->toArray(),
+            'channels_notified' => [$alert->type],
             'metadata' => [
                 'monitor_name' => $monitor->name,
-                'monitor_target' => $monitor->target,
+                'monitor_target' => $monitor->address,
                 'downtime_duration' => $duration,
                 'started_at' => $this->anomaly->started_at->format('Y-m-d H:i:s'),
                 'ended_at' => $this->anomaly->ended_at->format('Y-m-d H:i:s'),
@@ -53,9 +51,7 @@ class SendRecoveryNotificationJob implements ShouldQueue
         ]);
         $trigger->save();
 
-        // Send notification to all alert channels
-        $channels->each(function ($channel) {
-            $channel->notify(new MonitorRecoveredNotification($this->anomaly));
-        });
+        // Send notification to the user
+        $user->notify(new MonitorRecoveredNotification($this->anomaly));
     }
 }
