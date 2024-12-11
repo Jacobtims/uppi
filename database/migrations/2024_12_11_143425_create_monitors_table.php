@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('type');
             $table->string('address')->index();
+            $table->integer('port')->nullable();
             $table->string('name');
             $table->text('body')->nullable();
             $table->string('expects')->nullable();

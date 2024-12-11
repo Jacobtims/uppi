@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[ObservedBy([CheckObserver::class])]
 class Check extends Model
@@ -24,6 +25,12 @@ class Check extends Model
     {
         return $this->belongsTo(Monitor::class);
     }
+
+    public function anomaly(): HasOne
+    {
+        return $this->hasOne(Anomaly::class);
+    }
+
     public function scopeLatest(Builder $query): Builder
     {
         return $query->orderBy('checked_at', 'desc');

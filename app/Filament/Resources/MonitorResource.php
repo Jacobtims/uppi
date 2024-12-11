@@ -10,6 +10,7 @@ use App\Filament\Resources\MonitorResource\RelationManagers\AlertsRelationManage
 use App\Models\Monitor;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -37,11 +38,20 @@ class MonitorResource extends Resource
                             ->required(),
                         Forms\Components\Select::make('type')
                             ->options(MonitorType::class)
-                            ->required(),
+                            ->required()
+                            ->live(),
                         Forms\Components\TextInput::make('address')
-                            ->required(),
+                            ->required()
+                            ->live()
+                            ->url(fn (Get $get) => $get('type') === MonitorType::TCP->value ? null : 'https://' . $get('address')),
+                        Forms\Components\TextInput::make('port')
+                            ->numeric()
+                            ->requiredIf('type', MonitorType::TCP->value)
+                            ->hidden(fn (Get $get) => $get('type') !== MonitorType::TCP->value)
+                            ->live(),
                         Forms\Components\Toggle::make('is_enabled')
-                            ->required(),
+                            ->required()
+                            ->columnSpanFull(),
                     ])->columns(2),
 
                 Forms\Components\Section::make('Monitor Settings')
