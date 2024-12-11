@@ -6,6 +6,7 @@ use App\Models\Monitor;
 use App\Models\Check;
 use App\Enums\Checks\Status;
 use Exception;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;

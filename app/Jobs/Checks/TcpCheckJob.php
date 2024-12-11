@@ -24,7 +24,7 @@ class TcpCheckJob extends CheckJob
         fclose($socket);
 
         return [
-            'status' => Status::UP,
+            'status' => Status::OK,
             'response_code' => 0,
             'output' => "Successfully connected to {$this->monitor->address}:{$this->monitor->port}",
         ];

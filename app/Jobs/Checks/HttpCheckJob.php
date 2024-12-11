@@ -13,7 +13,7 @@ class HttpCheckJob extends CheckJob
             ->get($this->monitor->address);
 
         return [
-            'status' => $response->successful() ? Status::UP : Status::FAIL,
+            'status' => $response->successful() ? Status::OK : Status::FAIL,
             'response_code' => $response->status(),
             'output' => $response->body(),
         ];

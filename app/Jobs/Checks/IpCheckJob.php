@@ -27,7 +27,7 @@ class IpCheckJob extends CheckJob
 
         // If we got here, at least one ping was successful
         return [
-            'status' => Status::UP,
+            'status' => Status::OK,
             'response_code' => $result->packetsReceived,
             'output' => "Ping successful. Min/Avg/Max = {$result->minRtt}/{$result->avgRtt}/{$result->maxRtt} ms. {$result->packetsReceived}/{$result->packetsSent} packets received.",
         ];
