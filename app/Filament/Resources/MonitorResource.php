@@ -6,6 +6,7 @@ use App\Enums\Checks\Status;
 use App\Enums\Monitors\MonitorType;
 use App\Filament\Resources\MonitorResource\Pages;
 use App\Filament\Resources\MonitorResource\RelationManagers;
+use App\Filament\Resources\MonitorResource\RelationManagers\AlertsRelationManager;
 use App\Models\Monitor;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -98,7 +99,7 @@ class MonitorResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            AlertsRelationManager::class,
         ];
     }
 

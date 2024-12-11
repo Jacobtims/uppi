@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('alerts', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
             $table->string('type');
             $table->string('destination');
             $table->boolean('is_enabled')->default(true);

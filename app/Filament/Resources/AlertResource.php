@@ -24,6 +24,8 @@ class AlertResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\TextInput::make('name')
+                    ->required(),
                 Forms\Components\Select::make('type')
                     ->options(AlertType::class)
                     ->required(),
@@ -38,6 +40,8 @@ class AlertResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('type')
                     ->searchable()
                     ->badge(),

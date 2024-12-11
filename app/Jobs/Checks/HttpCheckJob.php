@@ -15,7 +15,7 @@ class HttpCheckJob extends CheckJob
 
         try {
             $response = Http::timeout(30)
-                ->get($this->monitor->target);
+                ->get($this->monitor->address);
 
             $endTime = microtime(true);
             $responseTime = ($endTime - $startTime) * 1000; // Convert to milliseconds

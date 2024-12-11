@@ -14,7 +14,7 @@ class TcpCheckJob extends CheckJob
 
         try {
             $socket = @fsockopen(
-                $this->monitor->target,
+                $this->monitor->address,
                 $this->monitor->port ?? 80,
                 $errno,
                 $errstr,
@@ -34,7 +34,7 @@ class TcpCheckJob extends CheckJob
                 'status' => Status::UP,
                 'response_time' => $responseTime,
                 'response_code' => 0,
-                'output' => "Successfully connected to {$this->monitor->target}:{$this->monitor->port}",
+                'output' => "Successfully connected to {$this->monitor->address}:{$this->monitor->port}",
                 'checked_at' => now(),
             ]);
 
