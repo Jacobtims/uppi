@@ -26,7 +26,7 @@ class TriggerAlertJob implements ShouldQueue
         $monitor = $this->check->monitor;
 
         // Check if we need to create a new anomaly
-        if ($this->check->status === Status::DOWN) {
+        if ($this->check->status === Status::FAIL) {
             // Check if there's already an active anomaly
             $activeAnomaly = $monitor->anomalies()
                 ->whereNull('ended_at')
