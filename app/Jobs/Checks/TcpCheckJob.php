@@ -1,12 +1,11 @@
 <?php
 
 namespace App\Jobs\Checks;
-class HttpCheckJob extends CheckJob
-{
 
+class TcpCheckJob extends CheckJob
+{
 
     public function handle(): void
     {
-        //
     }
 }
