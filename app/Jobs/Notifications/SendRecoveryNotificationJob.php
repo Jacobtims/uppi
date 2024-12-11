@@ -24,7 +24,6 @@ class SendRecoveryNotificationJob implements ShouldQueue
     {
         $monitor = $this->anomaly->monitor;
         $alert = $this->anomaly->alert;
-        $user = $monitor->user;
 
         if (!$alert || !$alert->is_enabled) {
             return;
@@ -51,7 +50,7 @@ class SendRecoveryNotificationJob implements ShouldQueue
         ]);
         $trigger->save();
 
-        // Send notification to the user
-        $user->notify(new MonitorRecoveredNotification($this->anomaly));
+        // Send notification to the alert
+        $alert->notify(new MonitorRecoveredNotification($this->anomaly));
     }
 }

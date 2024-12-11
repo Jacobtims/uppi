@@ -24,7 +24,6 @@ class SendAlertNotificationJob implements ShouldQueue
     {
         $monitor = $this->anomaly->monitor;
         $alert = $this->anomaly->alert;
-        $user = $monitor->user;
 
         if (!$alert || !$alert->is_enabled) {
             return;
@@ -46,7 +45,7 @@ class SendAlertNotificationJob implements ShouldQueue
         ]);
         $trigger->save();
 
-        // Send notification to the user
-        $user->notify(new MonitorDownNotification($this->anomaly));
+        // Send notification to the alert
+        $alert->notify(new MonitorDownNotification($this->anomaly));
     }
 }
