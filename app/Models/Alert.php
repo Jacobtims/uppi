@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\Types\AlertType;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
@@ -30,12 +31,21 @@ class Alert extends Model
     protected static function booted()
     {
         if (Auth::hasUser()) {
-            static::addGlobalScope('userMonitors', function (Builder $builder) {
-                $builder->whereHas('monitors', function ($query) {
-                    $query->where('user_id', Auth::id());
-                });
+            static::addGlobalScope('user', function (Builder $builder) {
+                $builder->where('user_id', Auth::id());
+            });
+
+            static::creating(function ($alert) {
+                if (!$alert->user_id) {
+                    $alert->user_id = Auth::id();
+                }
             });
         }
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function monitors(): BelongsToMany

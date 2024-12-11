@@ -14,12 +14,7 @@ class AlertPolicy
 
     public function view(User $user, Alert $alert): bool
     {
-        // If the alert has no monitors, it's a new alert or unattached
-        if ($alert->monitors()->count() === 0) {
-            return true;
-        }
-
-        return $alert->monitors()->where('user_id', $user->id)->exists();
+        return $alert->user_id === $user->id;
     }
 
     public function create(User $user): bool
@@ -29,31 +24,21 @@ class AlertPolicy
 
     public function update(User $user, Alert $alert): bool
     {
-        // If the alert has no monitors, it's a new alert or unattached
-        if ($alert->monitors()->count() === 0) {
-            return true;
-        }
-
-        return $alert->monitors()->where('user_id', $user->id)->exists();
+        return $alert->user_id === $user->id;
     }
 
     public function delete(User $user, Alert $alert): bool
     {
-        // If the alert has no monitors, it's a new alert or unattached
-        if ($alert->monitors()->count() === 0) {
-            return true;
-        }
-
-        return $alert->monitors()->where('user_id', $user->id)->exists();
+        return $alert->user_id === $user->id;
     }
 
     public function restore(User $user, Alert $alert): bool
     {
-        return $this->update($user, $alert);
+        return $alert->user_id === $user->id;
     }
 
     public function forceDelete(User $user, Alert $alert): bool
     {
-        return $this->delete($user, $alert);
+        return $alert->user_id === $user->id;
     }
 }
