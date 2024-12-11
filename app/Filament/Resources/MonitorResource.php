@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\Checks\Status;
 use App\Enums\Monitors\MonitorType;
 use App\Filament\Resources\MonitorResource\Pages;
 use App\Filament\Resources\MonitorResource\RelationManagers;
@@ -60,14 +61,18 @@ class MonitorResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('expects')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\IconColumn::make('is_enabled')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('interval')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
-                    ->searchable(),
+                    ->badge(),
+                Tables\Columns\TextColumn::make('last_checked_at')
+                    ->dateTime()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
