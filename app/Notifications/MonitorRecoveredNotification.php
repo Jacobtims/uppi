@@ -34,25 +34,69 @@ class MonitorRecoveredNotification extends Notification implements ShouldQueue
             ->line("Target: {$monitor->address}")
             ->line("Downtime duration: {$duration}")
             ->line("Recovered at: {$this->anomaly->ended_at->format('Y-m-d H:i:s')}")
-            ->action('View Monitor', url("/monitors/{$monitor->id}"));
+            ->action('Open ' . config('app.name'), url("/"));
     }
 
     public function toSlack(object $notifiable): SlackMessage
     {
         $monitor = $this->anomaly->monitor;
         $duration = $this->anomaly->started_at->diffForHumans($this->anomaly->ended_at, true);
+        $lastCheck = $this->anomaly->checks->last();
 
-        return (new SlackMessage)
-            ->success()
-            ->content("✅ Monitor Recovered: {$monitor->name}")
-            ->attachment(function ($attachment) use ($monitor, $duration) {
-                $attachment
-                    ->title($monitor->name)
-                    ->fields([
-                        'Target' => $monitor->address,
-                        'Downtime Duration' => $duration,
-                        'Recovered At' => $this->anomaly->ended_at->format('Y-m-d H:i:s'),
-                    ]);
-            });
+        $template = <<<JSON
+        {
+            "blocks": [
+                {
+                    "type": "header",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "✅ Monitor Recovered: {$monitor->name}",
+                        "emoji": true
+                    }
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Type:*\\n{$monitor->type->value}"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Target:*\\n{$monitor->address}"
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Downtime Duration:*\\n{$duration}"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Response Time:*\\n{$lastCheck?->response_time}ms"
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Started At:*\\n{$this->anomaly->started_at->format('Y-m-d H:i:s')}"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Recovered At:*\\n{$this->anomaly->ended_at->format('Y-m-d H:i:s')}"
+                        }
+                    ]
+                }
+            ]
+        }
+        JSON;
+
+        return (new SlackMessage)->usingBlockKitTemplate($template);
     }
 }

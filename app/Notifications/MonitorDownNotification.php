@@ -33,24 +33,55 @@ class MonitorDownNotification extends Notification implements ShouldQueue
             ->line("Target: {$monitor->address}")
             ->line("Last check output: {$this->anomaly->checks->last()?->output}")
             ->line("Down since: {$this->anomaly->started_at->format('Y-m-d H:i:s')}")
-            ->action('View Monitor', url("/monitors/{$monitor->id}"));
+            ->action('Open ' . config('app.name'), url("/"));
     }
 
     public function toSlack(object $notifiable): SlackMessage
     {
         $monitor = $this->anomaly->monitor;
+        $lastCheck = $this->anomaly->checks->last();
 
-        return (new SlackMessage)
-            ->error()
-            ->content("🔴 Monitor Down: {$monitor->name}")
-            ->attachment(function ($attachment) use ($monitor) {
-                $attachment
-                    ->title($monitor->name)
-                    ->fields([
-                        'Target' => $monitor->address,
-                        'Last Output' => $this->anomaly->checks->last()?->output,
-                        'Down Since' => $this->anomaly->started_at->format('Y-m-d H:i:s'),
-                    ]);
-            });
+        $template = <<<JSON
+        {
+            "blocks": [
+                {
+                    "type": "header",
+                    "text": {
+                        "type": "plain_text",
+                        "text": "🔴 Monitor Down: {$monitor->name}",
+                        "emoji": true
+                    }
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Type:*\\n{$monitor->type->value}"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Target:*\\n{$monitor->address}"
+                        }
+                    ]
+                },
+                {
+                    "type": "section",
+                    "fields": [
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Down Since:*\\n{$this->anomaly->started_at->format('Y-m-d H:i:s')}"
+                        },
+                        {
+                            "type": "mrkdwn",
+                            "text": "*Response Time:*\\n{$lastCheck?->response_time}ms"
+                        }
+                    ]
+                }
+            ]
+        }
+        JSON;
+
+        return (new SlackMessage)->usingBlockKitTemplate($template);
     }
 }
