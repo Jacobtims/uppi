@@ -21,19 +21,30 @@ class ActiveAnomalies extends BaseWidget
                     ->limit(10)
             )
             ->columns([
+                Tables\Columns\TextColumn::make('monitor.type')
+                    ->searchable()
+                    ->label(''),
                 Tables\Columns\TextColumn::make('monitor.name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('monitor.address')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Address')
+                    ->searchable()
+                    ->description(fn ($record) => $record->monitor->port),
+                Tables\Columns\TextColumn::make('started_at')
                     ->dateTime()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('duration')
+                    ->label('Duration')
+                    ->state(function ($record) {
+                        return $record->started_at->diffForHumans();
+                    }),
             ])
             ->searchable(false)
             ->emptyStateIcon('heroicon-o-face-smile')
             ->emptyStateHeading('No anomalies found')
             ->emptyStateDescription('All systems are running smoothly')
-            ->paginated(false);
+            ->paginated(false)
+            ->defaultSort('started_at', 'desc');
     }
 
 }

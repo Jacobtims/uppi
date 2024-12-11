@@ -6,6 +6,7 @@ use App\Enums\Checks\Status;
 use App\Enums\Monitors\MonitorType;
 use App\Enums\Types\AlertType;
 use App\Models\Alert;
+use App\Models\Anomaly;
 use App\Models\Check;
 use App\Models\Monitor;
 use App\Models\User;
@@ -83,6 +84,15 @@ class DatabaseSeeder extends Seeder
                         'created_at' => $checkTime,
                         'updated_at' => $checkTime,
                     ]);
+
+                    if (!$isSuccess) {
+                        $anomaly = new Anomaly([
+                            'started_at' => $checkTime,
+                            'monitor_id' => $monitor->id,
+                            'alert_id' => $alert->id,
+                        ]);
+                        $anomaly->save();
+                    }
                 }
             }
         }
