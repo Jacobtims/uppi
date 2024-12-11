@@ -32,6 +32,7 @@ class AlertResource extends Resource
                 ->required()
                 ->inline()
                 ->live()
+                ->default(AlertType::EMAIL)
                 ->columnSpanFull(),
                 Forms\Components\TextInput::make('name')
                     ->required()
@@ -43,6 +44,7 @@ class AlertResource extends Resource
                             AlertType::EMAIL->value => 'The email address to send the alert to.',
                             AlertType::SLACK->value => 'The Slack channel to send the alert to.',
                             AlertType::BIRD->value => 'The phone number to send the alert to.',
+                            default => null,
                         };
                     })
                     ->prefix(fn (Get $get) => $get('type') === AlertType::SLACK->value ? '#' : null)
