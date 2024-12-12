@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Slack\SlackMessage;
 use Illuminate\Notifications\Notification;
+use NotificationChannels\Messagebird\MessagebirdMessage;
 
 class MonitorRecoveredNotification extends Notification implements ShouldQueue
 {
@@ -19,7 +20,7 @@ class MonitorRecoveredNotification extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return ['mail', 'slack'];
+        return [$notifiable->type->toNotificationChannel()];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -36,6 +37,13 @@ class MonitorRecoveredNotification extends Notification implements ShouldQueue
             ->line("Recovered at: {$this->anomaly->ended_at->format('Y-m-d H:i:s')}")
             ->action('Open ' . config('app.name'), url("/"))
             ->line('Thank you for using ' . config('app.name') . '!');
+    }
+
+    public function toMessagebird(object $notifiable): MessagebirdMessage
+    {
+        $downTimeShort = $this->anomaly->started_at->diffForHumans($this->anomaly->ended_at, true);
+
+        return (new MessagebirdMessage("✅ Monitor Recovered: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address}): {$downTimeShort}"));
     }
 
     public function toSlack(object $notifiable): SlackMessage

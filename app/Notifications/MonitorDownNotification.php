@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Slack\SlackMessage;
 use Illuminate\Notifications\Notification;
+use NotificationChannels\Messagebird\MessagebirdMessage;
 
 class MonitorDownNotification extends Notification implements ShouldQueue
 {
@@ -19,7 +20,7 @@ class MonitorDownNotification extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return ['mail', 'slack'];
+        return [$notifiable->type->toNotificationChannel()];
     }
 
     public function toMail(object $notifiable): MailMessage
@@ -35,6 +36,11 @@ class MonitorDownNotification extends Notification implements ShouldQueue
             ->line("Last check output: {$this->anomaly->checks->last()?->output}")
             ->action('Open ' . config('app.name'), url("/"))
             ->line('Thank you for using ' . config('app.name') . '!');
+    }
+
+    public function toMessagebird($notifiable): MessagebirdMessage
+    {
+        return (new MessagebirdMessage("🔴 Monitor DOWN: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address})"));
     }
 
     public function toSlack(object $notifiable): SlackMessage
