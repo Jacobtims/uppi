@@ -12,14 +12,22 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Enums\Checks\Status;
+use Illuminate\Support\Facades\DB;
 
 class TriggerAlertJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $uniqueFor = 60;
+
     public function __construct(
         protected Check $check
     ) {}
+
+    public function uniqueId(): string
+    {
+        return 'trigger_alert_' . $this->check->id;
+    }
 
     public function handle(): void
     {
@@ -31,11 +39,14 @@ class TriggerAlertJob implements ShouldQueue
                 continue;
             }
 
-            if ($this->check->status === Status::FAIL) {
-                $this->handleMonitorDown($monitor, $alert);
-            } else {
-                $this->handleMonitorRecovery($monitor, $alert);
-            }
+            // Use a transaction to prevent race conditions
+            DB::transaction(function () use ($monitor, $alert) {
+                if ($this->check->status === Status::FAIL) {
+                    $this->handleMonitorDown($monitor, $alert);
+                } else {
+                    $this->handleMonitorRecovery($monitor, $alert);
+                }
+            });
         }
     }
 
@@ -45,6 +56,7 @@ class TriggerAlertJob implements ShouldQueue
         $activeAnomaly = $monitor->anomalies()
             ->where('alert_id', $alert->id)
             ->whereNull('ended_at')
+            ->lockForUpdate()  // Lock the row to prevent race conditions
             ->first();
 
         if (!$activeAnomaly) {
@@ -75,6 +87,7 @@ class TriggerAlertJob implements ShouldQueue
         $activeAnomaly = $monitor->anomalies()
             ->where('alert_id', $alert->id)
             ->whereNull('ended_at')
+            ->lockForUpdate()  // Lock the row to prevent race conditions
             ->first();
 
         if ($activeAnomaly) {
