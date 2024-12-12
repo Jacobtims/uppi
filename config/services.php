@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'messagebird' => [
+        'access_key' => 'bypass',
+    ],
+
 ];
