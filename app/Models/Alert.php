@@ -80,7 +80,7 @@ class Alert extends Model
         return SlackRoute::make($this->destination, $this->config['slack_token']);
     }
 
-    public function routeNotificationForBird(Notification $notification): ?MessagebirdRoute
+    public function routeNotificationForMessagebird(Notification $notification): ?MessagebirdRoute
     {
         if ($this->type !== AlertType::BIRD) {
             return null;
