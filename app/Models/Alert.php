@@ -67,7 +67,7 @@ class Alert extends Model
         return $this->destination;
     }
 
-    public function routeNotificationForSlack(Notification $notification): ?mixed
+    public function routeNotificationForSlack(Notification $notification): ?SlackRoute
     {
         if ($this->type !== AlertType::SLACK) {
             return null;
@@ -80,7 +80,7 @@ class Alert extends Model
         return SlackRoute::make($this->destination, $this->config['slack_token']);
     }
 
-    public function routeNotificationForBird(Notification $notification): mixed
+    public function routeNotificationForBird(Notification $notification): ?MessagebirdRoute
     {
         if ($this->type !== AlertType::BIRD) {
             return null;
