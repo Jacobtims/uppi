@@ -58,7 +58,7 @@ class Alert extends Model
         return $this->hasMany(Anomaly::class);
     }
 
-    public function routeNotificationForMail(): string
+    public function routeNotificationForMail(): ?string
     {
         if ($this->type !== AlertType::EMAIL) {
             return null;
@@ -67,7 +67,7 @@ class Alert extends Model
         return $this->destination;
     }
 
-    public function routeNotificationForSlack(Notification $notification): mixed
+    public function routeNotificationForSlack(Notification $notification): ?mixed
     {
         if ($this->type !== AlertType::SLACK) {
             return null;
