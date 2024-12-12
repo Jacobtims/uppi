@@ -24,7 +24,7 @@ enum AlertType: string implements HasLabel, HasIcon
     public function toNotificationChannel(): string
     {
         return match ($this) {
-            self::EMAIL => 'email',
+            self::EMAIL => 'mail',
             self::SLACK => 'slack',
             self::BIRD => MessagebirdChannel::class,
             default => throw new \InvalidArgumentException('Invalid alert type'),
