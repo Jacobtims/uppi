@@ -21,12 +21,8 @@ class MonitorResource extends Resource
 {
     protected static ?string $model = Monitor::class;
 
-    protected static ?string $navigationGroup = 'Monitors';
-
-    protected static ?int $navigationSort = -999;
-
-
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationIcon = 'heroicon-o-heart';
 
     public static function getEloquentQuery(): Builder
     {

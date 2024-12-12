@@ -17,7 +17,11 @@ class AnomalyResource extends Resource
 {
     protected static ?string $model = Anomaly::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-exclamation-triangle';
+    protected static ?string $navigationIcon = 'heroicon-o-clock';
+
+    protected static ?string $navigationLabel = 'History';
+
+    protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
     {
@@ -25,13 +29,12 @@ class AnomalyResource extends Resource
             ->schema([
                 Forms\Components\Select::make('monitor_id')
                     ->relationship('monitor', 'name')
-                    ->required(),
-                Forms\Components\TextInput::make('alert_id')
                     ->required()
-                    ->numeric(),
+                    ->searchable(),
                 Forms\Components\DateTimePicker::make('started_at')
                     ->required(),
                 Forms\Components\DateTimePicker::make('ended_at'),
+                Forms\Components\Textarea::make('')
             ]);
     }
 
@@ -39,12 +42,19 @@ class AnomalyResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('monitor.type')
+                    ->badge()
+                    ->label('')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('monitor.name')
                     ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('alert_id')
-                    ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('monitor.address')
+                    ->description(fn($record) => $record->monitor->port)
+                    ->sortable()
+                    ->label('Address')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('started_at')
                     ->dateTime()
                     ->sortable(),
@@ -55,6 +65,10 @@ class AnomalyResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('duration')
+                    ->label('Duration')
+                    ->sortable()
+                    ->state(fn($record) => $record->ended_at ? $record->ended_at->diffInSeconds($record->started_at) : null),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()

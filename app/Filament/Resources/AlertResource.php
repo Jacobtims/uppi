@@ -18,10 +18,11 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class AlertResource extends Resource
 {
     protected static ?string $model = Alert::class;
-
-    protected static ?string $navigationGroup = 'Monitors';
-
     protected static ?string $navigationIcon = 'heroicon-o-bell';
+
+    protected static ?string $navigationLabel = 'Alert Destinations';
+
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {

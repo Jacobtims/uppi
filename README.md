@@ -1,7 +1,7 @@
 # Uptime Monitor
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/janyksteenbeek/uppi)](https://github.com/janyksteenbeek/uppi/releases)
-[![GitHub](https://img.shields.io/github/license/janyksteenbeek/uppi)](LICENSE.md)
+[![GitHub](https://img.shields.io/github/license/janyksteenbeek/uppi)](LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/janyksteenbeek/uppi)](https://github.com/janyksteenbeek/uppi/issues)
 
 A robust uptime monitoring solution built with Laravel, designed to track the availability of your web services and notify you when issues arise.
