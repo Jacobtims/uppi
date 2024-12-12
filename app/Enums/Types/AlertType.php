@@ -5,6 +5,7 @@ namespace App\Enums\Types;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 use Filament\Support\Contracts\HasIcon;
+use NotificationChannels\Messagebird\MessagebirdChannel;
 
 enum AlertType: string implements HasLabel, HasIcon
 {
@@ -25,7 +26,7 @@ enum AlertType: string implements HasLabel, HasIcon
         return match ($this) {
             self::EMAIL => 'email',
             self::SLACK => 'slack',
-            self::BIRD => 'messagebird',
+            self::BIRD => MessagebirdChannel::class,
             default => throw new \InvalidArgumentException('Invalid alert type'),
         };
     }
