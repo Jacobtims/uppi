@@ -3,7 +3,9 @@
 namespace App\Jobs;
 
 use App\Models\Check;
+use App\Models\Monitor;
 use App\Models\Anomaly;
+use App\Models\Alert;
 use App\Jobs\Notifications\SendAlertNotificationJob;
 use App\Jobs\Notifications\SendRecoveryNotificationJob;
 use Illuminate\Bus\Queueable;
@@ -12,6 +14,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Enums\Checks\Status;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class TriggerAlertJob implements ShouldQueue
@@ -40,70 +43,111 @@ class TriggerAlertJob implements ShouldQueue
         }
     }
 
-    protected function handleMonitorDown($monitor): void
+    protected function handleMonitorDown(Monitor $monitor): void
     {
         DB::transaction(function () use ($monitor) {
-            // Check if there's already an active anomaly
-            $activeAnomaly = $monitor->anomalies()
-                ->whereNull('ended_at')
-                ->lockForUpdate()
-                ->first();
+            $activeAnomaly = $this->getActiveAnomaly($monitor);
+            $recentChecks = $this->getRecentChecks($monitor);
 
-            if (!$activeAnomaly) {
-                // Create new anomaly if none exists
-                $anomaly = new Anomaly([
-                    'started_at' => $this->check->checked_at,
-                    'monitor_id' => $monitor->id,
-                ]);
-                $anomaly->save();
-
-                // Associate check with anomaly
-                $this->check->anomaly()->associate($anomaly);
-                $this->check->save();
-
-                // Notify each enabled alert
-                foreach ($monitor->alerts as $alert) {
-                    if (!$alert->is_enabled) {
-                        continue;
-                    }
-
-                    SendAlertNotificationJob::dispatch($anomaly, $alert);
-                }
-            } else {
-                // Associate check with existing anomaly
-                $this->check->anomaly()->associate($activeAnomaly);
-                $this->check->save();
+            if (!$activeAnomaly && $this->hasMetFailureThreshold($recentChecks)) {
+                $anomaly = $this->createAnomaly($monitor, $recentChecks);
+                $this->associateChecksWithAnomaly($monitor, $recentChecks, $anomaly);
+                $this->notifyAlerts($monitor, $anomaly, SendAlertNotificationJob::class);
+            } elseif ($activeAnomaly) {
+                $this->associateCheckWithAnomaly($activeAnomaly);
             }
         });
     }
 
-    protected function handleMonitorRecovery($monitor): void
+    protected function handleMonitorRecovery(Monitor $monitor): void
     {
         DB::transaction(function () use ($monitor) {
-            // If status is OK, check if we need to close any anomalies
-            $activeAnomaly = $monitor->anomalies()
-                ->whereNull('ended_at')
-                ->lockForUpdate()
-                ->first();
+            $recentChecks = $this->getRecentChecks($monitor);
 
-            if ($activeAnomaly) {
-                // Set the ended_at to the time of this check
-                $activeAnomaly->ended_at = $this->check->checked_at;
-                $activeAnomaly->save();
+            if ($this->hasMetRecoveryThreshold($recentChecks)) {
+                $activeAnomaly = $this->getActiveAnomaly($monitor);
 
-                // Associate this recovery check with the anomaly
-                $this->check->anomaly()->associate($activeAnomaly);
-                $this->check->save();
-
-                // Notify each enabled alert
-                foreach ($monitor->alerts as $alert) {
-                    if (!$alert->is_enabled) {
-                        continue;
-                    }
-
-                    SendRecoveryNotificationJob::dispatch($activeAnomaly, $alert);
+                if ($activeAnomaly) {
+                    $this->closeAnomaly($activeAnomaly, $recentChecks);
+                    $this->associateChecksWithAnomaly($monitor, $recentChecks, $activeAnomaly);
+                    $this->notifyAlerts($monitor, $activeAnomaly, SendRecoveryNotificationJob::class);
                 }
             }
         });
+    }
+
+    protected function getActiveAnomaly(Monitor $monitor): ?Anomaly
+    {
+        return $monitor->anomalies()
+            ->whereNull('ended_at')
+            ->lockForUpdate()
+            ->first();
+    }
+
+    protected function getRecentChecks(Monitor $monitor): Collection
+    {
+        return $monitor->checks()
+            ->latest('checked_at')
+            ->take($monitor->consecutive_threshold)
+            ->get();
+    }
+
+    protected function hasMetFailureThreshold(Collection $checks): bool
+    {
+        return $this->hasMetThreshold($checks, Status::FAIL);
+    }
+
+    protected function hasMetRecoveryThreshold(Collection $checks): bool
+    {
+        return $this->hasMetThreshold($checks, Status::OK);
+    }
+
+    protected function hasMetThreshold(Collection $checks, Status $status): bool
+    {
+        $threshold = $this->check->monitor->consecutive_threshold;
+
+        return $checks->count() >= $threshold &&
+            $checks->every(fn($check) => $check->status === $status);
+    }
+
+    protected function createAnomaly(Monitor $monitor, Collection $checks): Anomaly
+    {
+        $anomaly = new Anomaly([
+            'started_at' => $checks->last()->checked_at,
+            'monitor_id' => $monitor->id,
+        ]);
+
+        $anomaly->save();
+
+        return $anomaly;
+    }
+
+    protected function closeAnomaly(Anomaly $anomaly, Collection $checks): void
+    {
+        $anomaly->ended_at = $checks->last()->checked_at;
+        $anomaly->save();
+    }
+
+    protected function associateChecksWithAnomaly(Monitor $monitor, Collection $checks, Anomaly $anomaly): void
+    {
+        $status = $this->check->status;
+
+        $monitor->checks()
+            ->where('checked_at', '>=', $checks->last()->checked_at)
+            ->where('status', $status)
+            ->update(['anomaly_id' => $anomaly->id]);
+    }
+
+    protected function associateCheckWithAnomaly(Anomaly $anomaly): void
+    {
+        $this->check->anomaly()->associate($anomaly);
+        $this->check->save();
+    }
+
+    protected function notifyAlerts(Monitor $monitor, Anomaly $anomaly, string $jobClass): void
+    {
+        $monitor->alerts
+            ->filter->is_enabled
+            ->each(fn(Alert $alert) => dispatch(new $jobClass($anomaly, $alert)));
     }
 }
