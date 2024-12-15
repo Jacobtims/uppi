@@ -8,6 +8,7 @@ use App\Models\StatusPage;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Support\Enums\IconPosition;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -70,6 +71,12 @@ class StatusPageResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('slug')
+                    ->label('URL')
+                    ->prefix('https://uppi.dev/s/')
+                    ->copyable()
+                    ->iconPosition(IconPosition::After)
+                    ->icon('heroicon-o-link')
+                    ->tooltip('Click to copy')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_enabled')
