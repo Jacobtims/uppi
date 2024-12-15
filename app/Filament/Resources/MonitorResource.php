@@ -62,6 +62,8 @@ class MonitorResource extends Resource
                             ->required()
                             ->numeric()
                             ->default(1)
+                            ->step(1)
+                            ->minValue(1)
                             ->helperText('Check interval in minutes'),
                         Forms\Components\TextInput::make('consecutive_threshold')
                             ->required()
@@ -79,6 +81,8 @@ class MonitorResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('type')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('status')
+                    ->badge(),
                 Tables\Columns\TextColumn::make('address')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
@@ -86,21 +90,22 @@ class MonitorResource extends Resource
                 Tables\Columns\TextColumn::make('expects')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\IconColumn::make('is_enabled')
-                    ->boolean(),
+                    ->boolean()
+                ->label('Enabled')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('interval')
                     ->numeric()
+                    ->sortable()
+                    ->suffix(' min'),
+                Tables\Columns\TextColumn::make('consecutive_threshold')
+                    ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status')
-                    ->badge(),
                 Tables\Columns\TextColumn::make('last_checked_at')
                     ->dateTime()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

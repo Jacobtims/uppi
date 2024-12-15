@@ -71,7 +71,7 @@ class Monitor extends Model
 
     public function getDomainAttribute(): ?string
     {
-        return parse_url($this->host, PHP_URL_HOST);
+        return parse_url($this->address, PHP_URL_HOST);
     }
 
     public function status30Days(): array
