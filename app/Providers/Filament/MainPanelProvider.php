@@ -5,7 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\Resources\AlertResource;
 use App\Filament\Resources\MonitorResource;
 use App\Filament\Widgets\ActiveAnomalies;
-use App\Filament\Widgets\IncidentsPerMonitor;
+use App\Filament\Widgets\AnomaliesPerMonitor;
 use App\Filament\Widgets\ResponseTime;
 use App\Filament\Widgets\StatusWidget;
 use Filament\Http\Middleware\Authenticate;
@@ -55,7 +55,7 @@ class MainPanelProvider extends PanelProvider
                 StatusWidget::class,
                 AccountWidget::class,
                 ResponseTime::class,
-                IncidentsPerMonitor::class,
+                AnomaliesPerMonitor::class,
                 ActiveAnomalies::class,
 
             ])

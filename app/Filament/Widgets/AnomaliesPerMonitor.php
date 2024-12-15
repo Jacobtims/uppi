@@ -6,9 +6,9 @@ use App\Models\Anomaly;
 use App\Models\Monitor;
 use Filament\Widgets\ChartWidget;
 
-class IncidentsPerMonitor extends ChartWidget
+class AnomaliesPerMonitor extends ChartWidget
 {
-    protected static ?string $heading = 'Incidents';
+    protected static ?string $heading = 'Anomalies';
 
     protected int|string|array $columnSpan = [
         'sm' => 12,
@@ -74,7 +74,7 @@ class IncidentsPerMonitor extends ChartWidget
 
     public function getDescription(): ?string
     {
-        return 'Incidents per monitor in the last 30 days';
+        return 'Anomalies per monitor in the last 30 days';
     }
 
 
