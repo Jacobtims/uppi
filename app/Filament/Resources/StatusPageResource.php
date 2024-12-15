@@ -82,12 +82,7 @@ class StatusPageResource extends Resource
                 Tables\Columns\IconColumn::make('is_enabled')
                     ->boolean()
                     ->sortable(),
-                Tables\Columns\ImageColumn::make('logo_url')
-                    ->circular(),
-                Tables\Columns\TextColumn::make('website_url')
-                    ->searchable()
-                    ->url(fn ($record) => $record->website_url)
-                    ->openUrlInNewTab(),
+                Tables\Columns\ImageColumn::make('logo_url')->label('Logo'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
