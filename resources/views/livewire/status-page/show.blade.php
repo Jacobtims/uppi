@@ -1,5 +1,5 @@
 <div>
-    <div class="max-w-2xl mx-auto">
+    <div class="max-w-2xl mx-auto my-4">
         <div class="bg-white shadow rounded-lg border border-neutral-100 p-4">
             <div class="flex items-center justify-between">
                 @if($statusPage->logo_url)
