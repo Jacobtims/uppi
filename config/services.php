@@ -41,6 +41,8 @@ return [
 
     'bird' => [
         'access_key' => 'bypass',
+        'workspace' => 'bypass',
+        'channel' => 'bypass',
     ],
 
 ];
