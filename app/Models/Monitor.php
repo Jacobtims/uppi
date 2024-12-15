@@ -24,6 +24,7 @@ class Monitor extends Model
         'type' => MonitorType::class,
         'status' => Status::class,
         'last_checked_at' => 'datetime',
+        'consecutive_threshold' => 'integer',
     ];
 
     protected static function booted()
