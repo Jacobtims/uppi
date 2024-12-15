@@ -27,8 +27,4 @@ enum Status: string implements \Filament\Support\Contracts\HasIcon, HasColor
             self::UNKNOWN => 'warning',
         };
     }
-
-
-
-
 }

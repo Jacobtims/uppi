@@ -42,7 +42,7 @@ enum AlertType: string implements HasLabel, HasIcon
             self::EMAIL => 'heroicon-o-envelope',
             self::SLACK => 'heroicon-o-chat-bubble-left-right',
             self::BIRD => 'heroicon-o-device-phone-mobile',
-            self::MESSAGEBIRD => 'heroicon-o-device-phone-mobile',
+            self::MESSAGEBIRD => 'heroicon-o-chat-bubble-oval-left-ellipsis',
         };
     }
 }
