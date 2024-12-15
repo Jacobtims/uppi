@@ -27,4 +27,23 @@ enum Status: string implements \Filament\Support\Contracts\HasIcon, HasColor
             self::UNKNOWN => 'warning',
         };
     }
+
+    public function isUp(): bool
+    {
+        return $this === self::OK;
+    }
+
+    public function isDown(): bool
+    {
+        return $this === self::FAIL;
+    }
+
+    public function label(): string
+    {
+        return match ($this) {
+            self::OK => 'Operational',
+            self::FAIL => 'Down',
+            self::UNKNOWN => 'Unknown',
+        };
+    }
 }

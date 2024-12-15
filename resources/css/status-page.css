@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .status-icon {
+        @apply size-24;
+    }
+
+    .status-indicator {
+        @apply w-3 h-3 rounded-full;
+    }
+
+    .status-bar {
+        @apply h-8 rounded cursor-help;
+    }
+
+    .status-card {
+        @apply bg-white shadow rounded-lg border border-neutral-100 p-4;
+    }
+
+    .status-text {
+        @apply text-xl font-bold mt-4;
+    }
+
+    .status-subtext {
+        @apply text-neutral-500 text-sm;
+    }
+}
