@@ -35,7 +35,7 @@ class MainPanelProvider extends PanelProvider
             ->id('main')
             ->path('')
             ->brandLogo(fn () => asset('logo.svg'))
-            ->brandLogoHeight('3rem')
+            ->brandLogoHeight('2rem')
             ->login()
             ->colors([
                 'primary' => Color::Red,
