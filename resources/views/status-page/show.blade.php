@@ -5,6 +5,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>{{ $statusPage->name }} - Status Page</title>
     @vite('resources/css/app.css')
+
+    <meta name="robots" content="noindex,nofollow">
 	@livewireStyles
 </head>
 <body>
