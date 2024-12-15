@@ -61,7 +61,7 @@ class MonitorResource extends Resource
                         Forms\Components\TextInput::make('interval')
                             ->required()
                             ->numeric()
-                            ->default(1)
+                            ->default(5)
                             ->step(1)
                             ->minValue(1)
                             ->helperText('Check interval in minutes'),
