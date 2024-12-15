@@ -5,19 +5,23 @@ namespace App\Enums\Types;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 use Filament\Support\Contracts\HasIcon;
+use NotificationChannels\Bird\BirdChannel;
 use NotificationChannels\Messagebird\MessagebirdChannel;
 
 enum AlertType: string implements HasLabel, HasIcon
 {
     case EMAIL = 'email';
     case SLACK = 'slack';
-    case BIRD = 'messagebird';
+    case BIRD = 'bird';
+    case MESSAGEBIRD = 'messagebird';
+
     public function getLabel(): string
     {
         return match ($this) {
             self::EMAIL => 'E-mail',
             self::SLACK => 'Slack',
             self::BIRD => 'Bird',
+            self::MESSAGEBIRD => 'Bird Connectivity Platform',
         };
     }
 
@@ -26,7 +30,8 @@ enum AlertType: string implements HasLabel, HasIcon
         return match ($this) {
             self::EMAIL => 'mail',
             self::SLACK => 'slack',
-            self::BIRD => MessagebirdChannel::class,
+            self::BIRD => BirdChannel::class,
+            self::MESSAGEBIRD => MessagebirdChannel::class,
             default => throw new \InvalidArgumentException('Invalid alert type'),
         };
     }
@@ -37,6 +42,7 @@ enum AlertType: string implements HasLabel, HasIcon
             self::EMAIL => 'heroicon-o-envelope',
             self::SLACK => 'heroicon-o-chat-bubble-left-right',
             self::BIRD => 'heroicon-o-device-phone-mobile',
+            self::MESSAGEBIRD => 'heroicon-o-device-phone-mobile',
         };
     }
 }

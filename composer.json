@@ -9,6 +9,7 @@
         "php": "^8.2",
         "acamposm/ping": "^2.1",
         "filament/filament": "^3.2",
+        "janyksteenbeek/laravel-bird-notifications": "^1.0",
         "laravel-notification-channels/messagebird": "dev-master",
         "laravel/framework": "^11.31",
         "laravel/slack-notification-channel": "^3.4",

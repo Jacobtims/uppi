@@ -39,4 +39,8 @@ return [
         'access_key' => 'bypass',
     ],
 
+    'bird' => [
+        'access_key' => 'bypass',
+    ],
+
 ];

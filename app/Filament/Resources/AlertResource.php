@@ -44,6 +44,7 @@ class AlertResource extends Resource
                             AlertType::EMAIL => 'The email address to send the alert to.',
                             AlertType::SLACK => 'The Slack channel to send the alert to.',
                             AlertType::BIRD => 'The phone number to send the alert to.',
+                            AlertType::MESSAGEBIRD => 'The phone number to send the alert to.',
                             default => null,
                         };
                     })
@@ -70,6 +71,25 @@ class AlertResource extends Resource
                         ->required()
                         ->password()
                         ->label('API Key')
+                        ->helperText('The API key for the Bird API.'),
+                    Forms\Components\TextInput::make('config.bird_workspace_id')
+                        ->label('Workspace ID')
+                        ->helperText('The ID of the workspace that will be used to send the alert from.')
+                        ->required(),
+                        Forms\Components\TextInput::make('config.bird_channel_id')
+                        ->label('Channel ID')
+                        ->helperText('The ID of the channel that will be used to send the alert to.')
+                        ->required(),
+                ])
+                ->columnSpanFull()
+                ->live()
+                ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::BIRD),
+
+                Forms\Components\Section::make([
+                    Forms\Components\TextInput::make('config.bird_api_key')
+                        ->required()
+                        ->password()
+                        ->label('API Key')
                         ->helperText('The API key for the MessageBird API.'),
                     Forms\Components\TextInput::make('config.bird_originator')
                         ->label('Originator')
@@ -78,7 +98,7 @@ class AlertResource extends Resource
                 ])
                 ->columnSpanFull()
                 ->live()
-                ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::BIRD),
+                ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::MESSAGEBIRD),
             ]);
     }
 

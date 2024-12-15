@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Slack\SlackMessage;
 use Illuminate\Notifications\Notification;
+use NotificationChannels\Bird\BirdMessage;
 use NotificationChannels\Messagebird\MessagebirdMessage;
 
 class MonitorRecoveredNotification extends Notification implements ShouldQueue
@@ -44,6 +45,13 @@ class MonitorRecoveredNotification extends Notification implements ShouldQueue
         $downTimeShort = $this->anomaly->started_at->diffForHumans($this->anomaly->ended_at, true);
 
         return (new MessagebirdMessage("✅ Monitor Recovered: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address}): {$downTimeShort}"));
+    }
+
+    public function toBird(object $notifiable): BirdMessage
+    {
+        $downTimeShort = $this->anomaly->started_at->diffForHumans($this->anomaly->ended_at, true);
+
+        return (new BirdMessage("✅ Monitor Recovered: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address}): {$downTimeShort}"));
     }
 
     public function toSlack(object $notifiable): SlackMessage

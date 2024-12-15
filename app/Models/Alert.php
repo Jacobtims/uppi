@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use InvalidArgumentException;
+use NotificationChannels\Bird\BirdRoute;
 use NotificationChannels\Messagebird\MessagebirdRoute;
 
 class Alert extends Model
@@ -82,7 +83,7 @@ class Alert extends Model
 
     public function routeNotificationForMessagebird(Notification $notification): ?MessagebirdRoute
     {
-        if ($this->type !== AlertType::BIRD) {
+        if ($this->type !== AlertType::MESSAGEBIRD) {
             return null;
         }
 
@@ -95,5 +96,22 @@ class Alert extends Model
         }
 
         return MessagebirdRoute::make([$this->destination], $this->config['bird_api_key'], $this->config['bird_originator']);
+    }
+
+    public function routeNotificationForBird(Notification $notification): ?BirdRoute
+    {
+        if ($this->type !== AlertType::BIRD) {
+            return null;
+        }
+
+        if (!isset($this->config['bird_api_key']) || !isset($this->config['bird_workspace_id']) || !isset($this->config['bird_channel_id'])) {
+            throw new InvalidArgumentException('Bird API key, workspace ID and channel ID are required');
+        }
+
+        if (empty($this->destination)) {
+            throw new InvalidArgumentException('Destination is required');
+        }
+
+        return BirdRoute::make([$this->destination], $this->config['bird_api_key'], $this->config['bird_workspace_id'], $this->config['bird_channel_id']);
     }
 }

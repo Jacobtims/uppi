@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Slack\SlackMessage;
 use Illuminate\Notifications\Notification;
+use NotificationChannels\Bird\BirdMessage;
 use NotificationChannels\Messagebird\MessagebirdMessage;
 
 class MonitorDownNotification extends Notification implements ShouldQueue
@@ -41,6 +42,11 @@ class MonitorDownNotification extends Notification implements ShouldQueue
     public function toMessagebird($notifiable): MessagebirdMessage
     {
         return (new MessagebirdMessage("🔴 Monitor DOWN: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address})"));
+    }
+
+    public function toBird(object $notifiable): BirdMessage
+    {
+        return (new BirdMessage("🔴 Monitor DOWN: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address})"));
     }
 
     public function toSlack(object $notifiable): SlackMessage

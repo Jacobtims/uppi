@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5cdb5dc9fa46a2449b53e34c19b25fa3",
+    "content-hash": "c4361c36a250c339ae974091f64720ab",
     "packages": [
         {
             "name": "acamposm/ping",
@@ -2027,6 +2027,61 @@
                 }
             ],
             "time": "2023-12-03T19:50:20+00:00"
+        },
+        {
+            "name": "janyksteenbeek/laravel-bird-notifications",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/janyksteenbeek/laravel-bird-notifications.git",
+                "reference": "a9136bc6bea9ef8267a59a4a8f9591c662af6128"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/janyksteenbeek/laravel-bird-notifications/zipball/a9136bc6bea9ef8267a59a4a8f9591c662af6128",
+                "reference": "a9136bc6bea9ef8267a59a4a8f9591c662af6128",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "guzzlehttp/guzzle": "^7.2",
+                "illuminate/notifications": "^9.0|^10.0|^11.0",
+                "illuminate/queue": "^9.0|^10.0|^11.0",
+                "illuminate/support": "^9.0|^10.0|^11.0",
+                "php": "^8.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "NotificationChannels\\Bird\\BirdServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "NotificationChannels\\Bird\\": "Bird"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Janyk Steenbeek",
+                    "email": "me@janyk.dev",
+                    "homepage": "https://janyk.dev",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Bird notification channel for Laravel",
+            "homepage": "https://github.com/janyksteenbeek/laravel-bird-notifications",
+            "support": {
+                "issues": "https://github.com/janyksteenbeek/laravel-bird-notifications/issues",
+                "source": "https://github.com/janyksteenbeek/laravel-bird-notifications/tree/v1.0.1"
+            },
+            "time": "2024-12-15T17:51:32+00:00"
         },
         {
             "name": "kirschbaum-development/eloquent-power-joins",
