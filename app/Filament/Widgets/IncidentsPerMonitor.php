@@ -10,7 +10,11 @@ class IncidentsPerMonitor extends ChartWidget
 {
     protected static ?string $heading = 'Incidents';
 
-    protected int|string|array $columnSpan = 4;
+    protected int|string|array $columnSpan = [
+        'sm' => 12,
+        'md' => 12,
+        'lg' => 5,
+    ];
 
 
 

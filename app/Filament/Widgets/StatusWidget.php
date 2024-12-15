@@ -10,7 +10,11 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class StatusWidget extends BaseWidget
 {
-    protected int|string|array $columnSpan = 11;
+    protected int|string|array $columnSpan = [
+        'sm' => 12,
+        'md' => 12,
+        'lg' => 11,
+    ];
 
     protected function getStats(): array
     {

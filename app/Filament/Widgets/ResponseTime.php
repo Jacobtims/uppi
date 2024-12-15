@@ -11,7 +11,11 @@ class ResponseTime extends ChartWidget
 {
     protected static ?string $heading = 'Performance';
 
-    protected int|string|array $columnSpan = 8;
+    protected int|string|array $columnSpan = [
+        'sm' => 12,
+        'md' => 12,
+        'lg' => 7,
+    ];
 
     protected int $refreshInterval = 60;
 
