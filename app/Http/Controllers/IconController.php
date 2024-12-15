@@ -18,11 +18,11 @@ class IconController extends Controller
             return redirect('/globe.svg');
         }
 
-        $favicon = \Cache::remember('favicon-' . $domain, now()->addMinutes(5), function () use ($domain) {
-            return file_get_contents('https://icons.duckduckgo.com/ip3/' . $domain . '.ico');
-        });
-
-        if(empty($favicon)) {
+        try {
+            $favicon = \Cache::remember('favicon-' . $domain, now()->addMinutes(5), function () use ($domain) {
+                return file_get_contents('https://icons.duckduckgo.com/ip3/' . $domain . '.ico');
+            });
+        } catch (\Exception $e) {
             return redirect('/globe.svg');
         }
 
