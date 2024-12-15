@@ -18,7 +18,6 @@ class StatusPage extends Model
 
     protected $casts = [
         'is_enabled' => 'boolean',
-        'status' => Status::class,
     ];
 
     protected static function booted()
