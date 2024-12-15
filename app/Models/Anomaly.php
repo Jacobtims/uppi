@@ -37,11 +37,6 @@ class Anomaly extends Model
         return $this->belongsTo(Monitor::class);
     }
 
-    public function alert(): BelongsTo
-    {
-        return $this->belongsTo(Alert::class);
-    }
-
     public function checks(): HasMany
     {
         return $this->hasMany(Check::class);

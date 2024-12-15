@@ -33,74 +33,77 @@ class TriggerAlertJob implements ShouldQueue
     {
         $monitor = $this->check->monitor;
 
-        // Process each alert attached to the monitor
-        foreach ($monitor->alerts as $alert) {
-            if (!$alert->is_enabled) {
-                continue;
-            }
-
-            // Use a transaction to prevent race conditions
-            DB::transaction(function () use ($monitor, $alert) {
-                if ($this->check->status === Status::FAIL) {
-                    $this->handleMonitorDown($monitor, $alert);
-                } else {
-                    $this->handleMonitorRecovery($monitor, $alert);
-                }
-            });
-        }
-    }
-
-    protected function handleMonitorDown($monitor, $alert): void
-    {
-        // Check if there's already an active anomaly for this alert
-        $activeAnomaly = $monitor->anomalies()
-            ->where('alert_id', $alert->id)
-            ->whereNull('ended_at')
-            ->lockForUpdate()  // Lock the row to prevent race conditions
-            ->first();
-
-        if (!$activeAnomaly) {
-            // Create new anomaly if none exists
-            $anomaly = new Anomaly([
-                'started_at' => $this->check->checked_at,
-                'monitor_id' => $monitor->id,
-                'alert_id' => $alert->id,
-            ]);
-            $anomaly->save();
-
-            // Associate check with anomaly
-            $this->check->anomaly()->associate($anomaly);
-            $this->check->save();
-
-            // Dispatch notification job
-            SendAlertNotificationJob::dispatch($anomaly);
+        if ($this->check->status === Status::FAIL) {
+            $this->handleMonitorDown($monitor);
         } else {
-            // Associate check with existing anomaly
-            $this->check->anomaly()->associate($activeAnomaly);
-            $this->check->save();
+            $this->handleMonitorRecovery($monitor);
         }
     }
 
-    protected function handleMonitorRecovery($monitor, $alert): void
+    protected function handleMonitorDown($monitor): void
     {
-        // If status is OK, check if we need to close any anomalies for this alert
-        $activeAnomaly = $monitor->anomalies()
-            ->where('alert_id', $alert->id)
-            ->whereNull('ended_at')
-            ->lockForUpdate()  // Lock the row to prevent race conditions
-            ->first();
+        DB::transaction(function () use ($monitor) {
+            // Check if there's already an active anomaly
+            $activeAnomaly = $monitor->anomalies()
+                ->whereNull('ended_at')
+                ->lockForUpdate()
+                ->first();
 
-        if ($activeAnomaly) {
-            // Set the ended_at to the time of this check
-            $activeAnomaly->ended_at = $this->check->checked_at;
-            $activeAnomaly->save();
+            if (!$activeAnomaly) {
+                // Create new anomaly if none exists
+                $anomaly = new Anomaly([
+                    'started_at' => $this->check->checked_at,
+                    'monitor_id' => $monitor->id,
+                ]);
+                $anomaly->save();
 
-            // Associate this recovery check with the anomaly
-            $this->check->anomaly()->associate($activeAnomaly);
-            $this->check->save();
+                // Associate check with anomaly
+                $this->check->anomaly()->associate($anomaly);
+                $this->check->save();
 
-            // Dispatch recovery notification
-            SendRecoveryNotificationJob::dispatch($activeAnomaly);
-        }
+                // Notify each enabled alert
+                foreach ($monitor->alerts as $alert) {
+                    if (!$alert->is_enabled) {
+                        continue;
+                    }
+
+                    SendAlertNotificationJob::dispatch($anomaly, $alert);
+                }
+            } else {
+                // Associate check with existing anomaly
+                $this->check->anomaly()->associate($activeAnomaly);
+                $this->check->save();
+            }
+        });
+    }
+
+    protected function handleMonitorRecovery($monitor): void
+    {
+        DB::transaction(function () use ($monitor) {
+            // If status is OK, check if we need to close any anomalies
+            $activeAnomaly = $monitor->anomalies()
+                ->whereNull('ended_at')
+                ->lockForUpdate()
+                ->first();
+
+            if ($activeAnomaly) {
+                // Set the ended_at to the time of this check
+                $activeAnomaly->ended_at = $this->check->checked_at;
+                $activeAnomaly->save();
+
+                // Associate this recovery check with the anomaly
+                $this->check->anomaly()->associate($activeAnomaly);
+                $this->check->save();
+
+                // Notify each enabled alert
+                foreach ($monitor->alerts as $alert) {
+                    if (!$alert->is_enabled) {
+                        continue;
+                    }
+
+                    SendRecoveryNotificationJob::dispatch($activeAnomaly, $alert);
+                }
+            }
+        });
     }
 }

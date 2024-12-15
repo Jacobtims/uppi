@@ -3,6 +3,7 @@
 namespace App\Jobs\Notifications;
 
 use App\Models\Anomaly;
+use App\Models\Alert;
 use App\Models\AlertTrigger;
 use App\Notifications\MonitorRecoveredNotification;
 use App\Enums\AlertTriggerType;
@@ -17,15 +18,15 @@ class SendRecoveryNotificationJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public function __construct(
-        protected Anomaly $anomaly
+        protected Anomaly $anomaly,
+        protected Alert $alert
     ) {}
 
     public function handle(): void
     {
         $monitor = $this->anomaly->monitor;
-        $alert = $this->anomaly->alert;
 
-        if (!$alert || !$alert->is_enabled) {
+        if (!$this->alert->is_enabled) {
             return;
         }
 
@@ -35,10 +36,10 @@ class SendRecoveryNotificationJob implements ShouldQueue
         // Create alert trigger record
         $trigger = new AlertTrigger([
             'anomaly_id' => $this->anomaly->id,
-            'alert_id' => $alert->id,
+            'alert_id' => $this->alert->id,
             'monitor_id' => $monitor->id,
             'type' => AlertTriggerType::RECOVERY,
-            'channels_notified' => [$alert->type],
+            'channels_notified' => [$this->alert->type],
             'metadata' => [
                 'monitor_name' => $monitor->name,
                 'monitor_target' => $monitor->address,
@@ -51,6 +52,6 @@ class SendRecoveryNotificationJob implements ShouldQueue
         $trigger->save();
 
         // Send notification to the alert
-        $alert->notify(new MonitorRecoveredNotification($this->anomaly));
+        $this->alert->notify(new MonitorRecoveredNotification($this->anomaly));
     }
 }
