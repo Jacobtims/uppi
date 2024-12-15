@@ -33,8 +33,7 @@ class AnomalyResource extends Resource
                     ->searchable(),
                 Forms\Components\DateTimePicker::make('started_at')
                     ->required(),
-                Forms\Components\DateTimePicker::make('ended_at'),
-                Forms\Components\Textarea::make('')
+                Forms\Components\DateTimePicker::make('ended_at')
             ]);
     }
 
@@ -68,7 +67,7 @@ class AnomalyResource extends Resource
                 Tables\Columns\TextColumn::make('duration')
                     ->label('Duration')
                     ->sortable()
-                    ->state(fn($record) => $record->ended_at ? $record->ended_at->diffInSeconds($record->started_at) : null),
+                    ->state(fn($record) => $record->ended_at ? $record->ended_at->diffForHumans($record->started_at, true) : null),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
