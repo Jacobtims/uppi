@@ -18,6 +18,7 @@ class StatusPage extends Model
 
     protected $casts = [
         'is_enabled' => 'boolean',
+        'status' => Status::class,
     ];
 
     protected static function booted()
@@ -64,6 +65,6 @@ class StatusPage extends Model
 
     public function getStatusAttribute(): Status
     {
-        return $this->isOk() ? Status::UP : Status::DOWN;
+        return $this->isOk() ? Status::OK : Status::FAIL;
     }
 }
