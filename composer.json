@@ -13,7 +13,8 @@
         "laravel-notification-channels/messagebird": "dev-master",
         "laravel/framework": "^11.31",
         "laravel/slack-notification-channel": "^3.4",
-        "laravel/tinker": "^2.9"
+        "laravel/tinker": "^2.9",
+        "sentry/sentry-laravel": "^4.10"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
