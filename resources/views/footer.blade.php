@@ -13,6 +13,7 @@
 </footer>
 
 <style>
+    /* @TODO: should be in a theme */
     .fi-topbar {
         border-top: 4px solid #DC2625;
     }
