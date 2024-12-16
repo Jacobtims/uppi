@@ -98,7 +98,7 @@ class Alert extends Model
         return MessagebirdRoute::make([$this->destination], $this->config['bird_api_key'], $this->config['bird_originator']);
     }
 
-    public function routeNotificationForPushover(Notification $notification): ?string
+    public function routeNotificationForPushover(): ?string
     {
         if ($this->type !== AlertType::PUSHOVER) {
             return null;
