@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\IconController;
 use App\Http\Controllers\StatusPageController;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/s/{statusPage:slug}', [StatusPageController::class, 'show'])->name('status-page.show');
