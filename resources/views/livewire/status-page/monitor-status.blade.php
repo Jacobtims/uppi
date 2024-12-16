@@ -26,8 +26,7 @@
                     'bg-red-500' => $statuses[$index] === false,
                     'bg-gray-200' => $statuses[$index] === null,
                 ])
-                title="{{ \Carbon\Carbon::parse($date)->format('F j, Y') }}
-{{ $statuses[$index] === true ? '✓ Operational' : ($statuses[$index] === false ? '✕ Down' : '? No Data') }}"
+                data-tippy-content="<strong>{{ \Carbon\Carbon::parse($date)->format('F j, Y') }}</strong><br>{{ $statuses[$index] === true ? '✓ Operational' : ($statuses[$index] === false ? '✕ Down' : '? No Data') }}"
             ></div>
         @endforeach
     </div>
