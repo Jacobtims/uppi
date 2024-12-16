@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\StatusPage;
+use Illuminate\Http\Request;
 
 class StatusPageController extends Controller
 {
@@ -22,5 +23,19 @@ class StatusPageController extends Controller
         return response()->json([
             'status' => $statusPage->status,
         ])->header('Access-Control-Allow-Origin', '*');
+    }
+
+    public function embed(StatusPage $statusPage, Request $request)
+    {
+        if (!$statusPage->is_enabled) {
+            abort(404);
+        }
+
+        $type = $request->get('type', 'all');
+
+        return view('status-page.embed', [
+            'statusPage' => $statusPage,
+            'type' => $type,
+        ]);
     }
 }
