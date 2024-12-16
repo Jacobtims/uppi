@@ -12,7 +12,6 @@ use Filament\Support\Enums\IconPosition;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Actions\Action;
 
 class StatusPageResource extends Resource
 {
@@ -107,15 +106,15 @@ class StatusPageResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('embed')
-                ->label('Embed')
-                ->modalHeading('Embed Status Page')
-                ->modalDescription('Copy and paste this code into your website to embed the status page.')
-                ->modalContent(fn ($record) => view('filament.resources.status-page.embed-code', [
-                    'statusPage' => $record,
-                ]))
-                ->modalWidth('2xl')
-                ->modalSubmitAction(false)
-                ->modalCancelActionLabel('Close'),
+                    ->label('Embed')
+                    ->modalHeading('Embed Status Page')
+                    ->modalDescription('Copy and paste this code into your website to embed the status page.')
+                    ->modalContent(fn ($record) => view('filament.resources.status-page.embed-code', [
+                        'statusPage' => $record,
+                    ]))
+                    ->modalWidth('2xl')
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Close'),
             ])
             ->bulkActions([
 

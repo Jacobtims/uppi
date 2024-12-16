@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use App\Models\Check;
 use App\Jobs\TriggerAlertJob;
+use App\Models\Check;
 
 class CheckObserver
 {

@@ -2,18 +2,18 @@
 
 namespace Database\Seeders;
 
+use App\Enums\AlertTriggerType;
 use App\Enums\Checks\Status;
 use App\Enums\Monitors\MonitorType;
 use App\Enums\Types\AlertType;
-use App\Enums\AlertTriggerType;
 use App\Models\Alert;
+use App\Models\AlertTrigger;
 use App\Models\Anomaly;
 use App\Models\Check;
 use App\Models\Monitor;
 use App\Models\User;
-use App\Models\AlertTrigger;
-use Illuminate\Database\Seeder;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -95,7 +95,7 @@ class DatabaseSeeder extends Seeder
                 'is_enabled' => true,
                 'config' => [
                     'bird_api_key' => 'test-key',
-                    'bird_originator' => 'UPTIME'
+                    'bird_originator' => 'UPTIME',
                 ],
                 'user_id' => $janyk->id,
             ]),
@@ -153,7 +153,7 @@ class DatabaseSeeder extends Seeder
                     ]);
 
                     // Handle anomaly creation and closure
-                    if ($status === Status::FAIL && !$activeAnomaly) {
+                    if ($status === Status::FAIL && ! $activeAnomaly) {
                         $activeAnomaly = $this->createAnomaly($monitor, $check, $checkTime);
                         $check->anomaly()->associate($activeAnomaly);
                         $check->save();

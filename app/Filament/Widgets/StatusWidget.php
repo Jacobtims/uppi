@@ -40,13 +40,12 @@ class StatusWidget extends BaseWidget
             ->pluck('count')
             ->toArray();
 
-            $anomalyCount = Anomaly::where('ended_at', null)->count();
+        $anomalyCount = Anomaly::where('ended_at', null)->count();
 
         return [
             Stat::make('Need attention', $anomalyCount)->chart($anomalyGraph)->color($anomalyCount > 0 ? 'primary-600' : 'success'),
             Stat::make('Total monitors', Monitor::count())->chart($monitorGraph),
             Stat::make('Alerts last 7 days', AlertTrigger::where('created_at', '>=', now()->subDays(7))->count())->chart($alertGraph),
-
 
         ];
     }

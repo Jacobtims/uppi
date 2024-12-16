@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\StatusPageResource\Pages;
 
 use App\Filament\Resources\StatusPageResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateStatusPage extends CreateRecord

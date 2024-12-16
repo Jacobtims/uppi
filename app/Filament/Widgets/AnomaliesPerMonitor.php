@@ -16,9 +16,7 @@ class AnomaliesPerMonitor extends ChartWidget
         'lg' => 5,
     ];
 
-
-
-    protected function getMaxHeight(): string|null
+    protected function getMaxHeight(): ?string
     {
         return '300px';
     }
@@ -76,8 +74,6 @@ class AnomaliesPerMonitor extends ChartWidget
     {
         return 'Anomalies per monitor in the last 30 days';
     }
-
-
 
     protected function getType(): string
     {

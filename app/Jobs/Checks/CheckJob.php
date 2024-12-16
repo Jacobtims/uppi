@@ -2,9 +2,9 @@
 
 namespace App\Jobs\Checks;
 
-use App\Models\Monitor;
-use App\Models\Check;
 use App\Enums\Checks\Status;
+use App\Models\Check;
+use App\Models\Monitor;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -17,9 +17,7 @@ abstract class CheckJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function __construct(protected Monitor $monitor)
-    {
-    }
+    public function __construct(protected Monitor $monitor) {}
 
     abstract protected function performCheck(): array;
 
@@ -56,7 +54,7 @@ abstract class CheckJob implements ShouldQueue
 
                 // Only update status if we have enough consecutive checks with the same status
                 if ($recentChecks->count() >= $this->monitor->consecutive_threshold &&
-                    $recentChecks->every(fn($check) => $check->status === $checkStatus)) {
+                    $recentChecks->every(fn ($check) => $check->status === $checkStatus)) {
                     $this->monitor->update(['status' => $checkStatus]);
                 }
             });
@@ -84,7 +82,7 @@ abstract class CheckJob implements ShouldQueue
 
                 // Only update status if we have enough consecutive failures
                 if ($recentChecks->count() >= $this->monitor->consecutive_threshold &&
-                    $recentChecks->every(fn($check) => $check->status === Status::FAIL)) {
+                    $recentChecks->every(fn ($check) => $check->status === Status::FAIL)) {
                     $this->monitor->update(['status' => Status::FAIL]);
                 }
             });

@@ -9,12 +9,12 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class ActiveAnomalies extends BaseWidget
 {
-
     protected int|string|array $columnSpan = [
         'sm' => 12,
         'md' => 12,
         'lg' => 12,
     ];
+
     public function table(Table $table): Table
     {
         return $table
@@ -50,5 +50,4 @@ class ActiveAnomalies extends BaseWidget
             ->paginated(false)
             ->defaultSort('started_at', 'desc');
     }
-
 }

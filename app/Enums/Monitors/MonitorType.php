@@ -7,7 +7,7 @@ use App\Jobs\Checks\TcpCheckJob;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
-enum MonitorType: string implements HasLabel, HasIcon
+enum MonitorType: string implements HasIcon, HasLabel
 {
     case HTTP = 'http';
     case TCP = 'tcp';
@@ -19,10 +19,12 @@ enum MonitorType: string implements HasLabel, HasIcon
             self::TCP => TcpCheckJob::class,
         };
     }
+
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function getLabel(): string {
+    public function getLabel(): string
+    {
         return match ($this) {
             self::HTTP => 'HTTP',
             self::TCP => 'TCP',
@@ -37,4 +39,3 @@ enum MonitorType: string implements HasLabel, HasIcon
         };
     }
 }
-

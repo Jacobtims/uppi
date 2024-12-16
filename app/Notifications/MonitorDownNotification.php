@@ -6,8 +6,8 @@ use App\Models\Anomaly;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Slack\SlackMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Slack\SlackMessage;
 use NotificationChannels\Bird\BirdMessage;
 use NotificationChannels\Messagebird\MessagebirdMessage;
 use NotificationChannels\Pushover\PushoverMessage;
@@ -36,18 +36,18 @@ class MonitorDownNotification extends Notification implements ShouldQueue
             ->line("Target: {$monitor->address}")
             ->line("Down since: {$this->anomaly->started_at->format('Y-m-d H:i:s')}")
             ->line("Last check output: {$this->anomaly->checks->last()?->output}")
-            ->action('Open ' . config('app.name'), url("/"))
-            ->line('Thank you for using ' . config('app.name') . '!');
+            ->action('Open '.config('app.name'), url('/'))
+            ->line('Thank you for using '.config('app.name').'!');
     }
 
     public function toMessagebird($notifiable): MessagebirdMessage
     {
-        return (new MessagebirdMessage("🔴 Monitor DOWN: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address})"));
+        return new MessagebirdMessage("🔴 Monitor DOWN: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address})");
     }
 
     public function toBird(object $notifiable): BirdMessage
     {
-        return (new BirdMessage("🔴 Monitor DOWN: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address})"));
+        return new BirdMessage("🔴 Monitor DOWN: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address})");
     }
 
     public function toPushover(object $notifiable): PushoverMessage
@@ -56,7 +56,7 @@ class MonitorDownNotification extends Notification implements ShouldQueue
             ->title("🔴 Monitor DOWN: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address})")
             ->content("The monitor {$this->anomaly->monitor->name} is down and not responding. Last check output: {$this->anomaly->checks->last()?->output}")
             ->emergencyPriority(60, 360)
-            ->url(url("/"), 'Open ' . config('app.name'));
+            ->url(url('/'), 'Open '.config('app.name'));
     }
 
     public function toSlack(object $notifiable): SlackMessage

@@ -2,7 +2,6 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Anomaly;
 use App\Models\Check;
 use App\Models\Monitor;
 use Filament\Widgets\ChartWidget;
@@ -35,19 +34,20 @@ class ResponseTime extends ChartWidget
                 ->where('monitor_id', $monitor->id)
                 ->where('checked_at', '>=', now()->subDays(value: 7))
                 ->get()
-                ->groupBy(function($check) {
+                ->groupBy(function ($check) {
                     return $check->checked_at->format('d-m H').'h';
                 })
-                ->filter(function($group, $timestamp) {
+                ->filter(function ($group, $timestamp) {
                     // '01-12 12h'
                     $hour = (int) substr($timestamp, -3, 2);
+
                     return $hour % 12 === 0;
                 })
-                ->map(function($group) {
+                ->map(function ($group) {
                     return $group->avg('response_time');
                 });
 
-                $color = self::generatePastelColorBasedOnMonitorId($monitor->id);
+            $color = self::generatePastelColorBasedOnMonitorId($monitor->id);
 
             $datasets[] = [
                 'label' => $monitor->name,
@@ -86,17 +86,29 @@ class ResponseTime extends ChartWidget
         $m = ($lightness / 100) - ($c / 2);
 
         if ($hue < 60) {
-            $r = $c; $g = $x; $b = 0;
+            $r = $c;
+            $g = $x;
+            $b = 0;
         } elseif ($hue < 120) {
-            $r = $x; $g = $c; $b = 0;
+            $r = $x;
+            $g = $c;
+            $b = 0;
         } elseif ($hue < 180) {
-            $r = 0; $g = $c; $b = $x;
+            $r = 0;
+            $g = $c;
+            $b = $x;
         } elseif ($hue < 240) {
-            $r = 0; $g = $x; $b = $c;
+            $r = 0;
+            $g = $x;
+            $b = $c;
         } elseif ($hue < 300) {
-            $r = $x; $g = 0; $b = $c;
+            $r = $x;
+            $g = 0;
+            $b = $c;
         } else {
-            $r = $c; $g = 0; $b = $x;
+            $r = $c;
+            $g = 0;
+            $b = $x;
         }
 
         $r = round(($r + $m) * 255);

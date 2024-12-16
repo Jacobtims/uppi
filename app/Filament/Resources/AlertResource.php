@@ -15,6 +15,7 @@ use Filament\Tables\Table;
 class AlertResource extends Resource
 {
     protected static ?string $model = Alert::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-bell';
 
     protected static ?string $navigationLabel = 'Alert Destinations';
@@ -26,11 +27,11 @@ class AlertResource extends Resource
         return $form
             ->schema([
                 Forms\Components\ToggleButtons::make('type')
-                ->options(AlertType::class)
-                ->required()
-                ->inline()
-                ->live()
-                ->columnSpanFull(),
+                    ->options(AlertType::class)
+                    ->required()
+                    ->inline()
+                    ->live()
+                    ->columnSpanFull(),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->columnSpanFull(),
@@ -49,7 +50,7 @@ class AlertResource extends Resource
                     ->prefix(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::SLACK ? '#' : null)
                     ->password(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::PUSHOVER)
                     ->live()
-                    ->visible(fn (Get $get) => !empty($get('type')))
+                    ->visible(fn (Get $get) => ! empty($get('type')))
                     ->email(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::EMAIL)
                     ->required(),
                 Forms\Components\Toggle::make('is_enabled')
@@ -61,9 +62,9 @@ class AlertResource extends Resource
                         ->label('Slack Bot OAuth Token')
                         ->required(),
                 ])
-                ->columnSpanFull()
-                ->live()
-                ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::SLACK),
+                    ->columnSpanFull()
+                    ->live()
+                    ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::SLACK),
 
                 Forms\Components\Section::make([
                     Forms\Components\TextInput::make('config.bird_api_key')
@@ -75,14 +76,14 @@ class AlertResource extends Resource
                         ->label('Workspace ID')
                         ->helperText('The ID of the workspace that will be used to send the alert from.')
                         ->required(),
-                        Forms\Components\TextInput::make('config.bird_channel_id')
+                    Forms\Components\TextInput::make('config.bird_channel_id')
                         ->label('Channel ID')
                         ->helperText('The ID of the channel that will be used to send the alert to.')
                         ->required(),
                 ])
-                ->columnSpanFull()
-                ->live()
-                ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::BIRD),
+                    ->columnSpanFull()
+                    ->live()
+                    ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::BIRD),
 
                 Forms\Components\Section::make([
                     Forms\Components\TextInput::make('config.bird_api_key')
@@ -95,9 +96,9 @@ class AlertResource extends Resource
                         ->helperText('The originator of the message. This is the name that will be displayed on the recipient\'s phone.')
                         ->required(),
                 ])
-                ->columnSpanFull()
-                ->live()
-                ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::MESSAGEBIRD),
+                    ->columnSpanFull()
+                    ->live()
+                    ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::MESSAGEBIRD),
             ]);
     }
 
@@ -115,6 +116,7 @@ class AlertResource extends Resource
                         if ($record->type === AlertType::PUSHOVER) {
                             return '************';
                         }
+
                         return $state;
                     }),
                 Tables\Columns\IconColumn::make('is_enabled')

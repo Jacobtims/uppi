@@ -19,6 +19,7 @@ class MonitorResource extends Resource
     protected static ?string $model = Monitor::class;
 
     protected static ?int $navigationSort = 2;
+
     protected static ?string $navigationIcon = 'heroicon-o-heart';
 
     public static function getEloquentQuery(): Builder
@@ -41,7 +42,7 @@ class MonitorResource extends Resource
                         Forms\Components\TextInput::make('address')
                             ->required()
                             ->live()
-                            ->url(fn (Get $get) => $get('type') === MonitorType::TCP->value ? null : 'https://' . $get('address')),
+                            ->url(fn (Get $get) => $get('type') === MonitorType::TCP->value ? null : 'https://'.$get('address')),
                         Forms\Components\TextInput::make('port')
                             ->numeric()
                             ->requiredIf('type', MonitorType::TCP->value)
@@ -91,7 +92,7 @@ class MonitorResource extends Resource
 
                 Tables\Columns\IconColumn::make('is_enabled')
                     ->boolean()
-                ->label('Enabled')
+                    ->label('Enabled')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('interval')
                     ->numeric()

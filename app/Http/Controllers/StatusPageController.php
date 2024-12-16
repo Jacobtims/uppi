@@ -9,7 +9,7 @@ class StatusPageController extends Controller
 {
     public function show(StatusPage $statusPage)
     {
-        if (!$statusPage->is_enabled) {
+        if (! $statusPage->is_enabled) {
             abort(404);
         }
 
@@ -27,7 +27,7 @@ class StatusPageController extends Controller
 
     public function embed(StatusPage $statusPage, Request $request)
     {
-        if (!$statusPage->is_enabled) {
+        if (! $statusPage->is_enabled) {
             abort(404);
         }
 

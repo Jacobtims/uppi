@@ -2,18 +2,17 @@
 
 namespace App\Models;
 
-use App\Enums\Monitors\MonitorType;
 use App\Enums\Checks\Status;
+use App\Enums\Monitors\MonitorType;
 use App\Jobs\Checks\CheckJob;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Concerns\HasUlids;
-use Carbon\Carbon;
-use Illuminate\Support\Collection;
 
 class Monitor extends Model
 {
@@ -37,7 +36,7 @@ class Monitor extends Model
             });
 
             static::creating(function ($monitor) {
-                if (!$monitor->user_id) {
+                if (! $monitor->user_id) {
                     $monitor->user_id = Auth::id();
                 }
             });
@@ -115,16 +114,15 @@ class Monitor extends Model
         for ($date = $thirtyDaysAgo; $date <= $today; $date = $date->copy()->addDay()) {
             $dateString = $date->toDateString();
 
-            if (!isset($allDays[$dateString])) {
+            if (! isset($allDays[$dateString])) {
                 // No data for this day
                 $status[$dateString] = null;
             } else {
                 // If any record for this day had downtime, mark as false (down)
-                $status[$dateString] = !$allDays[$dateString]->contains('had_downtime', true);
+                $status[$dateString] = ! $allDays[$dateString]->contains('had_downtime', true);
             }
         }
 
         return $status;
     }
 }
-

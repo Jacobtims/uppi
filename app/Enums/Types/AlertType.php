@@ -2,13 +2,13 @@
 
 namespace App\Enums\Types;
 
-use Filament\Support\Contracts\HasLabel;
 use Filament\Support\Contracts\HasIcon;
+use Filament\Support\Contracts\HasLabel;
 use NotificationChannels\Bird\BirdChannel;
 use NotificationChannels\Messagebird\MessagebirdChannel;
 use NotificationChannels\Pushover\PushoverChannel;
 
-enum AlertType: string implements HasLabel, HasIcon
+enum AlertType: string implements HasIcon, HasLabel
 {
     case EMAIL = 'email';
     case SLACK = 'slack';
@@ -39,7 +39,7 @@ enum AlertType: string implements HasLabel, HasIcon
         };
     }
 
-    public function getIcon(): string|null
+    public function getIcon(): ?string
     {
         return match ($this) {
             self::EMAIL => 'heroicon-o-envelope',

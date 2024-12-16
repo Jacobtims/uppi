@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cc0334c4ef82c9629ca035312ffaf6ba",
+    "content-hash": "d8975df8f6773d98d8ebf4f0a30c6db5",
     "packages": [
         {
             "name": "acamposm/ping",

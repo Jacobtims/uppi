@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
+use App\Enums\Checks\Status;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
-use App\Enums\Checks\Status;
 
 class StatusPage extends Model
 {
@@ -28,7 +28,7 @@ class StatusPage extends Model
             });
 
             static::creating(function ($statusPage) {
-                if (!$statusPage->user_id) {
+                if (! $statusPage->user_id) {
                     $statusPage->user_id = Auth::id();
                 }
             });
@@ -53,7 +53,7 @@ class StatusPage extends Model
         }
 
         // Check if any enabled monitor is down
-        return !$this->items()
+        return ! $this->items()
             ->where('is_enabled', true)
             ->whereHas('monitor', function ($query) {
                 $query->where('status', Status::FAIL)

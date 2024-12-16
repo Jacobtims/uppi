@@ -3,16 +3,16 @@
 namespace App\Models;
 
 use App\Enums\Types\AlertType;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Slack\SlackRoute;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use InvalidArgumentException;
 use NotificationChannels\Bird\BirdRoute;
 use NotificationChannels\Messagebird\MessagebirdRoute;
@@ -37,7 +37,7 @@ class Alert extends Model
             });
 
             static::creating(function ($alert) {
-                if (!$alert->user_id) {
+                if (! $alert->user_id) {
                     $alert->user_id = Auth::id();
                 }
             });
@@ -74,7 +74,7 @@ class Alert extends Model
             return null;
         }
 
-        if (!isset($this->config['slack_token'])) {
+        if (! isset($this->config['slack_token'])) {
             throw new InvalidArgumentException('Slack token and channel are required');
         }
 
@@ -87,7 +87,7 @@ class Alert extends Model
             return null;
         }
 
-        if (!isset($this->config['bird_api_key']) || !isset($this->config['bird_originator'])) {
+        if (! isset($this->config['bird_api_key']) || ! isset($this->config['bird_originator'])) {
             throw new InvalidArgumentException('Bird API key and originator are required');
         }
 
@@ -113,7 +113,7 @@ class Alert extends Model
             return null;
         }
 
-        if (!isset($this->config['bird_api_key']) || !isset($this->config['bird_workspace_id']) || !isset($this->config['bird_channel_id'])) {
+        if (! isset($this->config['bird_api_key']) || ! isset($this->config['bird_workspace_id']) || ! isset($this->config['bird_channel_id'])) {
             throw new InvalidArgumentException('Bird API key, workspace ID and channel ID are required');
         }
 

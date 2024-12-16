@@ -2,11 +2,11 @@
 
 namespace App\Jobs\Notifications;
 
-use App\Models\Anomaly;
+use App\Enums\AlertTriggerType;
 use App\Models\Alert;
 use App\Models\AlertTrigger;
+use App\Models\Anomaly;
 use App\Notifications\MonitorRecoveredNotification;
-use App\Enums\AlertTriggerType;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -26,7 +26,7 @@ class SendRecoveryNotificationJob implements ShouldQueue
     {
         $monitor = $this->anomaly->monitor;
 
-        if (!$this->alert->is_enabled) {
+        if (! $this->alert->is_enabled) {
             return;
         }
 

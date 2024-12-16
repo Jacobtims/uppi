@@ -28,7 +28,7 @@ class DispatchMonitorChecks extends Command
     {
         $monitors = Monitor::query()
             ->where('is_enabled', true)
-            ->when(!$this->option('force'), function ($query) {
+            ->when(! $this->option('force'), function ($query) {
                 $query->where(function ($query) {
                     $query->whereNull('last_checked_at')
                         ->orWhereRaw('last_checked_at <= DATE_SUB(NOW(), INTERVAL `interval` MINUTE)');

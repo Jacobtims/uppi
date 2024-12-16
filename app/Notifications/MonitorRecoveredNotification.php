@@ -6,8 +6,8 @@ use App\Models\Anomaly;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Slack\SlackMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Slack\SlackMessage;
 use NotificationChannels\Bird\BirdMessage;
 use NotificationChannels\Messagebird\MessagebirdMessage;
 use NotificationChannels\Pushover\PushoverMessage;
@@ -37,22 +37,22 @@ class MonitorRecoveredNotification extends Notification implements ShouldQueue
             ->line("Target: {$monitor->address}")
             ->line("Downtime duration: {$duration}")
             ->line("Recovered at: {$this->anomaly->ended_at->format('Y-m-d H:i:s')}")
-            ->action('Open ' . config('app.name'), url("/"))
-            ->line('Thank you for using ' . config('app.name') . '!');
+            ->action('Open '.config('app.name'), url('/'))
+            ->line('Thank you for using '.config('app.name').'!');
     }
 
     public function toMessagebird(object $notifiable): MessagebirdMessage
     {
         $downTimeShort = $this->anomaly->started_at->diffForHumans($this->anomaly->ended_at, true);
 
-        return (new MessagebirdMessage("✅ Monitor Recovered: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address}): {$downTimeShort}"));
+        return new MessagebirdMessage("✅ Monitor Recovered: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address}): {$downTimeShort}");
     }
 
     public function toBird(object $notifiable): BirdMessage
     {
         $downTimeShort = $this->anomaly->started_at->diffForHumans($this->anomaly->ended_at, true);
 
-        return (new BirdMessage("✅ Monitor Recovered: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address}): {$downTimeShort}"));
+        return new BirdMessage("✅ Monitor Recovered: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address}): {$downTimeShort}");
     }
 
     public function toPushover(object $notifiable): PushoverMessage
@@ -61,7 +61,7 @@ class MonitorRecoveredNotification extends Notification implements ShouldQueue
             ->title("✅ Monitor Recovered: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address})")
             ->content("The monitor {$this->anomaly->monitor->name} is back UP and recovered after {$this->anomaly->started_at->diffForHumans($this->anomaly->ended_at, true)}")
             ->highPriority()
-            ->url(url("/"), 'Open ' . config('app.name'));
+            ->url(url('/'), 'Open '.config('app.name'));
     }
 
     public function toSlack(object $notifiable): SlackMessage

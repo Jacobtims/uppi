@@ -2,19 +2,19 @@
 
 namespace App\Jobs;
 
-use App\Models\Check;
-use App\Models\Monitor;
-use App\Models\Anomaly;
-use App\Models\Alert;
+use App\Enums\Checks\Status;
 use App\Jobs\Notifications\SendAlertNotificationJob;
 use App\Jobs\Notifications\SendRecoveryNotificationJob;
+use App\Models\Alert;
+use App\Models\Anomaly;
+use App\Models\Check;
+use App\Models\Monitor;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Enums\Checks\Status;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class TriggerAlertJob implements ShouldQueue
@@ -29,7 +29,7 @@ class TriggerAlertJob implements ShouldQueue
 
     public function uniqueId(): string
     {
-        return 'trigger_alert_' . $this->check->id;
+        return 'trigger_alert_'.$this->check->id;
     }
 
     public function handle(): void
@@ -49,7 +49,7 @@ class TriggerAlertJob implements ShouldQueue
             $activeAnomaly = $this->getActiveAnomaly($monitor);
             $recentChecks = $this->getRecentChecks($monitor);
 
-            if (!$activeAnomaly && $this->hasMetFailureThreshold($recentChecks)) {
+            if (! $activeAnomaly && $this->hasMetFailureThreshold($recentChecks)) {
                 $anomaly = $this->createAnomaly($monitor, $recentChecks);
                 $this->associateChecksWithAnomaly($monitor, $recentChecks, $anomaly);
                 $this->notifyAlerts($monitor, $anomaly, SendAlertNotificationJob::class);
@@ -107,7 +107,7 @@ class TriggerAlertJob implements ShouldQueue
         $threshold = $this->check->monitor->consecutive_threshold;
 
         return $checks->count() >= $threshold &&
-            $checks->every(fn($check) => $check->status === $status);
+            $checks->every(fn ($check) => $check->status === $status);
     }
 
     protected function createAnomaly(Monitor $monitor, Collection $checks): Anomaly
@@ -148,6 +148,6 @@ class TriggerAlertJob implements ShouldQueue
     {
         $monitor->alerts
             ->filter->is_enabled
-            ->each(fn(Alert $alert) => dispatch(new $jobClass($anomaly, $alert)));
+            ->each(fn (Alert $alert) => dispatch(new $jobClass($anomaly, $alert)));
     }
 }
