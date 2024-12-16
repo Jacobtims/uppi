@@ -47,14 +47,29 @@ class TriggerAlertJob implements ShouldQueue
     {
         DB::transaction(function () use ($monitor) {
             $activeAnomaly = $this->getActiveAnomaly($monitor);
+
+            // If there's already an active anomaly, just associate the check
+            if ($activeAnomaly) {
+                $this->associateCheckWithAnomaly($activeAnomaly);
+                return;
+            }
+
+            // Get recent checks in chronological order for proper threshold checking
             $recentChecks = $this->getRecentChecks($monitor);
 
-            if (! $activeAnomaly && $this->hasMetFailureThreshold($recentChecks)) {
-                $anomaly = $this->createAnomaly($monitor, $recentChecks);
-                $this->associateChecksWithAnomaly($monitor, $recentChecks, $anomaly);
+            // Only proceed if we have enough consecutive failures
+            if ($this->hasMetFailureThreshold($recentChecks)) {
+                // Find the first failed check in the sequence (this is when the problem started)
+                $firstFailedCheck = $recentChecks->reverse()->first();
+
+                // Create anomaly starting from the first failure
+                $anomaly = $this->createAnomaly($monitor, $firstFailedCheck);
+
+                // Associate all failed checks with the anomaly
+                $this->associateChecksWithAnomaly($monitor, $firstFailedCheck, $anomaly);
+
+                // Send notifications
                 $this->notifyAlerts($monitor, $anomaly, SendAlertNotificationJob::class);
-            } elseif ($activeAnomaly) {
-                $this->associateCheckWithAnomaly($activeAnomaly);
             }
         });
     }
@@ -62,16 +77,30 @@ class TriggerAlertJob implements ShouldQueue
     protected function handleMonitorRecovery(Monitor $monitor): void
     {
         DB::transaction(function () use ($monitor) {
+            $activeAnomaly = $this->getActiveAnomaly($monitor);
+            if (!$activeAnomaly) {
+                return;
+            }
+
+            // Get recent checks in chronological order
             $recentChecks = $this->getRecentChecks($monitor);
 
+            // Only proceed if we have enough consecutive successes
             if ($this->hasMetRecoveryThreshold($recentChecks)) {
-                $activeAnomaly = $this->getActiveAnomaly($monitor);
+                // Find the first successful check in the sequence
+                $firstSuccessCheck = $recentChecks->reverse()->first();
 
-                if ($activeAnomaly) {
-                    $this->closeAnomaly($activeAnomaly, $recentChecks);
-                    $this->associateChecksWithAnomaly($monitor, $recentChecks, $activeAnomaly);
-                    $this->notifyAlerts($monitor, $activeAnomaly, SendRecoveryNotificationJob::class);
-                }
+                // Close the anomaly
+                $this->closeAnomaly($activeAnomaly, $firstSuccessCheck);
+
+                // Associate all successful checks with the anomaly
+                $this->associateChecksWithAnomaly($monitor, $firstSuccessCheck, $activeAnomaly);
+
+                // Send recovery notifications
+                $this->notifyAlerts($monitor, $activeAnomaly, SendRecoveryNotificationJob::class);
+            } else {
+                // If we don't have enough successes yet, just associate the check
+                $this->associateCheckWithAnomaly($activeAnomaly);
             }
         });
     }
@@ -87,9 +116,11 @@ class TriggerAlertJob implements ShouldQueue
     protected function getRecentChecks(Monitor $monitor): Collection
     {
         return $monitor->checks()
+            ->orderBy('checked_at', 'asc') // Get in chronological order
             ->latest('checked_at')
             ->take($monitor->consecutive_threshold)
-            ->get();
+            ->get()
+            ->sortBy('checked_at'); // Ensure chronological order
     }
 
     protected function hasMetFailureThreshold(Collection $checks): bool
@@ -110,10 +141,10 @@ class TriggerAlertJob implements ShouldQueue
             $checks->every(fn ($check) => $check->status === $status);
     }
 
-    protected function createAnomaly(Monitor $monitor, Collection $checks): Anomaly
+    protected function createAnomaly(Monitor $monitor, Check $firstFailedCheck): Anomaly
     {
         $anomaly = new Anomaly([
-            'started_at' => $checks->last()->checked_at,
+            'started_at' => $firstFailedCheck->checked_at,
             'monitor_id' => $monitor->id,
         ]);
 
@@ -122,18 +153,18 @@ class TriggerAlertJob implements ShouldQueue
         return $anomaly;
     }
 
-    protected function closeAnomaly(Anomaly $anomaly, Collection $checks): void
+    protected function closeAnomaly(Anomaly $anomaly, Check $firstSuccessCheck): void
     {
-        $anomaly->ended_at = $checks->last()->checked_at;
+        $anomaly->ended_at = $firstSuccessCheck->checked_at;
         $anomaly->save();
     }
 
-    protected function associateChecksWithAnomaly(Monitor $monitor, Collection $checks, Anomaly $anomaly): void
+    protected function associateChecksWithAnomaly(Monitor $monitor, Check $startingCheck, Anomaly $anomaly): void
     {
-        $status = $this->check->status;
+        $status = $startingCheck->status;
 
         $monitor->checks()
-            ->where('checked_at', '>=', $checks->last()->checked_at)
+            ->where('checked_at', '>=', $startingCheck->checked_at)
             ->where('status', $status)
             ->update(['anomaly_id' => $anomaly->id]);
     }
