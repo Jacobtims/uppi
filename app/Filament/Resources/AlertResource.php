@@ -4,7 +4,6 @@ namespace App\Filament\Resources;
 
 use App\Enums\Types\AlertType;
 use App\Filament\Resources\AlertResource\Pages;
-use App\Filament\Resources\AlertResource\RelationManagers;
 use App\Models\Alert;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -12,8 +11,6 @@ use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class AlertResource extends Resource
 {
@@ -45,7 +42,7 @@ class AlertResource extends Resource
                             AlertType::SLACK => 'The Slack channel to send the alert to.',
                             AlertType::BIRD => 'The phone number to send the alert to.',
                             AlertType::MESSAGEBIRD => 'The phone number to send the alert to.',
-                            AlertType::PUSHOVER => 'Your PushOver key.',
+                            AlertType::PUSHOVER => 'Your PushOver key. Failure alerts will be sent with a emergency priority every 60 seconds for 3 minutes. Recovery alerts will be sent with a high priority.',
                             default => null,
                         };
                     })
@@ -101,60 +98,6 @@ class AlertResource extends Resource
                 ->columnSpanFull()
                 ->live()
                 ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::MESSAGEBIRD),
-
-                Forms\Components\Section::make([
-                    Forms\Components\Select::make('config.pushover_priority')
-                        ->label('Priority for failure alert')
-                        ->options([
-                            '1' => 'Low',
-                            '2' => 'Normal',
-                            '3' => 'High',
-                            '4' => 'Emergency',
-                        ])
-                        ->required(),
-                        Forms\Components\Select::make('config.pushover_priority_recovery')
-                        ->label('Priority for recovery alert')
-                        ->options([
-                            '1' => 'Low',
-                            '2' => 'Normal',
-                            '3' => 'High',
-                            '4' => 'Emergency',
-                        ])
-                        ->required(),
-
-                    Forms\Components\Select::make('config.pushover_sound')
-                        ->label('Sound')
-                        ->helperText('The sound to play when the alert is received.')
-                        ->options([
-                            'pushover' => 'Default',
-                            'bike' => 'Bike',
-                            'bugle' => 'Bugle',
-                            'cashregister' => 'Cashregister',
-                            'classical' => 'Classical',
-                            'cosmic' => 'Cosmic',
-                            'falling' => 'Falling',
-                            'gamelan' => 'Gamelan',
-                            'incoming' => 'Incoming',
-                            'intermission' => 'Intermission',
-                            'magic' => 'Magic',
-                            'mechanical' => 'Mechanical',
-                            'pianobar' => 'Piano Bar',
-                            'siren' => 'Siren',
-                            'spacealarm' => 'Space Alarm',
-                            'tugboat' => 'Tug Boat',
-                            'alien' => 'Alien Alarm (long)',
-                            'climb' => 'Climb (long)',
-                            'persistent' => 'Persistent (long)',
-                            'echo' => 'Pushover Echo (long)',
-                            'updown' => 'Up Down (long)',
-                            'vibrate' => 'Vibrate Only',
-                            'none' => 'None (silent)',
-                        ])
-                        ->required(),
-                ])
-                ->columnSpanFull()
-                ->live()
-                ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::PUSHOVER),
             ]);
     }
 

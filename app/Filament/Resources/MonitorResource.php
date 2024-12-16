@@ -2,10 +2,8 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\Checks\Status;
 use App\Enums\Monitors\MonitorType;
 use App\Filament\Resources\MonitorResource\Pages;
-use App\Filament\Resources\MonitorResource\RelationManagers;
 use App\Filament\Resources\MonitorResource\RelationManagers\AlertsRelationManager;
 use App\Models\Monitor;
 use Filament\Forms;
@@ -15,7 +13,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class MonitorResource extends Resource
 {
