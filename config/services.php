@@ -45,4 +45,8 @@ return [
         'channel' => 'bypass',
     ],
 
+    'pushover' => [
+        'token' => 'bypass',
+    ],
+
 ];
