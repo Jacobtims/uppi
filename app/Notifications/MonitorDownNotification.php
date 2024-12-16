@@ -10,6 +10,7 @@ use Illuminate\Notifications\Slack\SlackMessage;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Bird\BirdMessage;
 use NotificationChannels\Messagebird\MessagebirdMessage;
+use NotificationChannels\Pushover\PushoverMessage;
 
 class MonitorDownNotification extends Notification implements ShouldQueue
 {
@@ -47,6 +48,15 @@ class MonitorDownNotification extends Notification implements ShouldQueue
     public function toBird(object $notifiable): BirdMessage
     {
         return (new BirdMessage("🔴 Monitor DOWN: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address})"));
+    }
+
+    public function toPushover(object $notifiable): PushoverMessage
+    {
+        return PushoverMessage::create()
+            ->title("🔴 Monitor DOWN: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address})")
+            ->content("The monitor {$this->anomaly->monitor->name} is down and not responding. Last check output: {$this->anomaly->checks->last()?->output}")
+            ->emergencyPriority(60, 360)
+            ->url(url("/"), 'Open ' . config('app.name'));
     }
 
     public function toSlack(object $notifiable): SlackMessage

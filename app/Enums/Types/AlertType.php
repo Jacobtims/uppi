@@ -2,11 +2,11 @@
 
 namespace App\Enums\Types;
 
-use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasLabel;
 use Filament\Support\Contracts\HasIcon;
 use NotificationChannels\Bird\BirdChannel;
 use NotificationChannels\Messagebird\MessagebirdChannel;
+use NotificationChannels\Pushover\PushoverChannel;
 
 enum AlertType: string implements HasLabel, HasIcon
 {
@@ -14,6 +14,7 @@ enum AlertType: string implements HasLabel, HasIcon
     case SLACK = 'slack';
     case BIRD = 'bird';
     case MESSAGEBIRD = 'messagebird';
+    case PUSHOVER = 'pushover';
 
     public function getLabel(): string
     {
@@ -22,6 +23,7 @@ enum AlertType: string implements HasLabel, HasIcon
             self::SLACK => 'Slack',
             self::BIRD => 'Bird',
             self::MESSAGEBIRD => 'Bird Connectivity Platform',
+            self::PUSHOVER => 'Pushover',
         };
     }
 
@@ -32,6 +34,7 @@ enum AlertType: string implements HasLabel, HasIcon
             self::SLACK => 'slack',
             self::BIRD => BirdChannel::class,
             self::MESSAGEBIRD => MessagebirdChannel::class,
+            self::PUSHOVER => PushoverChannel::class,
             default => throw new \InvalidArgumentException('Invalid alert type'),
         };
     }
@@ -43,6 +46,7 @@ enum AlertType: string implements HasLabel, HasIcon
             self::SLACK => 'heroicon-o-chat-bubble-left-right',
             self::BIRD => 'heroicon-o-device-phone-mobile',
             self::MESSAGEBIRD => 'heroicon-o-chat-bubble-oval-left-ellipsis',
+            self::PUSHOVER => 'heroicon-o-bell',
         };
     }
 }

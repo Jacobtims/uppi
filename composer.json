@@ -11,6 +11,7 @@
         "filament/filament": "^3.2",
         "janyksteenbeek/laravel-bird-notifications": "^1.0",
         "laravel-notification-channels/messagebird": "dev-master",
+        "laravel-notification-channels/pushover": "^4.0",
         "laravel/framework": "^11.31",
         "laravel/slack-notification-channel": "^3.4",
         "laravel/tinker": "^2.9",

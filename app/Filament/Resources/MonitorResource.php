@@ -68,9 +68,10 @@ class MonitorResource extends Resource
                         Forms\Components\TextInput::make('consecutive_threshold')
                             ->required()
                             ->numeric()
-                            ->default(1)
+                            ->default(state: 2)
+                            ->step(1)
                             ->minValue(1)
-                            ->helperText('Number of consecutive checks required to change status (up/down)'),
+                            ->helperText('Number of failed checks in a row needed before registering an anomaly and sending an alert'),
                     ])->columns(2),
             ]);
     }

@@ -42,7 +42,6 @@ class AnomalyResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('monitor.type')
-                    ->badge()
                     ->label('')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('monitor.name')

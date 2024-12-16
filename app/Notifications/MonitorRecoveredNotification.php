@@ -10,6 +10,7 @@ use Illuminate\Notifications\Slack\SlackMessage;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Bird\BirdMessage;
 use NotificationChannels\Messagebird\MessagebirdMessage;
+use NotificationChannels\Pushover\PushoverMessage;
 
 class MonitorRecoveredNotification extends Notification implements ShouldQueue
 {
@@ -52,6 +53,15 @@ class MonitorRecoveredNotification extends Notification implements ShouldQueue
         $downTimeShort = $this->anomaly->started_at->diffForHumans($this->anomaly->ended_at, true);
 
         return (new BirdMessage("✅ Monitor Recovered: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address}): {$downTimeShort}"));
+    }
+
+    public function toPushover(object $notifiable): PushoverMessage
+    {
+        return PushoverMessage::create()
+            ->title("✅ Monitor Recovered: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address})")
+            ->content("The monitor {$this->anomaly->monitor->name} is back UP and recovered after {$this->anomaly->started_at->diffForHumans($this->anomaly->ended_at, true)}")
+            ->highPriority()
+            ->url(url("/"), 'Open ' . config('app.name'));
     }
 
     public function toSlack(object $notifiable): SlackMessage
