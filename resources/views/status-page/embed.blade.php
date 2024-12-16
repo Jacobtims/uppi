@@ -9,16 +9,18 @@
     @livewireStyles
 </head>
 <body>
-    @if($type === 'overview')
-        <livewire:status-page.overall-status :statusPage="$statusPage" />
-    @elseif($type === 'monitors')
-        <livewire:status-page.monitors-list :statusPage="$statusPage" />
-    @else
-        <div>
+    <div class="pb-1">
+        @if($type === 'overview')
             <livewire:status-page.overall-status :statusPage="$statusPage" />
+        @elseif($type === 'monitors')
             <livewire:status-page.monitors-list :statusPage="$statusPage" />
-        </div>
-    @endif
+        @else
+            <div>
+                <livewire:status-page.overall-status :statusPage="$statusPage" />
+                <livewire:status-page.monitors-list :statusPage="$statusPage" />
+            </div>
+        @endif
+    </div>
     @livewireScripts
 
     <script>
