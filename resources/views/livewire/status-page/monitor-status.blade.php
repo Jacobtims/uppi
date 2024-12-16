@@ -1,12 +1,12 @@
-<div class="bg-white shadow rounded-lg border border-neutral-100 p-4" wire:poll.30s>
+<div class="bg-white dark:bg-gray-800 shadow rounded-lg border border-neutral-100 dark:border-gray-700 p-4" wire:poll.30s>
     <div class="flex items-center gap-2 mb-4">
         @if($item->is_showing_favicon && $item->is_enabled)
             <img src="{{ URL::signedRoute('icon', ['statusPageItem' => $item]) }}"
                  alt="{{ $item->name }}"
                  class="w-6">
         @endif
-        <p class="font-bold">{{ $item->name }}</p>
-        <div class="flex items-center gap-1 ml-auto text-sm">
+        <p class="font-bold dark:text-white">{{ $item->name }}</p>
+        <div class="flex items-center gap-1 ml-auto text-sm dark:text-neutral-300">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" @class([
                 'size-5',
                 'text-green-500' => $item->monitor->status === \App\Enums\Checks\Status::OK,
@@ -24,7 +24,7 @@
                     'h-8 rounded cursor-help',
                     'bg-green-500' => $statuses[$index] === true,
                     'bg-red-500' => $statuses[$index] === false,
-                    'bg-gray-200' => $statuses[$index] === null,
+                    'bg-gray-200 dark:bg-gray-600' => $statuses[$index] === null,
                 ])
                 title="{{ \Carbon\Carbon::parse($date)->format('F j, Y') }}
 {{ $statuses[$index] === true ? '✓ Operational' : ($statuses[$index] === false ? '✕ Down' : '? No Data') }}"

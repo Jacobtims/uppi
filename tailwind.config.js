@@ -24,6 +24,13 @@ export default {
         'bg-red-500',
         'bg-yellow-500',
         'bg-gray-200',
+        'bg-gray-600',
+        'dark:bg-gray-600',
+        'dark:bg-gray-800',
+        'dark:border-gray-700',
+        'dark:text-white',
+        'dark:text-neutral-300',
+        'dark:text-neutral-400',
 
         // Utility classes that might be dynamically applied
         'rotate-180',
