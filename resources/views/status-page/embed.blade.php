@@ -6,6 +6,8 @@
     <title>{{ $statusPage->name }} - Status</title>
     @vite('resources/css/app.css')
     <meta name="robots" content="noindex,nofollow">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     @livewireStyles
 </head>
 <body>

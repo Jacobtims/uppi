@@ -12,9 +12,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->trustProxies(at: '*');
-        $middleware->validateCsrfTokens(except: [
-            'livewire/*', // @see https://github.com/livewire/livewire/discussions/6941
-        ]);
+//        $middleware->validateCsrfTokens(except: [
+//            'livewire/*', // @see https://github.com/livewire/livewire/discussions/6941
+//        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
