@@ -9,7 +9,7 @@ class AppTokenController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $token = PersonalAccessToken::where('activation_code', $request->code)->first();
+        $token = PersonalAccessToken::where('activation_code', $request->code)->where('expires_at', '>', now())->first();
 
         if (!$token) {
             return response()->json(['message' => 'Invalid activation code'], 422);
