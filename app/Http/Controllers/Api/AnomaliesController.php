@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\Anomaly;
+use App\Models\Monitor;
 use Illuminate\Http\JsonResponse;
 
 class AnomaliesController extends Controller
 {
     public function index(): JsonResponse
     {
+        $this->authorize('viewAny', Monitor::class);
+
         $anomalies = Anomaly::query()
             ->with([
                 'monitor',
@@ -25,6 +27,8 @@ class AnomaliesController extends Controller
 
     public function show(Anomaly $anomaly): JsonResponse
     {
+        $this->authorize('view', $anomaly->monitor);
+
         return response()->json($anomaly->load([
             'monitor',
             'checks' => function ($query) {

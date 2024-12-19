@@ -29,6 +29,10 @@ class Alert extends Model
         'config' => 'array',
     ];
 
+    protected $hidden = [
+        'config',
+    ];
+
     protected static function booted()
     {
         if (Auth::hasUser()) {
@@ -37,7 +41,7 @@ class Alert extends Model
             });
 
             static::creating(function ($alert) {
-                if (! $alert->user_id) {
+                if (!$alert->user_id) {
                     $alert->user_id = Auth::id();
                 }
             });
@@ -74,7 +78,7 @@ class Alert extends Model
             return null;
         }
 
-        if (! isset($this->config['slack_token'])) {
+        if (!isset($this->config['slack_token'])) {
             throw new InvalidArgumentException('Slack token and channel are required');
         }
 
@@ -87,7 +91,7 @@ class Alert extends Model
             return null;
         }
 
-        if (! isset($this->config['bird_api_key']) || ! isset($this->config['bird_originator'])) {
+        if (!isset($this->config['bird_api_key']) || !isset($this->config['bird_originator'])) {
             throw new InvalidArgumentException('Bird API key and originator are required');
         }
 
@@ -113,7 +117,7 @@ class Alert extends Model
             return null;
         }
 
-        if (! isset($this->config['bird_api_key']) || ! isset($this->config['bird_workspace_id']) || ! isset($this->config['bird_channel_id'])) {
+        if (!isset($this->config['bird_api_key']) || !isset($this->config['bird_workspace_id']) || !isset($this->config['bird_channel_id'])) {
             throw new InvalidArgumentException('Bird API key, workspace ID and channel ID are required');
         }
 

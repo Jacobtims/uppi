@@ -61,9 +61,10 @@ class PersonalAccessTokenResource extends Resource
                     ->action(function () {
                         $activationCode = random_int(100_000, 999_999);
 
-                        $token = auth()->user()->createToken('Mobile device (not activated)', expiresAt: now()->addMinutes(15))->accessToken;
-                        $token->activation_code = $activationCode;
-                        $token->save();
+                        $token = auth()->user()->createToken('Mobile device (not activated)', expiresAt: now()->addMinutes(15));
+                        $accessToken = $token->accessToken;
+                        $accessToken->activation_code = $activationCode;
+                        $accessToken->save();
 
                         Notification::make()
                             ->title('Log in to the mobile app with the following code:')
@@ -72,9 +73,16 @@ class PersonalAccessTokenResource extends Resource
                                 . '</div>'
                                 . '<div class="text-xs mt-2 text-gray-500">This code will expire in 15 minutes.</div>')
                             ->success()
-                            ->inline()
                             ->persistent()
                             ->send();
+
+                        if (config('app.debug')) {
+                            Notification::make()
+                                ->title('Access Token')
+                                ->body($token->plainTextToken)
+                                ->info()
+                                ->send();
+                        }
                     })
             ]);
     }
