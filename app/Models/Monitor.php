@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 
 class Monitor extends Model
@@ -124,5 +125,10 @@ class Monitor extends Model
         }
 
         return $status;
+    }
+
+    public function lastCheck(): HasOne
+    {
+        return $this->hasOne(Check::class)->latestOfMany('checked_at');
     }
 }
