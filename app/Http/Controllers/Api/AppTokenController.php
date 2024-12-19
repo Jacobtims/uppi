@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\PersonalAccessToken;
 
 class AppTokenController extends Controller
@@ -15,11 +16,14 @@ class AppTokenController extends Controller
             return response()->json(['message' => 'Invalid activation code'], 422);
         }
 
+        DB::beginTransaction();
         $token->delete();
 
         $userAgent = explode('/', $request->header('User-Agent'));
         $token = $token->tokenable->createToken($userAgent[0], expiresAt: now()->addMonths(3));
-        
+
+        DB::commit();
+
         return response()->json(['token' => $token->plainTextToken]);
     }
 }
