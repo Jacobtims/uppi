@@ -4,7 +4,8 @@
 [![GitHub](https://img.shields.io/github/license/janyksteenbeek/uppi)](LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/janyksteenbeek/uppi)](https://github.com/janyksteenbeek/uppi/issues)
 
-A robust uptime monitoring solution built with Laravel, designed to track the availability of your web services and notify you when issues arise.
+A robust uptime monitoring solution built with Laravel, designed to track the availability of your web services and
+notify you when issues arise.
 
 ## Features
 
@@ -14,33 +15,36 @@ A robust uptime monitoring solution built with Laravel, designed to track the av
 - **Anomaly Detection**: Track and manage service disruptions
 - **Flexible Notifications**: Multiple notification channels for alerts
 
-
-
 ## Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/janyksteenbeek/uppi.git
 cd uppi
 ```
 
 2. Install dependencies:
+
 ```bash
 composer install
 ```
 
 3. Set up your environment:
+
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
 4. Configure your database in `.env` and run migrations:
+
 ```bash
 php artisan migrate
 ```
 
 5. Start the queue worker:
+
 ```bash
 php artisan queue:work
 ```
@@ -74,7 +78,11 @@ sudo supervisorctl start uppi
 
 ## License
 
-Uppi is released under the MIT License. See the [LICENSE](LICENSE.md) file for more details.
+Uppi is released under the Creative Commons Attribution-NonCommercial 4.0 International license. See
+the [LICENSE](LICENSE). A human friendly summary is available
+at [creativecommons.org](https://creativecommons.org/licenses/by-nc/4.0/).
+
+Underlying packages is under their respective licenses.
 
 ## Security
 

@@ -1,10 +1,13 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "janyksteenbeek/uppi",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
-    "license": "MIT",
+    "description": "A self-hosted robust uptime monitoring solution built with Laravel",
+    "keywords": [
+        "laravel",
+        "framework"
+    ],
+    "license": "CC-BY-NC",
     "require": {
         "php": "^8.2",
         "acamposm/ping": "^2.1",
@@ -13,6 +16,7 @@
         "laravel-notification-channels/messagebird": "dev-master",
         "laravel-notification-channels/pushover": "^4.0",
         "laravel/framework": "^11.31",
+        "laravel/sanctum": "^4.0",
         "laravel/slack-notification-channel": "^3.4",
         "laravel/tinker": "^2.9",
         "sentry/sentry-laravel": "^4.10"
