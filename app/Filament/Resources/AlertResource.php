@@ -12,13 +12,13 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 
-class AlertResource extends Resource
+final class AlertResource extends Resource
 {
     protected static ?string $model = Alert::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-bell';
 
-    protected static ?string $navigationLabel = 'Alert Destinations';
+    protected static ?string $navigationLabel = 'Destinations';
 
     protected static ?int $navigationSort = 3;
 

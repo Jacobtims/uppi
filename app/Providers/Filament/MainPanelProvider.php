@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Resources\PersonalAccessTokenResource;
 use App\Filament\Widgets\ActiveAnomalies;
 use App\Filament\Widgets\AnomaliesPerMonitor;
 use App\Filament\Widgets\ResponseTime;
@@ -10,6 +11,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Navigation\MenuItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -75,6 +77,12 @@ class MainPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::FOOTER,
                 fn() => view('footer')
-            );
+            )->userMenuItems([
+                MenuItem::make()
+                    ->label('Connections')
+                    ->url(fn (): string => PersonalAccessTokenResource::getUrl())
+                    ->icon('heroicon-o-device-phone-mobile'),
+            ]);
+            ;
     }
 }
