@@ -59,7 +59,7 @@ class PersonalAccessTokenResource extends Resource
                     ->icon('heroicon-o-plus')
                     ->label('Register new mobile device')
                     ->action(function () {
-                        $activationCode = rand(10000000, 99999999);
+                        $activationCode = random_int(10000000, 99999999);
 
                         $token = auth()->user()->createToken('Mobile device (not activated)', expiresAt: now()->addMinutes(15))->accessToken;
                         $token->activation_code = $activationCode;
