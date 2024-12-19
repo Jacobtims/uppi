@@ -15,12 +15,11 @@ class AppTokenController extends Controller
             return response()->json(['message' => 'Invalid activation code'], 422);
         }
 
-        $token->forceFill([
-            'name' => explode('/', $request->header('User-Agent'))[0],
-            'activation_code' => null,
-            'expires_at' => now()->addMonths(3),
-        ])->save();
+        $token->delete();
 
+        $userAgent = explode('/', $request->header('User-Agent'));
+        $token = $token->tokenable->createToken($userAgent[0], expiresAt: now()->addMonths(3));
+        
         return response()->json(['token' => $token->plainTextToken]);
     }
 }
