@@ -1,4 +1,4 @@
-# Uptime Monitor
+# Uppi
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/janyksteenbeek/uppi)](https://github.com/janyksteenbeek/uppi/releases)
 [![GitHub](https://img.shields.io/github/license/janyksteenbeek/uppi)](LICENSE)
