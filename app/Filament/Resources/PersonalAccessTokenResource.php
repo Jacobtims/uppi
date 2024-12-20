@@ -28,6 +28,11 @@ class PersonalAccessTokenResource extends Resource
             ]);
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('tokenable_id', auth()->id());
+    }
+
     public static function table(Table $table): Table
     {
         return $table
