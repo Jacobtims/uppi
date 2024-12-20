@@ -116,11 +116,10 @@ class TriggerAlertJob implements ShouldQueue
     protected function getRecentChecks(Monitor $monitor): Collection
     {
         return $monitor->checks()
-            ->orderBy('checked_at', 'asc') // Get in chronological order
             ->latest('checked_at')
             ->take($monitor->consecutive_threshold)
             ->get()
-            ->sortBy('checked_at'); // Ensure chronological order
+            ->sortBy('checked_at'); // Sort chronologically after fetching
     }
 
     protected function hasMetFailureThreshold(Collection $checks): bool
