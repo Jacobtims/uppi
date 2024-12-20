@@ -17,7 +17,10 @@ class AppTokenController extends Controller
         }
 
         DB::beginTransaction();
-        $token->delete();
+
+        if (!(bool)$token->is_persistent) {
+            $token->delete();
+        }
 
         $userAgent = explode('/', $request->header('User-Agent'));
         $token = $token->tokenable->createToken($userAgent[0], expiresAt: now()->addMonths(3));
