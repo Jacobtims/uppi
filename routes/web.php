@@ -21,4 +21,4 @@ Route::get('/embed/{user}/embed.js', function (User $user) {
         ->header('Cache-Control', 'public, max-age=3600');
 })->name('embed.js');
 
-Route::get('/privacy', [PrivacyController::class, 'show'])->name('privacy');
+Route::get('/privacy', PrivacyController::class)->name('privacy');
