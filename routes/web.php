@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\IconController;
+use App\Http\Controllers\PrivacyController;
 use App\Http\Controllers\StatusPageController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -19,3 +20,5 @@ Route::get('/embed/{user}/embed.js', function (User $user) {
         ->header('Content-Type', 'application/javascript')
         ->header('Cache-Control', 'public, max-age=3600');
 })->name('embed.js');
+
+Route::get('/privacy', [PrivacyController::class, 'show'])->name('privacy');
