@@ -16,7 +16,7 @@ Route::get('/embed/{user}/embed.js', function (User $user) {
     return response()
         ->view('js.embed', [
             'user' => $user,
-        ], 200)
+        ])
         ->header('Content-Type', 'application/javascript')
         ->header('Cache-Control', 'public, max-age=3600');
 })->name('embed.js');

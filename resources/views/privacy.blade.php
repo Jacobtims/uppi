@@ -92,6 +92,9 @@
             <li><strong>Webmethod:</strong> Primary hosting provider</li>
             <li><strong>Cloudflare, Inc.:</strong> Content Delivery Network (CDN) services</li>
             <li><strong>Backblaze, Inc.:</strong> File storage services</li>
+            <li><strong>650 Industries, Inc. ("Expo"):</strong> Push notification services</li>
+            <li><strong>Apple Inc.:</strong> Push notification services and mobile application distribution</li>
+            <li><strong>Google LLC:</strong> Push notification services and mobile application distribution</li>
         </ul>
         <p class="mb-4">These providers process data in accordance with their respective privacy policies and our data
             processing agreements.</p>
@@ -171,14 +174,37 @@
     </section>
 
     <section>
-        <h2 class="text-2xl font-semibold mb-4">13. Changes to This Policy</h2>
+        <h2 class="text-2xl font-semibold mb-4">13. Push Notifications</h2>
+        <p class="mb-4">
+            We may send push notifications to your devices to provide important updates, alerts, or information about
+            the service. Push notifications are handled by
+            <strong>Expo</strong> and sent to device-specific platforms, such as <strong>Apple</strong> (via APNs) and
+            <strong>Google</strong> (via FCM).
+        </p>
+        <h3 class="text-xl font-medium mb-2">13.1 Information Shared</h3>
+        <p class="mb-4">
+            To deliver push notifications, we share the following information with Expo, Apple, and Google:
+        </p>
+        <ul class="list-disc ml-6 mb-4">
+            <li>Device identifiers (e.g., push notification tokens)</li>
+            <li>Message content (e.g., alert text)</li>
+        </ul>
+        <h3 class="text-xl font-medium mb-2">13.2 Opting Out</h3>
+        <p class="mb-4">
+            You can manage or disable push notifications at any time by adjusting your device settings or preferences
+            within our application.
+        </p>
+    </section>
+
+    <section>
+        <h2 class="text-2xl font-semibold mb-4">14. Changes to This Policy</h2>
         <p class="mb-4">
             We may update this policy periodically to reflect changes in our practices, with or without notice to you.
             We encourage you to review this page regularly for the latest information on our privacy practices.
     </section>
 
     <section>
-        <h2 class="text-2xl font-semibold mb-4">14. Contact Information</h2>
+        <h2 class="text-2xl font-semibold mb-4">15. Contact Information</h2>
         <p class="mb-4">
             For privacy-related inquiries, please get in touch with us at
             <a href="mailto:ext-privacy@webmethod.nl" class="text-blue-500 underline">ext-privacy@webmethod.nl</a>.
@@ -186,7 +212,7 @@
     </section>
 
     <section>
-        <h2 class="text-2xl font-semibold mb-4">15. Supervisory Authority</h2>
+        <h2 class="text-2xl font-semibold mb-4">16. Supervisory Authority</h2>
         <p class="mb-4">
             You have the right to lodge a complaint with your local data protection authority. All disputes between
             Webmethod and
