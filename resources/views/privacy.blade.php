@@ -183,7 +183,7 @@
         </p>
         <h3 class="text-xl font-medium mb-2">13.1 Information Shared</h3>
         <p class="mb-4">
-            To deliver push notifications, we share the following information with Expo, Apple, and Google:
+            To deliver push notifications, we share the following information with Expo, Apple, Inc., and Google LLC:
         </p>
         <ul class="list-disc ml-6 mb-4">
             <li>Device identifiers (e.g., push notification tokens)</li>
