@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\Types\AlertType;
+use App\Observers\UserIdObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
@@ -19,6 +21,7 @@ use NotificationChannels\Expo\ExpoPushToken;
 use NotificationChannels\Messagebird\MessagebirdRoute;
 use NotificationChannels\Pushover\PushoverReceiver;
 
+#[ObservedBy(UserIdObserver::class)]
 class Alert extends Model
 {
     use HasUlids, Notifiable;
@@ -40,12 +43,6 @@ class Alert extends Model
         if (Auth::hasUser()) {
             static::addGlobalScope('user', function (Builder $builder) {
                 $builder->where('user_id', Auth::id());
-            });
-
-            static::creating(function ($alert) {
-                if (!$alert->user_id) {
-                    $alert->user_id = Auth::id();
-                }
             });
         }
     }
