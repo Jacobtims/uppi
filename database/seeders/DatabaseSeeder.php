@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
         $janyk = User::factory()->create([
             'name' => 'Janyk Steenbeek',
             'email' => 'janyk@webmethod.nl',
+            'is_admin' => true,
         ]);
 
         $testUser = User::factory()->create([
@@ -153,7 +154,7 @@ class DatabaseSeeder extends Seeder
                     ]);
 
                     // Handle anomaly creation and closure
-                    if ($status === Status::FAIL && ! $activeAnomaly) {
+                    if ($status === Status::FAIL && !$activeAnomaly) {
                         $activeAnomaly = $this->createAnomaly($monitor, $check, $checkTime);
                         $check->anomaly()->associate($activeAnomaly);
                         $check->save();
@@ -177,60 +178,6 @@ class DatabaseSeeder extends Seeder
                     }
                 }
             }
-        }
-    }
-
-    protected function determineCheckStatus(Monitor $monitor, Status $lastStatus, int $hour): Status
-    {
-        // Create patterns of failures
-        if (str_contains($monitor->address, 'nonexistant')) {
-            // Frequently failing monitor
-            return rand(0, 4) > 0 ? Status::FAIL : Status::OK;
-        } elseif ($hour >= 2 && $hour <= 4) {
-            // Create maintenance window failures between 2 AM and 4 AM
-            return rand(0, 2) > 0 ? Status::FAIL : Status::OK;
-        } elseif ($lastStatus === Status::FAIL) {
-            // 70% chance to continue failing if already failing
-            return rand(0, 100) < 70 ? Status::FAIL : Status::OK;
-        }
-
-        // 95% uptime for other cases
-        return rand(0, 100) < 95 ? Status::OK : Status::FAIL;
-    }
-
-    protected function createAnomaly(Monitor $monitor, Check $check, Carbon $startTime): Anomaly
-    {
-        return Anomaly::create([
-            'monitor_id' => $monitor->id,
-            'started_at' => $startTime,
-            'created_at' => $startTime,
-            'updated_at' => $startTime,
-        ]);
-    }
-
-    protected function createAlertTriggers(Monitor $monitor, Anomaly $anomaly, AlertTriggerType $type, ?Check $check = null): void
-    {
-        foreach ($monitor->alerts as $alert) {
-            $metadata = [
-                'monitor_name' => $monitor->name,
-                'monitor_target' => $monitor->address,
-            ];
-
-            if ($type === AlertTriggerType::RECOVERY) {
-                $metadata['started_at'] = $anomaly->started_at->format('Y-m-d H:i:s');
-                $metadata['ended_at'] = $anomaly->ended_at->format('Y-m-d H:i:s');
-                $metadata['downtime_duration'] = $anomaly->started_at->diffForHumans($anomaly->ended_at, true);
-            }
-
-            AlertTrigger::create([
-                'anomaly_id' => $anomaly->id,
-                'alert_id' => $alert->id,
-                'monitor_id' => $monitor->id,
-                'type' => $type,
-                'channels_notified' => [$alert->type],
-                'metadata' => $metadata,
-                'triggered_at' => now(),
-            ]);
         }
     }
 
@@ -299,6 +246,60 @@ class DatabaseSeeder extends Seeder
                     'triggered_at' => now(),
                 ]);
             }
+        }
+    }
+
+    protected function determineCheckStatus(Monitor $monitor, Status $lastStatus, int $hour): Status
+    {
+        // Create patterns of failures
+        if (str_contains($monitor->address, 'nonexistant')) {
+            // Frequently failing monitor
+            return rand(0, 4) > 0 ? Status::FAIL : Status::OK;
+        } elseif ($hour >= 2 && $hour <= 4) {
+            // Create maintenance window failures between 2 AM and 4 AM
+            return rand(0, 2) > 0 ? Status::FAIL : Status::OK;
+        } elseif ($lastStatus === Status::FAIL) {
+            // 70% chance to continue failing if already failing
+            return rand(0, 100) < 70 ? Status::FAIL : Status::OK;
+        }
+
+        // 95% uptime for other cases
+        return rand(0, 100) < 95 ? Status::OK : Status::FAIL;
+    }
+
+    protected function createAnomaly(Monitor $monitor, Check $check, Carbon $startTime): Anomaly
+    {
+        return Anomaly::create([
+            'monitor_id' => $monitor->id,
+            'started_at' => $startTime,
+            'created_at' => $startTime,
+            'updated_at' => $startTime,
+        ]);
+    }
+
+    protected function createAlertTriggers(Monitor $monitor, Anomaly $anomaly, AlertTriggerType $type, ?Check $check = null): void
+    {
+        foreach ($monitor->alerts as $alert) {
+            $metadata = [
+                'monitor_name' => $monitor->name,
+                'monitor_target' => $monitor->address,
+            ];
+
+            if ($type === AlertTriggerType::RECOVERY) {
+                $metadata['started_at'] = $anomaly->started_at->format('Y-m-d H:i:s');
+                $metadata['ended_at'] = $anomaly->ended_at->format('Y-m-d H:i:s');
+                $metadata['downtime_duration'] = $anomaly->started_at->diffForHumans($anomaly->ended_at, true);
+            }
+
+            AlertTrigger::create([
+                'anomaly_id' => $anomaly->id,
+                'alert_id' => $alert->id,
+                'monitor_id' => $monitor->id,
+                'type' => $type,
+                'channels_notified' => [$alert->type],
+                'metadata' => $metadata,
+                'triggered_at' => now(),
+            ]);
         }
     }
 }

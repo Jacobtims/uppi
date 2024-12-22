@@ -137,6 +137,7 @@ class MonitorResource extends Resource
                                 ->translateLabel()
                                 ->options(fn($record) => auth()->user()->alerts->pluck('name', 'id'))
                                 ->multiple()
+                                ->preload()
                                 ->required(),
                         ])
                         ->action(function ($records, $data) {

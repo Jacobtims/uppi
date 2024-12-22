@@ -23,7 +23,7 @@ class Anomaly extends Model
     protected static function booted()
     {
         if (Auth::hasUser()) {
-            static::addGlobalScope('userMonitors', function (Builder $builder) {
+            static::addGlobalScope('user', function (Builder $builder) {
                 $builder->whereHas('monitor', function ($query) {
                     $query->where('user_id', Auth::id());
                 });
