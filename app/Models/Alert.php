@@ -15,6 +15,7 @@ use Illuminate\Notifications\Slack\SlackRoute;
 use Illuminate\Support\Facades\Auth;
 use InvalidArgumentException;
 use NotificationChannels\Bird\BirdRoute;
+use NotificationChannels\Expo\ExpoPushToken;
 use NotificationChannels\Messagebird\MessagebirdRoute;
 use NotificationChannels\Pushover\PushoverReceiver;
 
@@ -129,12 +130,12 @@ class Alert extends Model
         return BirdRoute::make([$this->destination], $this->config['bird_api_key'], $this->config['bird_workspace_id'], $this->config['bird_channel_id']);
     }
 
-    public function routeNotificationForExpo()
+    public function routeNotificationForExpo(): ?ExpoPushToken
     {
         if ($this->type !== AlertType::EXPO) {
             return null;
         }
 
-        return $this->destination;
+        return new ExpoPushToken($this->destination);
     }
 }
