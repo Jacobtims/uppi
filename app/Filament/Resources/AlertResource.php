@@ -46,7 +46,6 @@ final class AlertResource extends Resource
 
                 Forms\Components\TextInput::make('name')
                     ->required()
-                    ->hidden(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::EXPO)
                     ->columnSpanFull(),
 
                 Forms\Components\TextInput::make('destination')
@@ -170,8 +169,7 @@ final class AlertResource extends Resource
 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->hidden(fn(Alert $record) => $record->type === AlertType::EXPO),
+                Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
