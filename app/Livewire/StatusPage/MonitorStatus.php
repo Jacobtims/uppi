@@ -16,8 +16,8 @@ class MonitorStatus extends Component
 
     public function render()
     {
-        $dates = collect($this->item->monitor->status30Days())->keys();
-        $statuses = collect($this->item->monitor->status30Days())->values();
+        $dates = collect($this->item?->monitor->status30Days())->keys();
+        $statuses = collect($this->item?->monitor->status30Days())->values();
 
         return view('livewire.status-page.monitor-status', [
             'dates' => $dates,
