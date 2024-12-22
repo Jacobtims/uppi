@@ -17,6 +17,7 @@
         "laravel-notification-channels/messagebird": "dev-master",
         "laravel-notification-channels/pushover": "^4.0",
         "laravel/framework": "^11.31",
+        "laravel/octane": "^2.6",
         "laravel/sanctum": "^4.0",
         "laravel/slack-notification-channel": "^3.4",
         "laravel/tinker": "^2.9",
