@@ -44,7 +44,6 @@
         <h3 class="font-semibold mb-2">How it works:</h3>
         <ol class="list-decimal list-inside space-y-2 text-sm text-gray-600 dark:text-gray-300">
             <li>Download and install the Uppi app from your device's app store</li>
-            <li>Open the app and click "Connect to Account"</li>
             <li>Register your device by generating a connection code from the "Connections" page</li>
             <li>Enter the code in the app to connect it to your account</li>
             <li>Optionally, enable push notifications to receive alerts for your monitors on Settings</li>
