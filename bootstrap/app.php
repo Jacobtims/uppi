@@ -14,8 +14,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->trustProxies(at: '*');
-        $middleware->validateCsrfTokens(except: [
-            'livewire/*', // @see https://github.com/livewire/livewire/discussions/6941
+        $middleware->web(replace: [
+            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class => \App\Http\Middleware\VerifyCsrf::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
