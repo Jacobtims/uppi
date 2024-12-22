@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use InvalidArgumentException;
 use NotificationChannels\Bird\BirdRoute;
 use NotificationChannels\Messagebird\MessagebirdRoute;
+use NotificationChannels\Pushover\PushoverReceiver;
 
 class Alert extends Model
 {
@@ -108,7 +109,7 @@ class Alert extends Model
             return null;
         }
 
-        return $this->destination;
+        return PushoverReceiver::withUserKey($this->destination)->withApplicationToken($this->config['pushover_api_token']);
     }
 
     public function routeNotificationForBird(Notification $notification): ?BirdRoute
