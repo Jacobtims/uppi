@@ -30,12 +30,14 @@ final class AlertResource extends Resource
                     ->options(AlertType::class)
                     ->required()
                     ->inline()
+                    ->grouped()
                     ->live()
                     ->columnSpanFull(),
 
                 Forms\Components\Section::make([
                     Forms\Components\Hidden::make('uppi_app_info')
-                        ->required(),
+                        ->dehydrated()
+                        ->required(fn($context) => $context === 'create' && AlertType::tryFrom($get('type')) === AlertType::EXPO),
                     Forms\Components\View::make('filament.forms.components.uppi-app-info')
                         ->viewData([
                             'personal_access_tokens_url' => PersonalAccessTokenResource::getUrl(),
@@ -46,7 +48,8 @@ final class AlertResource extends Resource
 
                 Forms\Components\TextInput::make('name')
                     ->required()
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->visible(fn(Get $get, $context) => ($context !== 'create' && AlertType::tryFrom($get('type')) === AlertType::EXPO) || $context === 'edit'),
 
                 Forms\Components\TextInput::make('destination')
                     ->helperText(function (Get $get) {
