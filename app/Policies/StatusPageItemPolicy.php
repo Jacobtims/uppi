@@ -14,7 +14,7 @@ class StatusPageItemPolicy
 
     public function view(User $user, StatusPageItem $statusPageItem): bool
     {
-        return $user->id === $statusPageItem->statusPage->user_id;
+        return true;
     }
 
     public function create(User $user): bool

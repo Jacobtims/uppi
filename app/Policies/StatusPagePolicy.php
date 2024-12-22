@@ -14,7 +14,7 @@ class StatusPagePolicy
 
     public function view(User $user, StatusPage $statusPage): bool
     {
-        return $user->id === $statusPage->user_id;
+        return true;
     }
 
     public function create(User $user): bool
