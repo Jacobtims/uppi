@@ -136,6 +136,6 @@ class Alert extends Model
             return null;
         }
 
-        return new ExpoPushToken($this->destination);
+        return ExpoPushToken::make($this->destination);
     }
 }
