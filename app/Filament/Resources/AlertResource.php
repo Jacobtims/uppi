@@ -145,7 +145,8 @@ final class AlertResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->description(fn($record) => ! $record->is_enabled ? 'Inactive' : null),
                 Tables\Columns\TextColumn::make('type')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('destination')
@@ -157,8 +158,6 @@ final class AlertResource extends Resource
 
                         return $state;
                     }),
-                Tables\Columns\IconColumn::make('is_enabled')
-                    ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -177,6 +176,16 @@ final class AlertResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('enable')
+                    ->label('Enable')
+                    ->action(fn($records) => $records->each->update(['is_enabled' => true]))
+                    ->deselectRecordsAfterCompletion()
+                    ->icon('heroicon-o-check'),
+                Tables\Actions\BulkAction::make('disable')
+                    ->label('Disable')
+                    ->action(fn($records) => $records->each->update(['is_enabled' => false]))
+                    ->deselectRecordsAfterCompletion()
+                    ->icon('heroicon-o-x-mark'),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
