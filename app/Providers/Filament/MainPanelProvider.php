@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\DeleteAccount;
 use App\Filament\Resources\PersonalAccessTokenResource;
 use App\Filament\Widgets\ActiveAnomalies;
 use App\Filament\Widgets\AnomaliesPerMonitor;
@@ -57,7 +58,6 @@ class MainPanelProvider extends PanelProvider
                 ResponseTime::class,
                 AnomaliesPerMonitor::class,
                 ActiveAnomalies::class,
-
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -71,6 +71,7 @@ class MainPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->spa()
+            ->font('FF Meta')
             ->authMiddleware([
                 Authenticate::class,
             ])

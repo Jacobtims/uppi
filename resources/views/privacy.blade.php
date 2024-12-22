@@ -127,7 +127,7 @@
             <li>Lodge a complaint with a supervisory authority</li>
         </ul>
         <p class="mb-4">To exercise these rights, please contact us at <a href="mailto:ext-privacy@webmethod.nl"
-                                                                          class="text-blue-500 underline">ext-privacy@webmethod.nl</a>.
+                                                                          class="text-blue-500 underline">ext-privacy@webmethod.nl</a>. In case you want to delete your account, you can do so via our <a href="{{ \App\Filament\Pages\DeleteAccount::getUrl() }}" class="text-blue-500 underline">self-service tool</a>.
         </p>
     </section>
 
