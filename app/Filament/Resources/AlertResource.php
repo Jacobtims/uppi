@@ -36,7 +36,7 @@ final class AlertResource extends Resource
 
                 Forms\Components\Section::make([
                     Forms\Components\Hidden::make('uppi_app_info')
-                        ->dehydrated()
+                        ->dehydrated(false)
                         ->required(fn($context) => $context === 'create' && AlertType::tryFrom($get('type')) === AlertType::EXPO),
                     Forms\Components\View::make('filament.forms.components.uppi-app-info')
                         ->viewData([
