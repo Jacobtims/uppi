@@ -9,6 +9,7 @@ use App\Models\Monitor;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -79,7 +80,8 @@ class MonitorResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('type')
-                    ->searchable(),
+                    ->searchable()
+                    ->description(fn($record) => !$record->is_enabled ? 'Inactive' : null),
                 Tables\Columns\TextColumn::make('status')
                     ->badge(),
                 Tables\Columns\TextColumn::make('address')
@@ -89,7 +91,6 @@ class MonitorResource extends Resource
                 Tables\Columns\TextColumn::make('expects')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-
                 Tables\Columns\IconColumn::make('is_enabled')
                     ->boolean()
                     ->label('Enabled')
@@ -97,10 +98,12 @@ class MonitorResource extends Resource
                 Tables\Columns\TextColumn::make('interval')
                     ->numeric()
                     ->sortable()
-                    ->suffix(' min'),
-                Tables\Columns\TextColumn::make('consecutive_threshold')
-                    ->numeric()
-                    ->sortable(),
+                    ->suffix(' min')
+                    ->description(description: fn($record) => $record->consecutive_threshold. 'x'),
+                Tables\Columns\TextColumn::make('alerts.name')
+                    ->size('xs')
+                    ->label('Alerts')
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('last_checked_at')
                     ->dateTime()
                     ->sortable(),
@@ -117,7 +120,33 @@ class MonitorResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\BulkAction::make('enable')
+                        ->label('Enable')
+                        ->action(fn($records) => $records->each->update(['is_enabled' => true]))
+                        ->deselectRecordsAfterCompletion()
+                        ->icon('heroicon-o-check'),
+                    Tables\Actions\BulkAction::make('disable')
+                        ->label('Disable')
+                        ->action(fn($records) => $records->each->update(['is_enabled' => false]))
+                        ->deselectRecordsAfterCompletion()
+                        ->icon('heroicon-o-x-mark'),
+                    Tables\Actions\BulkAction::make('set_alerts')
+                        ->label('Set Alerts')
+                        ->form([
+                            Forms\Components\Select::make('alerts')
+                                ->translateLabel()
+                                ->options(fn($record) => auth()->user()->alerts->pluck('name', 'id'))
+                                ->multiple()
+                                ->required(),
+                        ])
+                        ->action(function ($records, $data) {
+                            $records->each(function ($record) use ($data) {
+                                $record->alerts()->sync($data['alerts']);
+                            });
+                        })
+                        ->icon('heroicon-o-bell'),
                     Tables\Actions\DeleteBulkAction::make(),
+
                 ]),
             ]);
     }
