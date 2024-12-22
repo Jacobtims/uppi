@@ -11,13 +11,13 @@ class MonitorStatus extends Component
 
     public function mount(StatusPageItem $item)
     {
-        $this->item = $item;
+        $this->item = $item->loadMissing('monitor');
     }
 
     public function render()
     {
-        $dates = collect($this->item?->monitor->status30Days())->keys();
-        $statuses = collect($this->item?->monitor->status30Days())->values();
+        $dates = collect($this->item?->monitor?->status30Days())->keys();
+        $statuses = collect($this->item?->monitor?->status30Days())->values();
 
         return view('livewire.status-page.monitor-status', [
             'dates' => $dates,
