@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\CheckResource\Pages;
 use App\Filament\Admin\Resources\CheckResource\RelationManagers;
 use App\Models\Check;
+use App\Traits\WithoutUserScopes;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,6 +14,8 @@ use Filament\Tables\Table;
 
 class CheckResource extends Resource
 {
+    use WithoutUserScopes;
+
     protected static ?string $model = Check::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-check-circle';

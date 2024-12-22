@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\AlertResource\Pages;
 use App\Filament\Admin\Resources\AlertResource\RelationManagers;
 use App\Models\Alert;
+use App\Traits\WithoutUserScopes;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,6 +14,8 @@ use Filament\Tables\Table;
 
 class AlertResource extends Resource
 {
+    use WithoutUserScopes;
+
     protected static ?string $model = Alert::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-bell';

@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\AnomalyResource\Pages;
 use App\Filament\Admin\Resources\AnomalyResource\RelationManagers;
 use App\Models\Anomaly;
+use App\Traits\WithoutUserScopes;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,6 +14,8 @@ use Filament\Tables\Table;
 
 class AnomalyResource extends Resource
 {
+    use WithoutUserScopes;
+
     protected static ?string $model = Anomaly::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-exclamation-circle';

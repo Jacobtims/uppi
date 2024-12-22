@@ -14,7 +14,7 @@ class CheckPolicy
 
     public function view(User $user, Check $check): bool
     {
-        return $user->id === $check->monitor->user_id;
+        return $user->id === $check->monitor?->user_id;
     }
 
     public function create(User $user): bool
@@ -24,21 +24,21 @@ class CheckPolicy
 
     public function update(User $user, Check $check): bool
     {
-        return $user->id === $check->monitor->user_id;
+        return $user->id === $check->monitor?->user_id;
     }
 
     public function delete(User $user, Check $check): bool
     {
-        return $user->id === $check->monitor->user_id;
+        return $user->id === $check->monitor?->user_id;
     }
 
     public function restore(User $user, Check $check): bool
     {
-        return $user->id === $check->monitor->user_id;
+        return $user->id === $check->monitor?->user_id;
     }
 
     public function forceDelete(User $user, Check $check): bool
     {
-        return $user->id === $check->monitor->user_id;
+        return $user->id === $check->monitor?->user_id;
     }
 }

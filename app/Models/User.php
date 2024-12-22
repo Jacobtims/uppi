@@ -8,6 +8,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -40,6 +41,11 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     public function monitors(): HasMany
     {
         return $this->hasMany(Monitor::class);
+    }
+
+    public function checks(): HasManyThrough
+    {
+        return $this->hasManyThrough(Check::class, Monitor::class);
     }
 
     public function alerts(): HasMany

@@ -79,7 +79,7 @@ class DeleteAccount extends Page implements HasForms
                 $user->alerts()->delete();
                 $user->statusPages()->delete();
                 $user->tokens()->delete();
-
+                $user->checks()->delete();
                 Auth::logout();
                 $user->delete();
 
