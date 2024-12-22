@@ -7,6 +7,7 @@ use Filament\Support\Contracts\HasLabel;
 use NotificationChannels\Bird\BirdChannel;
 use NotificationChannels\Messagebird\MessagebirdChannel;
 use NotificationChannels\Pushover\PushoverChannel;
+use NotificationChannels\Expo\ExpoChannel;
 
 enum AlertType: string implements HasIcon, HasLabel
 {
@@ -15,6 +16,7 @@ enum AlertType: string implements HasIcon, HasLabel
     case BIRD = 'bird';
     case MESSAGEBIRD = 'messagebird';
     case PUSHOVER = 'pushover';
+    case EXPO = 'expo';
 
     public function getLabel(): string
     {
@@ -24,6 +26,7 @@ enum AlertType: string implements HasIcon, HasLabel
             self::BIRD => 'Bird',
             self::MESSAGEBIRD => 'Bird Connectivity Platform',
             self::PUSHOVER => 'Pushover',
+            self::EXPO => 'Uppi app',
         };
     }
 
@@ -35,6 +38,7 @@ enum AlertType: string implements HasIcon, HasLabel
             self::BIRD => BirdChannel::class,
             self::MESSAGEBIRD => MessagebirdChannel::class,
             self::PUSHOVER => PushoverChannel::class,
+            self::EXPO => ExpoChannel::class,
             default => throw new \InvalidArgumentException('Invalid alert type'),
         };
     }
@@ -44,9 +48,10 @@ enum AlertType: string implements HasIcon, HasLabel
         return match ($this) {
             self::EMAIL => 'heroicon-o-envelope',
             self::SLACK => 'heroicon-o-chat-bubble-left-right',
-            self::BIRD => 'heroicon-o-device-phone-mobile',
+            self::BIRD => 'heroicon-o-megaphone',
             self::MESSAGEBIRD => 'heroicon-o-chat-bubble-oval-left-ellipsis',
             self::PUSHOVER => 'heroicon-o-bell',
+            self::EXPO => 'heroicon-o-device-phone-mobile',
         };
     }
 }

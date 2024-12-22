@@ -10,7 +10,7 @@ class AppTokenController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $token = PersonalAccessToken::where('activation_code', $request->code)->where('expires_at', '>', now())->first();
+        $token = PersonalAccessToken::where('activation_code', strtoupper($request->code))->where('expires_at', '>', now())->first();
 
         if (!$token) {
             return response()->json(['message' => 'Invalid activation code'], 422);
@@ -23,7 +23,7 @@ class AppTokenController extends Controller
         }
 
         $userAgent = explode('/', $request->header('User-Agent'));
-        $token = $token->tokenable->createToken($userAgent[0], expiresAt: now()->addMonths(3));
+        $token = $token->tokenable->createToken($userAgent[0], expiresAt: now()->addYears(2));
 
         DB::commit();
 

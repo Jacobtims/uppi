@@ -11,6 +11,7 @@ use Illuminate\Notifications\Slack\SlackMessage;
 use NotificationChannels\Bird\BirdMessage;
 use NotificationChannels\Messagebird\MessagebirdMessage;
 use NotificationChannels\Pushover\PushoverMessage;
+use NotificationChannels\Expo\ExpoMessage;
 
 class MonitorRecoveredNotification extends Notification implements ShouldQueue
 {
@@ -62,6 +63,17 @@ class MonitorRecoveredNotification extends Notification implements ShouldQueue
             ->content("The monitor {$this->anomaly->monitor->name} is back UP and recovered after {$this->anomaly->started_at->diffForHumans($this->anomaly->ended_at, true)}")
             ->highPriority()
             ->url(url('/'), 'Open '.config('app.name'));
+    }
+
+    public function toExpo(object $notifiable): ExpoMessage
+    {
+        $monitor = $this->anomaly->monitor;
+        $duration = $this->anomaly->started_at->diffForHumans($this->anomaly->ended_at, true);
+
+        return ExpoMessage::create()
+            ->title("✅ Monitor Recovered: {$monitor->name}")
+            ->body("The monitor {$monitor->name} is back UP and recovered after {$duration}")
+            ->ttl(3600);
     }
 
     public function toSlack(object $notifiable): SlackMessage

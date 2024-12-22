@@ -127,4 +127,13 @@ class Alert extends Model
 
         return BirdRoute::make([$this->destination], $this->config['bird_api_key'], $this->config['bird_workspace_id'], $this->config['bird_channel_id']);
     }
+
+    public function routeNotificationForExpo()
+    {
+        if ($this->type !== AlertType::EXPO) {
+            return null;
+        }
+
+        return $this->destination;
+    }
 }

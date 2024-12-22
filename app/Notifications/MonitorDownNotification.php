@@ -11,6 +11,7 @@ use Illuminate\Notifications\Slack\SlackMessage;
 use NotificationChannels\Bird\BirdMessage;
 use NotificationChannels\Messagebird\MessagebirdMessage;
 use NotificationChannels\Pushover\PushoverMessage;
+use NotificationChannels\Expo\ExpoMessage;
 
 class MonitorDownNotification extends Notification implements ShouldQueue
 {
@@ -57,6 +58,18 @@ class MonitorDownNotification extends Notification implements ShouldQueue
             ->content("The monitor {$this->anomaly->monitor->name} is down and not responding. Last check output: {$this->anomaly->checks->last()?->output}")
             ->emergencyPriority(60, 360)
             ->url(url('/'), 'Open '.config('app.name'));
+    }
+
+    public function toExpo(object $notifiable): ExpoMessage
+    {
+        $monitor = $this->anomaly->monitor;
+        $lastCheck = $this->anomaly->checks->last();
+
+        return ExpoMessage::create()
+            ->title("🔴 Monitor Down: {$monitor->name}")
+            ->body("The monitor {$monitor->name} is down and not responding. Last check output: {$lastCheck?->output}")
+            ->ttl(3600)
+            ->priority('high');
     }
 
     public function toSlack(object $notifiable): SlackMessage

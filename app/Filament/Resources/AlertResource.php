@@ -32,8 +32,21 @@ final class AlertResource extends Resource
                     ->inline()
                     ->live()
                     ->columnSpanFull(),
+
+                Forms\Components\Section::make([
+                    Forms\Components\Hidden::make('uppi_app_info')
+                        ->required(),
+                    Forms\Components\View::make('filament.forms.components.uppi-app-info')
+                        ->viewData([
+                            'personal_access_tokens_url' => PersonalAccessTokenResource::getUrl(),
+                        ]),
+                ])
+                    ->columnSpanFull()
+                    ->visible(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::EXPO),
+
                 Forms\Components\TextInput::make('name')
                     ->required()
+                    ->hidden(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::EXPO)
                     ->columnSpanFull(),
 
                 Forms\Components\TextInput::make('destination')
@@ -43,20 +56,25 @@ final class AlertResource extends Resource
                             AlertType::SLACK => 'The Slack channel to send the alert to.',
                             AlertType::BIRD => 'The phone number to send the alert to.',
                             AlertType::MESSAGEBIRD => 'The phone number to send the alert to.',
-                            AlertType::PUSHOVER => 'Your PushOver key. Failure alerts will be sent with a emergency priority every 60 seconds for 3 minutes. Recovery alerts will be sent with a high priority.',
+                            AlertType::PUSHOVER => 'Your PushOver User Key. Failure alerts will be sent with a emergency priority every 60 seconds for 3 minutes. Recovery alerts will be sent with a high priority.',
                             default => null,
                         };
                     })
-                    ->prefix(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::SLACK ? '#' : null)
-                    ->password(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::PUSHOVER)
+                    ->prefix(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::SLACK ? '#' : null)
+                    ->password(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::PUSHOVER)
                     ->live()
-                    ->visible(fn (Get $get) => ! empty($get('type')))
-                    ->email(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::EMAIL)
+                    ->columnSpanFull()
+                    ->hidden(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::EXPO)
+                    ->visible(fn(Get $get) => !empty($get('type')))
+                    ->email(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::EMAIL)
                     ->required(),
+
                 Forms\Components\Toggle::make('is_enabled')
                     ->required()
                     ->default(true)
+                    ->hidden(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::EXPO)
                     ->columnSpanFull(),
+
                 Forms\Components\Section::make([
                     Forms\Components\TextInput::make('config.slack_token')
                         ->label('Slack Bot OAuth Token')
@@ -64,7 +82,7 @@ final class AlertResource extends Resource
                 ])
                     ->columnSpanFull()
                     ->live()
-                    ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::SLACK),
+                    ->visible(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::SLACK),
 
                 Forms\Components\Section::make([
                     Forms\Components\TextInput::make('config.bird_api_key')
@@ -83,7 +101,25 @@ final class AlertResource extends Resource
                 ])
                     ->columnSpanFull()
                     ->live()
-                    ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::BIRD),
+                    ->visible(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::BIRD),
+
+                Forms\Components\Section::make([
+                    Forms\Components\TextInput::make('config.pushover_api_token')
+                        ->required()
+                        ->password()
+                        ->label('Application API Token')
+                        ->helperText('The Application API Token for the PushOver API.')
+                        ->hintAction(
+                            \Filament\Forms\Components\Actions\Action::make('generate')
+                                ->label('Create a new application')
+                                ->icon('heroicon-m-arrow-top-right-on-square')
+                                ->url('https://pushover.net/apps/build')
+                                ->openUrlInNewTab()
+                        ),
+                ])
+                    ->columnSpanFull()
+                    ->live()
+                    ->visible(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::PUSHOVER),
 
                 Forms\Components\Section::make([
                     Forms\Components\TextInput::make('config.bird_api_key')
@@ -98,7 +134,7 @@ final class AlertResource extends Resource
                 ])
                     ->columnSpanFull()
                     ->live()
-                    ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::MESSAGEBIRD),
+                    ->visible(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::MESSAGEBIRD),
             ]);
     }
 
@@ -113,7 +149,7 @@ final class AlertResource extends Resource
                 Tables\Columns\TextColumn::make('destination')
                     ->searchable()
                     ->formatStateUsing(function ($state, $record) {
-                        if ($record->type === AlertType::PUSHOVER) {
+                        if (in_array($record->type, [AlertType::PUSHOVER, AlertType::EXPO])) {
                             return '************';
                         }
 
@@ -131,10 +167,11 @@ final class AlertResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+//
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->hidden(fn(Alert $record) => $record->type === AlertType::EXPO),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

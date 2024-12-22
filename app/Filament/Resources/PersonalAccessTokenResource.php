@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\PersonalAccessToken;
 
 class PersonalAccessTokenResource extends Resource
@@ -64,7 +65,7 @@ class PersonalAccessTokenResource extends Resource
                     ->icon('heroicon-o-plus')
                     ->label('Register new mobile device')
                     ->action(function () {
-                        $activationCode = random_int(100_000, 999_999);
+                        $activationCode = strtoupper(Str::random(6));
 
                         $token = auth()->user()->createToken('Mobile device (not activated)', expiresAt: now()->addMinutes(15));
                         $accessToken = $token->accessToken;
