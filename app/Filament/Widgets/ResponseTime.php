@@ -5,7 +5,6 @@ namespace App\Filament\Widgets;
 use App\Models\Check;
 use App\Models\Monitor;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Facades\DB;
 
 class ResponseTime extends ChartWidget
 {
@@ -30,6 +29,9 @@ class ResponseTime extends ChartWidget
             ->selectRaw('monitor_id, DATE_FORMAT(checked_at, "%d-%m %H") as hour, AVG(response_time) as avg_response_time')
             ->where('checked_at', '>=', now()->subDays(7))
             ->whereRaw('HOUR(checked_at) % 12 = 0')
+            ->whereHas('monitor', function ($query) {
+                $query->where('is_enabled', true);
+            })
             ->groupBy(['monitor_id', 'hour'])
             ->with('monitor:id,name')
             ->get();
@@ -38,7 +40,9 @@ class ResponseTime extends ChartWidget
         $datasets = [];
 
         foreach ($monitorData as $monitorId => $monitorChecks) {
-            $monitor = $monitorChecks->first()->monitor;
+            $monitor = $monitorChecks->first()?->monitor;
+            if (!$monitor) continue;
+
             $color = self::generatePastelColorBasedOnMonitorId($monitorId);
 
             $datasets[] = [
@@ -53,8 +57,9 @@ class ResponseTime extends ChartWidget
             ];
         }
 
+        $firstMonitorData = $monitorData->first();
         return [
-            'labels' => $monitorData->first()?->pluck('hour')->toArray() ?? [],
+            'labels' => $firstMonitorData ? $firstMonitorData->pluck('hour')->toArray() : [],
             'datasets' => $datasets,
         ];
     }

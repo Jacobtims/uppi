@@ -11,7 +11,13 @@ class MonitorsList extends Component
 
     public function mount(StatusPage $statusPage)
     {
-        $this->statusPage = $statusPage;
+        $this->statusPage = $statusPage->load(['items' => function($query) {
+            $query->where('is_enabled', true)
+                ->orderBy('order')
+                ->with(['monitor' => function($query) {
+                    $query->where('is_enabled', true);
+                }]);
+        }]);
     }
 
     public function render()

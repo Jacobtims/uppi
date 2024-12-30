@@ -3,6 +3,7 @@
 namespace App\Livewire\StatusPage;
 
 use App\Models\StatusPageItem;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 
 class MonitorStatus extends Component
@@ -11,17 +12,27 @@ class MonitorStatus extends Component
 
     public function mount(StatusPageItem $item)
     {
-        $this->item = $item->loadMissing('monitor');
+        $this->item = $item->load(['monitor' => function($query) {
+            $query->with(['checks' => function($query) {
+                $query->where('checked_at', '>=', now()->subDays(30))
+                    ->orderBy('checked_at');
+            }, 'anomalies' => function($query) {
+                $query->where('started_at', '>=', now()->subDays(30));
+            }]);
+        }]);
     }
 
     public function render()
     {
-        $dates = collect($this->item?->monitor?->status30Days())->keys();
-        $statuses = collect($this->item?->monitor?->status30Days())->values();
+        $status30Days = Cache::remember(
+            "monitor_status_{$this->item->monitor_id}",
+            now()->addMinutes(5),
+            fn() => $this->item->monitor->status30Days()
+        );
 
         return view('livewire.status-page.monitor-status', [
-            'dates' => $dates,
-            'statuses' => $statuses,
+            'dates' => collect($status30Days)->keys(),
+            'statuses' => collect($status30Days)->values(),
         ]);
     }
 }
