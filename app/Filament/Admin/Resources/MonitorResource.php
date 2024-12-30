@@ -54,6 +54,8 @@ class MonitorResource extends Resource
                     ->required()
                     ->numeric()
                     ->default(1),
+                Forms\Components\TextInput::make('user_agent')
+                    ->maxLength(255),
                 Forms\Components\TextInput::make('status')
                     ->required()
                     ->maxLength(255)
