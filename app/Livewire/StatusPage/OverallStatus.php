@@ -27,7 +27,15 @@ class OverallStatus extends Component
     {
         return <<<'HTML'
         <div class="animate-pulse">
-            <div class="h-16 bg-gray-200 rounded"></div>
+            <div class="p-4 rounded-lg bg-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="w-4 h-4 rounded-full bg-gray-300"></div>
+                    <div class="h-6 bg-gray-300 rounded w-32"></div>
+                </div>
+                <div class="mt-2">
+                    <div class="h-4 bg-gray-300 rounded w-48"></div>
+                </div>
+            </div>
         </div>
         HTML;
     }

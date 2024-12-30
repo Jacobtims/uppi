@@ -28,9 +28,27 @@ class MonitorStatus extends Component
     {
         return <<<'HTML'
         <div class="animate-pulse">
-            <div class="h-8 bg-gray-200 rounded w-full"></div>
+            <div class="flex flex-col space-y-2">
+                <div class="flex items-center justify-between">
+                    <div class="h-5 bg-gray-200 rounded w-32"></div>
+                    <div class="h-5 bg-gray-200 rounded w-24"></div>
+                </div>
+                <div class="flex space-x-1">
+                    {$this->generateStatusBoxes()}
+                </div>
+            </div>
         </div>
         HTML;
+    }
+
+    protected function generateStatusBoxes(): string
+    {
+        $boxes = [];
+        for ($i = 0; $i < 30; $i++) {
+            $width = rand(4, 6);
+            $boxes[] = "<div class=\"w-{$width} h-6 bg-gray-200 rounded\"></div>";
+        }
+        return implode("\n", $boxes);
     }
 
     public function render()
