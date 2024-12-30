@@ -49,12 +49,6 @@ class MonitorResource extends Resource
                             ->requiredIf('type', MonitorType::TCP->value)
                             ->hidden(fn (Get $get) => $get('type') !== MonitorType::TCP->value)
                             ->live(),
-                        Forms\Components\TextInput::make('user_agent')
-                            ->placeholder(config('app.name'))
-                            ->hidden(fn (Get $get) => $get('type') !== MonitorType::HTTP->value)
-                            ->maxLength(255)
-                            ->helperText('Custom User-Agent string for HTTP requests. (Optional)')
-                            ->live(),
                         Forms\Components\Toggle::make('is_enabled')
                             ->required()
                             ->default(true)
@@ -77,6 +71,12 @@ class MonitorResource extends Resource
                             ->step(1)
                             ->minValue(1)
                             ->helperText('Number of failed checks in a row needed before registering an anomaly and sending an alert'),
+                        Forms\Components\TextInput::make('user_agent')
+                            ->placeholder(config('app.name'))
+                            ->hidden(fn (Get $get) => $get('type') !== MonitorType::HTTP->value)
+                            ->maxLength(255)
+                            ->helperText('Custom User-Agent string for HTTP requests')
+                            ->live(),
                     ])->columns(2),
             ]);
     }
