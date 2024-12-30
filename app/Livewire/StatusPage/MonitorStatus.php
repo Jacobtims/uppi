@@ -26,26 +26,7 @@ class MonitorStatus extends Component
 
     public function placeholder()
     {
-        $boxes = str_repeat('<div class="w-5 h-6 bg-gray-200 rounded"></div>', 30);
-
-        return '<div class="animate-pulse">
-            <div class="flex flex-col space-y-2">
-                <div class="flex items-center justify-between">
-                    <div class="h-5 bg-gray-200 rounded w-32"></div>
-                    <div class="h-5 bg-gray-200 rounded w-24"></div>
-                </div>
-                <div class="flex space-x-1">' . $boxes . '</div>
-            </div>
-        </div>';
-    }
-
-    protected function generateBoxesHtml(): string
-    {
-        $boxes = [];
-        for ($i = 0; $i < 30; $i++) {
-            $boxes[] = '<div class="w-5 h-6 bg-gray-200 rounded"></div>';
-        }
-        return implode("\n", $boxes);
+        return view('livewire.status-page.monitor-status-placeholder');
     }
 
     public function render()
