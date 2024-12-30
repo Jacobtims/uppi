@@ -9,7 +9,8 @@ class HttpCheckJob extends CheckJob
 {
     protected function performCheck(): array
     {
-        $response = Http::timeout(5)->withUserAgent(config('app.name'))
+        $response = Http::timeout(5)
+            ->withUserAgent($this->monitor->user_agent ?? config('app.name'))
             ->get($this->monitor->address);
 
         return [
