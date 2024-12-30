@@ -26,24 +26,17 @@ class MonitorStatus extends Component
 
     public function placeholder()
     {
-        $boxes = array_map(function() {
-            $width = rand(4, 6);
-            return "<div class=\"w-{$width} h-6 bg-gray-200 rounded\"></div>";
-        }, range(1, 30));
+        $boxes = str_repeat('<div class="w-5 h-6 bg-gray-200 rounded"></div>', 30);
 
-        return <<<HTML
-        <div class="animate-pulse">
+        return '<div class="animate-pulse">
             <div class="flex flex-col space-y-2">
                 <div class="flex items-center justify-between">
                     <div class="h-5 bg-gray-200 rounded w-32"></div>
                     <div class="h-5 bg-gray-200 rounded w-24"></div>
                 </div>
-                <div class="flex space-x-1">
-                    {$this->generateBoxesHtml()}
-                </div>
+                <div class="flex space-x-1">' . $boxes . '</div>
             </div>
-        </div>
-        HTML;
+        </div>';
     }
 
     protected function generateBoxesHtml(): string
