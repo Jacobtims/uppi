@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\Check;
 use App\Models\Monitor;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Facades\DB;
 
 class ResponseTime extends ChartWidget
 {
@@ -25,33 +26,24 @@ class ResponseTime extends ChartWidget
 
     protected function getData(): array
     {
-        $monitors = Monitor::all();
+        $checks = Check::query()
+            ->selectRaw('monitor_id, DATE_FORMAT(checked_at, "%d-%m %H") as hour, AVG(response_time) as avg_response_time')
+            ->where('checked_at', '>=', now()->subDays(7))
+            ->whereRaw('HOUR(checked_at) % 12 = 0')
+            ->groupBy(['monitor_id', 'hour'])
+            ->with('monitor:id,name')
+            ->get();
+
+        $monitorData = $checks->groupBy('monitor_id');
         $datasets = [];
-        $checks = collect();
 
-        foreach ($monitors as $monitor) {
-            $checks = Check::query()
-                ->where('monitor_id', $monitor->id)
-                ->where('checked_at', '>=', now()->subDays(value: 7))
-                ->get()
-                ->groupBy(function ($check) {
-                    return $check->checked_at->format('d-m H').'h';
-                })
-                ->filter(function ($group, $timestamp) {
-                    // '01-12 12h'
-                    $hour = (int) substr($timestamp, -3, 2);
-
-                    return $hour % 12 === 0;
-                })
-                ->map(function ($group) {
-                    return $group->avg('response_time');
-                });
-
-            $color = self::generatePastelColorBasedOnMonitorId($monitor->id);
+        foreach ($monitorData as $monitorId => $monitorChecks) {
+            $monitor = $monitorChecks->first()->monitor;
+            $color = self::generatePastelColorBasedOnMonitorId($monitorId);
 
             $datasets[] = [
                 'label' => $monitor->name,
-                'data' => $checks?->values()?->toArray(),
+                'data' => $monitorChecks->pluck('avg_response_time')->toArray(),
                 'type' => 'line',
                 'backgroundColor' => $color,
                 'borderColor' => $color,
@@ -62,10 +54,9 @@ class ResponseTime extends ChartWidget
         }
 
         return [
-            'labels' => $checks?->keys()?->toArray(),
+            'labels' => $monitorData->first()?->pluck('hour')->toArray() ?? [],
             'datasets' => $datasets,
         ];
-
     }
 
     public static function generatePastelColorBasedOnMonitorId(string $monitorId): string
