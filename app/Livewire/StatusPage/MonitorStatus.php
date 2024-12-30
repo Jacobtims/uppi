@@ -5,7 +5,9 @@ namespace App\Livewire\StatusPage;
 use App\Models\StatusPageItem;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
+use Livewire\Attributes\Lazy;
 
+#[Lazy]
 class MonitorStatus extends Component
 {
     public StatusPageItem $item;
@@ -20,6 +22,15 @@ class MonitorStatus extends Component
                 $query->where('started_at', '>=', now()->subDays(30));
             }]);
         }]);
+    }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <div class="animate-pulse">
+            <div class="h-8 bg-gray-200 rounded w-full"></div>
+        </div>
+        HTML;
     }
 
     public function render()

@@ -5,7 +5,9 @@ namespace App\Livewire\StatusPage;
 use App\Models\StatusPage;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
+use Livewire\Attributes\Lazy;
 
+#[Lazy]
 class OverallStatus extends Component
 {
     public StatusPage $statusPage;
@@ -19,6 +21,15 @@ class OverallStatus extends Component
                         ->select('id', 'status');
                 }]);
         }]);
+    }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <div class="animate-pulse">
+            <div class="h-16 bg-gray-200 rounded"></div>
+        </div>
+        HTML;
     }
 
     public function render()

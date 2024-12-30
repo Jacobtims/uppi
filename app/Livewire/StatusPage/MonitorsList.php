@@ -4,7 +4,9 @@ namespace App\Livewire\StatusPage;
 
 use App\Models\StatusPage;
 use Livewire\Component;
+use Livewire\Attributes\Lazy;
 
+#[Lazy]
 class MonitorsList extends Component
 {
     public StatusPage $statusPage;
@@ -18,6 +20,19 @@ class MonitorsList extends Component
                     $query->where('is_enabled', true);
                 }]);
         }]);
+    }
+
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <div class="animate-pulse">
+            <div class="space-y-4">
+                <div class="h-12 bg-gray-200 rounded"></div>
+                <div class="h-12 bg-gray-200 rounded"></div>
+                <div class="h-12 bg-gray-200 rounded"></div>
+            </div>
+        </div>
+        HTML;
     }
 
     public function render()
