@@ -1,4 +1,4 @@
-<div class="animate-pulse">
+<div class="animate-pulse bg-white shadow rounded-lg border border-neutral-100 p-4">
     <div class="flex flex-col space-y-2">
         <div class="flex items-center justify-between">
             <div class="h-5 bg-gray-200 rounded w-32"></div>
