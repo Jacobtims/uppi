@@ -12,6 +12,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Sentry;
 
 abstract class CheckJob implements ShouldQueue
 {
@@ -60,6 +62,10 @@ abstract class CheckJob implements ShouldQueue
             });
 
         } catch (Exception $e) {
+
+            Log::error('Failed to perform monitor check ' . $this->monitor->id . ': ' . $e->getMessage());
+            Sentry::captureException($e);
+
             $endTime = microtime(true);
 
             DB::transaction(function () use ($startTime, $endTime, $e) {
