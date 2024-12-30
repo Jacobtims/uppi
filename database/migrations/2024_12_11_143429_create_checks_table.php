@@ -20,6 +20,9 @@ return new class extends Migration
             $table->text('output')->nullable();
             $table->timestamp('checked_at')->index();
             $table->timestamps();
+
+            // Add composite indexes for the response time widget query
+            $table->index(['monitor_id', 'checked_at', 'response_time']);
         });
     }
 

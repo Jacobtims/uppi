@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('name');
             $table->text('body')->nullable();
             $table->string('expects')->nullable();
-            $table->boolean('is_enabled')->default(true);
+            $table->boolean('is_enabled')->default(true)->index();
             $table->integer('interval')->default(1);
             $table->string('status')->default(Status::UNKNOWN);
             $table->timestamp('last_checked_at')->nullable();
