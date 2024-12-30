@@ -6,7 +6,7 @@
         </div>
         <div class="grid grid-cols-30 gap-1">
             @for ($i = 0; $i < 30; $i++)
-                <div class="aspect-square bg-gray-200 rounded shadow-sm border border-gray-300"></div>
+                <div class="bg-gray-200 h-8 rounded shadow-sm border border-gray-300"></div>
             @endfor
         </div>
     </div>
