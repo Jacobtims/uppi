@@ -17,7 +17,6 @@ class HttpCheckJob extends CheckJob
         } catch (ConnectionException $exception) {
             return [
                 'status' => Status::FAIL,
-                'response_code' => $exception,
                 'output' => json_encode([
                     'error' => $exception->getMessage(),
                 ]),
