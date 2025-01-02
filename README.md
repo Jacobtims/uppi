@@ -51,7 +51,13 @@ npm install
 npm run build
 ```
 
-6. Start the queue worker:
+6. Run the Scheduler every minute in a cron
+
+```bash
+php artisan schedule:run
+```
+
+7. Start the queue worker:
 
 ```bash
 php artisan queue:work
