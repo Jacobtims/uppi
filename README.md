@@ -14,6 +14,7 @@ notify you when issues arise.
 - **Dashboard Overview**: Visual representation of your monitors' status
 - **Anomaly Detection**: Track and manage service disruptions
 - **Flexible Notifications**: Multiple notification channels for alerts
+- **Public Status Pages**: Share your service status with your users, or embed it in your website
 
 ## Installation
 
@@ -83,13 +84,19 @@ sudo supervisorctl update
 sudo supervisorctl start uppi
 ```
 
+## Mobile companion app
+
+The mobile app is available for Android and iOS and built with React Native. You can find the source code
+at [janyksteenbeek/uppi-app](https://github.com/janyksteenbeek/uppi-app)
+
 ## License
 
 Uppi is released under the Creative Commons Attribution-NonCommercial 4.0 International license. See
 the [LICENSE](LICENSE). A human friendly summary is available
-at [creativecommons.org](https://creativecommons.org/licenses/by-nc/4.0/).
+at [creativecommons.org](https://creativecommons.org/licenses/by-nc/4.0/). An addendum regarding clarification of
+non-commercial use is available at [NON-COMMERCIAL.md](NON-COMMERCIAL.md).
 
-Underlying packages is under their respective licenses.
+Dependencies may be subject to their own licenses.
 
 ## Security
 
