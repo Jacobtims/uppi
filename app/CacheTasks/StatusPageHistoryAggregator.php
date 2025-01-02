@@ -3,8 +3,6 @@
 namespace App\CacheTasks;
 
 use App\Models\Check;
-use App\Models\Monitor;
-use App\Models\StatusPage;
 use App\Models\StatusPageItem;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -23,7 +21,7 @@ class StatusPageHistoryAggregator extends CacheTask
 
     public static function getTtl(): int
     {
-        return 60; // Cache for 1 hour
+        return 60;
     }
 
     public function execute(): Collection
@@ -34,73 +32,73 @@ class StatusPageHistoryAggregator extends CacheTask
 
         $today = now()->startOfDay();
         $start = $today->copy()->subDays($this->days);
-        $end = $today->copy()->subDay()->endOfDay(); // Yesterday end of day
+        $end = $today->copy()->subDay()->endOfDay();
 
-        // Get the status page with its items
-        $page = StatusPage::where('id', $this->statusPageId)
-            ->where('user_id', $this->userId)
+        // Get enabled items
+        $query = StatusPageItem::query()
+            ->where('status_page_id', $this->statusPageId)
             ->where('is_enabled', true)
-            ->with(['items' => function ($query) {
-                $query->where('is_enabled', true)
-                    ->whereHas('monitor', function ($query) {
-                        $query->where('is_enabled', true);
-                    })
-                    ->with(['monitor']);
+            ->whereHas('statusPage', function ($query) {
+                $query->where('user_id', $this->userId)
+                    ->where('is_enabled', true);
+            })
+            ->whereHas('monitor', function ($query) {
+                $query->where('is_enabled', true);
+            });
+
+        if ($this->id !== null) {
+            $query->where('id', $this->id);
+        }
+
+        $items = $query->get();
+
+        if ($items->isEmpty()) {
+            return collect();
+        }
+
+        $monitorIds = $items->pluck('monitor_id');
+
+        // Get all checks grouped by date and monitor
+        $checks = Check::selectRaw('monitor_id, DATE(checked_at) as date')
+            ->whereIn('monitor_id', $monitorIds)
+            ->whereBetween('checked_at', [$start, $end])
+            ->groupBy('monitor_id', 'date')
+            ->get()
+            ->groupBy('monitor_id')
+            ->map(fn ($checks) => $checks->pluck('date'));
+
+        // Get all anomalies grouped by date and monitor
+        $anomalies = StatusPageItem::with(['monitor.anomalies' => function ($query) use ($start, $end) {
+                $query->whereBetween('started_at', [$start, $end])
+                    ->whereNull('ended_at')
+                    ->selectRaw('monitor_id, DATE(started_at) as date');
             }])
-            ->firstOrFail();
+            ->whereIn('id', $items->pluck('id'))
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return [$item->monitor_id => $item->monitor->anomalies->pluck('date')];
+            });
 
         $result = collect();
-
-        foreach ($page->items as $item) {
-            // Get all anomalies in the date range
-            $anomalies = $item->monitor->anomalies()
-                ->where('started_at', '>=', $start)
-                ->where('started_at', '<=', $end)
-                ->get();
-
-            // Get all days where we had checks
-            $checks = $item->monitor->checks()
-                ->where('checked_at', '>=', $start)
-                ->where('checked_at', '<=', $end)
-                ->get();
-
-            // Build the array with dates as keys
+        foreach ($items as $item) {
             $status = collect();
+            $monitorChecks = $checks->get($item->monitor_id, collect());
+            $monitorAnomalies = $anomalies->get($item->monitor_id, collect());
+
             for ($date = $start->copy(); $date <= $end; $date->addDay()) {
-                $dateString = $date->toDateString(); // Format: YYYY-MM-DD
+                $dateString = $date->toDateString();
 
-                // Get checks for this day
-                $dayChecks = $checks->filter(function ($check) use ($date) {
-                    return $check->checked_at->startOfDay()->equalTo($date);
-                });
-
-                // Get anomalies for this day
-                $dayAnomalies = $anomalies->filter(function ($anomaly) use ($date) {
-                    return $anomaly->started_at->startOfDay()->equalTo($date);
-                });
-
-                if ($dayChecks->isEmpty()) {
-                    // No checks for this day
+                if (!$monitorChecks->contains($dateString)) {
                     $status[$dateString] = null;
-                } else {
-                    // If we have anomalies for this day, mark as down
-                    $status[$dateString] = $dayAnomalies->isEmpty();
+                    continue;
                 }
+
+                $status[$dateString] = !$monitorAnomalies->contains($dateString);
             }
 
             $result[$item->id] = $status;
         }
 
         return $result;
-    }
-
-    public static function refreshForUser(string $userId): void
-    {
-        StatusPage::where('user_id', $userId)
-            ->where('is_enabled', true)
-            ->select('id')
-            ->each(function ($page) use ($userId) {
-                dispatch(new \App\Jobs\RefreshCacheTaskJob(static::class, $userId, [$page->id]))->onQueue('cache');
-            });
     }
 }
