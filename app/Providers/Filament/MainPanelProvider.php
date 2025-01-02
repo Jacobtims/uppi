@@ -32,9 +32,9 @@ class MainPanelProvider extends PanelProvider
             ->default()
             ->id('main')
             ->path('')
-            ->brandLogo(fn () => asset('logo.svg'))
+            ->brandLogo(fn() => asset('logo.svg'))
             ->brandLogoHeight('2rem')
-            ->favicon(fn () => asset('favicon.png'))
+            ->favicon(fn() => asset('favicon.png'))
             ->login()
             ->colors([
                 'primary' => Color::Red,
@@ -66,7 +66,6 @@ class MainPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
             ])
-            ->spa()
             ->topbar()
             ->breadcrumbs(false)
             ->font('Manrope')
@@ -76,24 +75,24 @@ class MainPanelProvider extends PanelProvider
             ->viteTheme('resources/css/filament/main/theme.css')
             ->renderHook(
                 PanelsRenderHook::CONTENT_START,
-                fn () => view('blob')
+                fn() => view('blob')
             )
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
-                fn () => view('blob', ['fixed' => true])
+                fn() => view('blob', ['fixed' => true])
             )
             ->renderHook(
                 PanelsRenderHook::FOOTER,
-                fn () => view('footer')
+                fn() => view('footer')
             )
             ->renderHook(
                 PanelsRenderHook::SIDEBAR_NAV_END,
-                fn () => view('sidebar-user')
+                fn() => view('sidebar-user')
             )
             ->userMenuItems([
                 MenuItem::make()
                     ->label('Connections')
-                    ->url(fn (): string => PersonalAccessTokenResource::getUrl())
+                    ->url(fn(): string => PersonalAccessTokenResource::getUrl())
                     ->icon('heroicon-o-device-phone-mobile'),
             ]);
     }
