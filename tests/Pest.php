@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -11,9 +14,13 @@
 |
 */
 
-pest()->extend(Tests\TestCase::class)
- // ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
-    ->in('Feature');
+pest()->uses(Tests\TestCase::class)
+    ->in('Feature', 'Unit', 'Architecture')
+    ->use(RefreshDatabase::class)
+    ->beforeEach(function () {
+        // Fake all notifications
+        Notification::fake();
+    });
 
 /*
 |--------------------------------------------------------------------------
@@ -41,7 +48,26 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+/**
+ * Assert that a notification was sent
+ */
+function assertNotificationSent(string $notification, callable $callback = null)
 {
-    // ..
+    Notification::assertSent($notification, $callback);
+}
+
+/**
+ * Assert that a notification was not sent
+ */
+function assertNotificationNotSent(string $notification)
+{
+    Notification::assertNotSent($notification);
+}
+
+/**
+ * Assert nothing was sent
+ */
+function assertNothingSent()
+{
+    Notification::assertNothingSent();
 }

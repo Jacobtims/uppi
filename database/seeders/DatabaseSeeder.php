@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        \Illuminate\Support\Facades\Notification::fake();
+
         // Create test users
         $janyk = User::factory()->create([
             'name' => 'Janyk Steenbeek',
