@@ -3,7 +3,6 @@
 namespace App\CacheTasks\Strategies;
 
 use App\CacheTasks\RefreshStrategy;
-use App\Jobs\RefreshCacheTaskJob;
 use Illuminate\Support\Collection;
 
 class SimpleRefreshStrategy implements RefreshStrategy
@@ -12,10 +11,8 @@ class SimpleRefreshStrategy implements RefreshStrategy
         private readonly string $taskClass
     ) {}
 
-    public function getRefreshJobs(string $userId): Collection
+    public function getConstructorParameters(string $userId): Collection
     {
-        return collect([
-            new RefreshCacheTaskJob($this->taskClass, $userId)
-        ]);
+        return collect([[$this->taskClass, $userId]]);
     }
 }

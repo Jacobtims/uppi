@@ -26,6 +26,14 @@ class StatusPageHistoryAggregator extends CacheTask
         return 60; // Cache for 1 hour
     }
 
+    public static function getStatusPagesForUser(string $userId): Collection
+    {
+        return StatusPage::where('user_id', $userId)
+            ->where('is_enabled', true)
+            ->select('id')
+            ->get();
+    }
+
     public function execute(): Collection
     {
         if ($this->userId === null) {
@@ -94,8 +102,13 @@ class StatusPageHistoryAggregator extends CacheTask
         return $result;
     }
 
-    public function getRefreshStrategy(): RefreshStrategy
+    public static function refreshForUser(string $userId): void
     {
-        return new Strategies\StatusPageRefreshStrategy(static::class);
+        StatusPage::where('user_id', $userId)
+            ->where('is_enabled', true)
+            ->select('id')
+            ->each(function ($page) use ($userId) {
+                dispatch(new \App\Jobs\RefreshCacheTaskJob(static::class, $userId, [$page->id]))->onQueue('cache');
+            });
     }
 }

@@ -24,23 +24,15 @@ class RefreshCacheTasksCommand extends Command
             ->each(function (User $user) {
                 $this->registry->getTasks()
                     ->each(function (string $taskClass) use ($user) {
-                        // Create a test instance to check TTL
                         /** @var \App\CacheTasks\CacheTask $task */
                         $task = new $taskClass();
 
-                        // Check if task needs refresh
-                        $ttl = $task->ttl();
-                        if ($ttl <= 0) {
+                        if ($task->ttl() <= 0) {
                             return;
                         }
 
-                        // Get refresh jobs from the task's strategy
-                        $task->getRefreshStrategy()
-                            ->getRefreshJobs($user->id)
-                            ->each(function ($job) use ($taskClass, $user) {
-                                $this->info("Dispatching refresh job for: " . class_basename($taskClass) . " (User: {$user->id})");
-                                $job->onQueue('cache')->dispatch();
-                            });
+                        $this->info("Dispatching refresh jobs for: " . class_basename($taskClass) . " (User: {$user->id})");
+                        $taskClass::refreshForUser($user->id);
                     });
             });
     }

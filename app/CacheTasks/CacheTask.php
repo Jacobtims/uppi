@@ -2,7 +2,6 @@
 
 namespace App\CacheTasks;
 
-use App\CacheTasks\Strategies\SimpleRefreshStrategy;
 use Illuminate\Support\Facades\Cache;
 
 abstract class CacheTask
@@ -10,27 +9,16 @@ abstract class CacheTask
     protected ?string $userId = null;
     protected ?string $id = null;
 
-    /**
-     * Get the cache key for this task
-     */
     abstract public function key(): string;
-
-    /**
-     * Get the cache TTL in minutes
-     */
     abstract public function ttl(): int;
-
-    /**
-     * Execute the task and return the data to cache
-     */
     abstract public function execute(): mixed;
 
     /**
-     * Get the refresh strategy for this task
+     * Dispatch refresh jobs for this task
      */
-    public function getRefreshStrategy(): RefreshStrategy
+    public static function refreshForUser(string $userId): void
     {
-        return new SimpleRefreshStrategy(static::class);
+        dispatch(new \App\Jobs\RefreshCacheTaskJob(static::class, $userId))->onQueue('cache');
     }
 
     public function forUser(string $userId): static
@@ -45,9 +33,6 @@ abstract class CacheTask
         return $this;
     }
 
-    /**
-     * Get the full cache key including user scope
-     */
     protected function getCacheKey(): string
     {
         if ($this->userId === null) {
@@ -56,6 +41,7 @@ abstract class CacheTask
 
         return "user_{$this->userId}_{$this->key()}";
     }
+
     public function get(): mixed
     {
         $data = Cache::remember(

@@ -7,7 +7,9 @@ use Illuminate\Support\Collection;
 interface RefreshStrategy
 {
     /**
-     * Get the refresh jobs for this cache task
+     * Get the constructor parameters for the refresh jobs
+     *
+     * @return Collection<array>
      */
-    public function getRefreshJobs(string $userId): Collection;
+    public function getConstructorParameters(string $userId): Collection;
 }

@@ -3,7 +3,6 @@
 namespace App\CacheTasks\Strategies;
 
 use App\CacheTasks\RefreshStrategy;
-use App\Jobs\RefreshCacheTaskJob;
 use App\Models\StatusPage;
 use Illuminate\Support\Collection;
 
@@ -13,16 +12,12 @@ class StatusPageRefreshStrategy implements RefreshStrategy
         private readonly string $taskClass
     ) {}
 
-    public function getRefreshJobs(string $userId): Collection
+    public function getConstructorParameters(string $userId): Collection
     {
         return StatusPage::where('user_id', $userId)
             ->where('is_enabled', true)
             ->select('id')
             ->get()
-            ->map(fn (StatusPage $page) => new RefreshCacheTaskJob(
-                $this->taskClass,
-                $userId,
-                [$page->id]
-            ));
+            ->map(fn (StatusPage $page) => [$this->taskClass, $userId, [$page->id]]);
     }
 }
