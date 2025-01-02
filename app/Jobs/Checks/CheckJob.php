@@ -67,8 +67,8 @@ abstract class CheckJob implements ShouldQueue
         } catch (Exception $exception) {
             $this->fail($exception, $startTime);
 
-            Log::error('Failed to perform monitor check ' . $this->monitor->id . ': ' . $e->getMessage());
-            Sentry::captureException($e);
+            Log::error('Failed to perform monitor check ' . $this->monitor->id . ': ' . $exception->getMessage());
+            Sentry::captureException($exception);
         }
     }
 
