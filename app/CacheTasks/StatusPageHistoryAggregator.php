@@ -20,7 +20,7 @@ class StatusPageHistoryAggregator extends CacheTask
         return "status_page_history_{$this->statusPageId}_{$this->days}";
     }
 
-    public static function ttl(): int
+    public static function getTtl(): int
     {
         return 60;
     }

@@ -1,4 +1,7 @@
 <?php
 
-Illuminate\Support\Facades\Schedule::command('monitors:check')->everyMinute();
-Illuminate\Support\Facades\Schedule::command('cache:refresh-tasks')->everyMinute();
+use Illuminate\Support\Facades\Schedule;
+
+Schedule::command('monitors:check')->everyMinute();
+Schedule::command('cache:refresh-tasks')->everyMinute();
+Schedule::command('checks:cleanup')->dailyAt('03:00');

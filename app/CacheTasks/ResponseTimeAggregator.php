@@ -20,9 +20,9 @@ class ResponseTimeAggregator extends CacheTask
         return "response_time_aggregated_{$interval}_{$this->days}";
     }
 
-    public static function ttl(): int
+    public static function getTtl(): int
     {
-        return 60; // Cache for 1 hour
+        return 60;
     }
 
     public function execute(): Collection
