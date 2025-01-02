@@ -34,8 +34,9 @@ class StatusPageHistoryAggregator extends CacheTask
             throw new \RuntimeException('Cache task must be scoped to a user');
         }
 
-        $start = now()->subDays($this->days)->startOfDay();
-        $end = now()->subDay()->endOfDay(); // Only cache until yesterday
+        $today = now()->startOfDay();
+        $start = $today->copy()->subDays($this->days);
+        $end = $today->copy()->subDay()->endOfDay(); // Yesterday end of day
 
         // If we have a specific status page ID, only get that one
         $query = StatusPage::where('user_id', $this->userId)
@@ -94,7 +95,7 @@ class StatusPageHistoryAggregator extends CacheTask
 
                 // Build the array with dates as keys
                 $status = collect();
-                for ($date = $start; $date <= $end; $date = $date->copy()->addDay()) {
+                for ($date = $start->copy(); $date <= $end; $date->addDay()) {
                     $dateString = $date->toDateString();
 
                     if (!isset($allDays[$dateString])) {
