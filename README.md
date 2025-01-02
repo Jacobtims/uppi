@@ -43,7 +43,14 @@ php artisan key:generate
 php artisan migrate
 ```
 
-5. Start the queue worker:
+5. Build the assets
+
+```bash
+npm install
+npm run build
+```
+
+6. Start the queue worker:
 
 ```bash
 php artisan queue:work
