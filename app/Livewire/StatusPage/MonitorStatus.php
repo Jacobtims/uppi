@@ -34,7 +34,7 @@ class MonitorStatus extends Component
     public function render()
     {
         // Get historical data from cache
-        $historicalStatus = (new StatusPageHistoryAggregator())
+        $historicalStatus = (new StatusPageHistoryAggregator($this->item->status_page_id))
             ->forUser($this->item->monitor->user_id)
             ->get()
             ->get($this->item->id, collect());

@@ -2,6 +2,7 @@
 
 namespace App\CacheTasks;
 
+use App\CacheTasks\Strategies\SimpleRefreshStrategy;
 use Illuminate\Support\Facades\Cache;
 
 abstract class CacheTask
@@ -23,6 +24,14 @@ abstract class CacheTask
      * Execute the task and return the data to cache
      */
     abstract public function execute(): mixed;
+
+    /**
+     * Get the refresh strategy for this task
+     */
+    public function getRefreshStrategy(): RefreshStrategy
+    {
+        return new SimpleRefreshStrategy(static::class);
+    }
 
     public function forUser(string $userId): static
     {

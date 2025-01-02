@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\CacheTasks\CacheTaskRegistry;
-use App\Jobs\RefreshCacheTaskJob;
 use App\Models\User;
 use Illuminate\Console\Command;
 
@@ -35,8 +34,13 @@ class RefreshCacheTasksCommand extends Command
                             return;
                         }
 
-                        $this->info("Dispatching refresh job for: " . class_basename($taskClass) . " (User: {$user->id})");
-                        RefreshCacheTaskJob::dispatch($taskClass, $user->id)->onQueue('cache');
+                        // Get refresh jobs from the task's strategy
+                        $task->getRefreshStrategy()
+                            ->getRefreshJobs($user->id)
+                            ->each(function ($job) use ($taskClass, $user) {
+                                $this->info("Dispatching refresh job for: " . class_basename($taskClass) . " (User: {$user->id})");
+                                $job->onQueue('cache')->dispatch();
+                            });
                     });
             });
     }
