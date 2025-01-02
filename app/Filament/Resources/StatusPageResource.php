@@ -74,6 +74,7 @@ class StatusPageResource extends Resource
                     ->label('URL')
                     ->prefix('https://uppi.dev/s/')
                     ->copyable()
+                    ->copyableState(fn($record) => 'https://uppi.dev/s/' . $record->slug)
                     ->iconPosition(IconPosition::After)
                     ->icon('heroicon-o-link')
                     ->tooltip('Click to copy')
@@ -109,12 +110,19 @@ class StatusPageResource extends Resource
                     ->label('Embed')
                     ->modalHeading('Embed Status Page')
                     ->modalDescription('Copy and paste this code into your website to embed the status page.')
-                    ->modalContent(fn ($record) => view('filament.resources.status-page.embed-code', [
+                    ->modalContent(fn($record) => view('filament.resources.status-page.embed-code', [
                         'statusPage' => $record,
                     ]))
                     ->modalWidth('2xl')
                     ->modalSubmitAction(false)
-                    ->modalCancelActionLabel('Close'),
+                    ->modalCancelActionLabel('Close')
+                    ->icon('heroicon-o-window'),
+                Tables\Actions\Action::make('open_page')
+                    ->label('Open page')
+                    ->url(fn($record) => route('status-page.show', $record->slug))
+                    ->openUrlInNewTab()
+                    ->icon('heroicon-o-link'),
+
             ])
             ->bulkActions([
 
