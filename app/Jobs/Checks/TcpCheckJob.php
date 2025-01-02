@@ -17,7 +17,7 @@ class TcpCheckJob extends CheckJob
             timeout: 5
         );
 
-        if (! $socket) {
+        if (!$socket) {
             throw new Exception($errstr, $errno);
         }
 
@@ -25,8 +25,6 @@ class TcpCheckJob extends CheckJob
 
         return [
             'status' => Status::OK,
-            'response_code' => 0,
-            'output' => "Successfully connected to {$this->monitor->address}:{$this->monitor->port}",
         ];
     }
 }

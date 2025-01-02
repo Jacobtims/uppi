@@ -28,7 +28,6 @@ class HttpCheckJob extends CheckJob
             'status' => $response->successful() ? Status::OK : Status::FAIL,
             'response_code' => $response->status(),
             'output' => json_encode([
-                'headers' => $response->headers(),
                 'reason' => $response->reason(),
             ]),
         ];
