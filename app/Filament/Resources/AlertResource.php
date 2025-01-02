@@ -37,19 +37,19 @@ final class AlertResource extends Resource
                 Forms\Components\Section::make([
                     Forms\Components\Hidden::make('uppi_app_info')
                         ->dehydrated(false)
-                        ->required(fn($context) => $context === 'create' && AlertType::tryFrom($get('type')) === AlertType::EXPO),
+                        ->required(fn ($context) => $context === 'create' && AlertType::tryFrom($get('type')) === AlertType::EXPO),
                     Forms\Components\View::make('filament.forms.components.uppi-app-info')
                         ->viewData([
                             'personal_access_tokens_url' => PersonalAccessTokenResource::getUrl(),
                         ]),
                 ])
                     ->columnSpanFull()
-                    ->visible(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::EXPO),
+                    ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::EXPO),
 
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->columnSpanFull()
-                    ->visible(fn(Get $get, $context) => ($context !== 'create' && AlertType::tryFrom($get('type')) === AlertType::EXPO) || $context === 'edit'),
+                    ->visible(fn (Get $get, $context) => ($context !== 'create' && AlertType::tryFrom($get('type')) === AlertType::EXPO) || $context === 'edit'),
 
                 Forms\Components\TextInput::make('destination')
                     ->helperText(function (Get $get) {
@@ -62,19 +62,19 @@ final class AlertResource extends Resource
                             default => null,
                         };
                     })
-                    ->prefix(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::SLACK ? '#' : null)
-                    ->password(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::PUSHOVER)
+                    ->prefix(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::SLACK ? '#' : null)
+                    ->password(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::PUSHOVER)
                     ->live()
                     ->columnSpanFull()
-                    ->hidden(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::EXPO)
-                    ->visible(fn(Get $get) => !empty($get('type')))
-                    ->email(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::EMAIL)
+                    ->hidden(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::EXPO)
+                    ->visible(fn (Get $get) => ! empty($get('type')))
+                    ->email(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::EMAIL)
                     ->required(),
 
                 Forms\Components\Toggle::make('is_enabled')
                     ->required()
                     ->default(true)
-                    ->hidden(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::EXPO)
+                    ->hidden(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::EXPO)
                     ->columnSpanFull(),
 
                 Forms\Components\Section::make([
@@ -84,7 +84,7 @@ final class AlertResource extends Resource
                 ])
                     ->columnSpanFull()
                     ->live()
-                    ->visible(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::SLACK),
+                    ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::SLACK),
 
                 Forms\Components\Section::make([
                     Forms\Components\TextInput::make('config.bird_api_key')
@@ -103,7 +103,7 @@ final class AlertResource extends Resource
                 ])
                     ->columnSpanFull()
                     ->live()
-                    ->visible(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::BIRD),
+                    ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::BIRD),
 
                 Forms\Components\Section::make([
                     Forms\Components\TextInput::make('config.pushover_api_token')
@@ -121,7 +121,7 @@ final class AlertResource extends Resource
                 ])
                     ->columnSpanFull()
                     ->live()
-                    ->visible(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::PUSHOVER),
+                    ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::PUSHOVER),
 
                 Forms\Components\Section::make([
                     Forms\Components\TextInput::make('config.bird_api_key')
@@ -136,7 +136,7 @@ final class AlertResource extends Resource
                 ])
                     ->columnSpanFull()
                     ->live()
-                    ->visible(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::MESSAGEBIRD),
+                    ->visible(fn (Get $get) => AlertType::tryFrom($get('type')) === AlertType::MESSAGEBIRD),
             ]);
     }
 
@@ -146,7 +146,7 @@ final class AlertResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
-                    ->description(fn($record) => ! $record->is_enabled ? 'Inactive' : null),
+                    ->description(fn ($record) => ! $record->is_enabled ? 'Inactive' : null),
                 Tables\Columns\TextColumn::make('type')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('destination')
@@ -168,7 +168,7 @@ final class AlertResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-//
+                //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -177,15 +177,15 @@ final class AlertResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\BulkAction::make('enable')
-                    ->label('Enable')
-                    ->action(fn($records) => $records->each->update(['is_enabled' => true]))
-                    ->deselectRecordsAfterCompletion()
-                    ->icon('heroicon-o-check'),
-                Tables\Actions\BulkAction::make('disable')
-                    ->label('Disable')
-                    ->action(fn($records) => $records->each->update(['is_enabled' => false]))
-                    ->deselectRecordsAfterCompletion()
-                    ->icon('heroicon-o-x-mark'),
+                        ->label('Enable')
+                        ->action(fn ($records) => $records->each->update(['is_enabled' => true]))
+                        ->deselectRecordsAfterCompletion()
+                        ->icon('heroicon-o-check'),
+                    Tables\Actions\BulkAction::make('disable')
+                        ->label('Disable')
+                        ->action(fn ($records) => $records->each->update(['is_enabled' => false]))
+                        ->deselectRecordsAfterCompletion()
+                        ->icon('heroicon-o-x-mark'),
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);

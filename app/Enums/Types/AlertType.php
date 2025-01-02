@@ -5,9 +5,9 @@ namespace App\Enums\Types;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 use NotificationChannels\Bird\BirdChannel;
+use NotificationChannels\Expo\ExpoChannel;
 use NotificationChannels\Messagebird\MessagebirdChannel;
 use NotificationChannels\Pushover\PushoverChannel;
-use NotificationChannels\Expo\ExpoChannel;
 
 enum AlertType: string implements HasIcon, HasLabel
 {

@@ -154,7 +154,7 @@ class DatabaseSeeder extends Seeder
                     ]);
 
                     // Handle anomaly creation and closure
-                    if ($status === Status::FAIL && !$activeAnomaly) {
+                    if ($status === Status::FAIL && ! $activeAnomaly) {
                         $activeAnomaly = $this->createAnomaly($monitor, $check, $checkTime);
                         $check->anomaly()->associate($activeAnomaly);
                         $check->save();

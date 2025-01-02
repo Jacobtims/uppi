@@ -3,8 +3,8 @@
 namespace App\Livewire\StatusPage;
 
 use App\Models\StatusPage;
-use Livewire\Component;
 use Livewire\Attributes\Lazy;
+use Livewire\Component;
 
 #[Lazy]
 class MonitorsList extends Component
@@ -13,10 +13,10 @@ class MonitorsList extends Component
 
     public function mount(StatusPage $statusPage)
     {
-        $this->statusPage = $statusPage->load(['items' => function($query) {
+        $this->statusPage = $statusPage->load(['items' => function ($query) {
             $query->where('is_enabled', true)
                 ->orderBy('order')
-                ->with(['monitor' => function($query) {
+                ->with(['monitor' => function ($query) {
                     $query->where('is_enabled', true);
                 }]);
         }]);

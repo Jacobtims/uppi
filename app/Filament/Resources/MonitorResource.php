@@ -9,7 +9,6 @@ use App\Models\Monitor;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
-use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -87,7 +86,7 @@ class MonitorResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('type')
                     ->searchable()
-                    ->description(fn($record) => !$record->is_enabled ? 'Inactive' : null),
+                    ->description(fn ($record) => ! $record->is_enabled ? 'Inactive' : null),
                 Tables\Columns\TextColumn::make('status')
                     ->badge(),
                 Tables\Columns\TextColumn::make('address')
@@ -105,7 +104,7 @@ class MonitorResource extends Resource
                     ->numeric()
                     ->sortable()
                     ->suffix(' min')
-                    ->description(description: fn($record) => $record->consecutive_threshold. 'x'),
+                    ->description(description: fn ($record) => $record->consecutive_threshold.'x'),
                 Tables\Columns\TextColumn::make('alerts.name')
                     ->size('xs')
                     ->label('Alerts')
@@ -128,12 +127,12 @@ class MonitorResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\BulkAction::make('enable')
                         ->label('Enable')
-                        ->action(fn($records) => $records->each->update(['is_enabled' => true]))
+                        ->action(fn ($records) => $records->each->update(['is_enabled' => true]))
                         ->deselectRecordsAfterCompletion()
                         ->icon('heroicon-o-check'),
                     Tables\Actions\BulkAction::make('disable')
                         ->label('Disable')
-                        ->action(fn($records) => $records->each->update(['is_enabled' => false]))
+                        ->action(fn ($records) => $records->each->update(['is_enabled' => false]))
                         ->deselectRecordsAfterCompletion()
                         ->icon('heroicon-o-x-mark'),
                     Tables\Actions\BulkAction::make('set_alerts')
@@ -141,7 +140,7 @@ class MonitorResource extends Resource
                         ->form([
                             Forms\Components\Select::make('alerts')
                                 ->translateLabel()
-                                ->options(fn($record) => auth()->user()->alerts->pluck('name', 'id'))
+                                ->options(fn ($record) => auth()->user()->alerts->pluck('name', 'id'))
                                 ->multiple()
                                 ->preload()
                                 ->required(),

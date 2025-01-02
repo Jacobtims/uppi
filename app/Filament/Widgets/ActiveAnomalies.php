@@ -9,6 +9,8 @@ use Filament\Widgets\TableWidget as BaseWidget;
 
 class ActiveAnomalies extends BaseWidget
 {
+    protected static ?string $heading = '';
+
     protected int|string|array $columnSpan = [
         'sm' => 12,
         'md' => 12,
@@ -25,6 +27,10 @@ class ActiveAnomalies extends BaseWidget
                     ->limit(10)
             )
             ->columns([
+                Tables\Columns\TextColumn::make('monitor.status')
+                    ->badge()
+                    ->searchable()
+                    ->label(''),
                 Tables\Columns\TextColumn::make('monitor.type')
                     ->searchable()
                     ->label(''),

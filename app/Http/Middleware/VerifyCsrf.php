@@ -2,10 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Symfony\Component\HttpFoundation\Response;
 
 // @see https://github.com/livewire/livewire/discussions/7729
 class VerifyCsrf extends \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken
@@ -18,7 +16,6 @@ class VerifyCsrf extends \Illuminate\Foundation\Http\Middleware\ValidateCsrfToke
     /**
      * Check if the CSRF tokens match for the given request.
      *
-     * @param  mixed  $request
      *
      * @return bool True if the CSRF tokens match, false otherwise.
      */
@@ -37,16 +34,13 @@ class VerifyCsrf extends \Illuminate\Foundation\Http\Middleware\ValidateCsrfToke
 
     /**
      * Get Livewire component path from the request.
-     *
-     * @param  mixed  $request
-     *
-     * @return string|null
      */
     protected function getLivewireComponentPath(mixed $request): ?string
     {
         $components = $request->input('components')[0] ?? [];
         $snapshot = json_decode($components['snapshot'] ?? '{}', true);
         $memo = $snapshot['memo'] ?? [];
+
         return $memo['name'] ?? null;
     }
 }

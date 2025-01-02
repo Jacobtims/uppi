@@ -14,6 +14,6 @@ trait WithoutUserScopes
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->tap(fn($query) => (new static)->applyGlobalScopes($query));
+        return parent::getEloquentQuery()->tap(fn ($query) => (new static)->applyGlobalScopes($query));
     }
 }

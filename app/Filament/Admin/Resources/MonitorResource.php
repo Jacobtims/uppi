@@ -3,7 +3,6 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\MonitorResource\Pages;
-use App\Filament\Admin\Resources\MonitorResource\RelationManagers;
 use App\Models\Monitor;
 use App\Traits\WithoutUserScopes;
 use Filament\Forms;
@@ -14,7 +13,7 @@ use Filament\Tables\Table;
 
 class MonitorResource extends Resource
 {
-     use WithoutUserScopes;
+    use WithoutUserScopes;
 
     protected static ?string $model = Monitor::class;
 

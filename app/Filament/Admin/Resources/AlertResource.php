@@ -3,7 +3,6 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\AlertResource\Pages;
-use App\Filament\Admin\Resources\AlertResource\RelationManagers;
 use App\Models\Alert;
 use App\Traits\WithoutUserScopes;
 use Filament\Forms;

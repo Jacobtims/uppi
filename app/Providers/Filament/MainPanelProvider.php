@@ -2,7 +2,6 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages\DeleteAccount;
 use App\Filament\Resources\PersonalAccessTokenResource;
 use App\Filament\Widgets\ActiveAnomalies;
 use App\Filament\Widgets\AnomaliesPerMonitor;
@@ -13,7 +12,6 @@ use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
-use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -44,10 +42,8 @@ class MainPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
             ])
             ->darkMode(false)
-            ->topNavigation()
             ->registration()
             ->profile()
             ->passwordReset()
@@ -71,19 +67,34 @@ class MainPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->spa()
-            ->font('FF Meta')
+            ->topbar()
+            ->breadcrumbs(false)
+            ->font('Manrope')
             ->authMiddleware([
                 Authenticate::class,
             ])
+            ->viteTheme('resources/css/filament/main/theme.css')
+            ->renderHook(
+                PanelsRenderHook::CONTENT_START,
+                fn () => view('blob')
+            )
+            ->renderHook(
+                PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
+                fn () => view('blob', ['fixed' => true])
+            )
             ->renderHook(
                 PanelsRenderHook::FOOTER,
-                fn() => view('footer')
-            )->userMenuItems([
+                fn () => view('footer')
+            )
+            ->renderHook(
+                PanelsRenderHook::SIDEBAR_NAV_END,
+                fn () => view('sidebar-user')
+            )
+            ->userMenuItems([
                 MenuItem::make()
                     ->label('Connections')
                     ->url(fn (): string => PersonalAccessTokenResource::getUrl())
                     ->icon('heroicon-o-device-phone-mobile'),
             ]);
-            ;
     }
 }

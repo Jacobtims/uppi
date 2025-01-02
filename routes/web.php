@@ -6,6 +6,13 @@ use App\Http\Controllers\StatusPageController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect(\App\Filament\Pages\Dashboard::getUrl());
+    }
+
+    return view('welcome');
+});
 Route::get('/s/{statusPage:slug}', [StatusPageController::class, 'show'])->name('status-page.show');
 Route::get('/s/{statusPage:slug}/status.json', [StatusPageController::class, 'statusJson'])->name('status-page.status-json');
 Route::get('/s/{statusPage:slug}/embed', [StatusPageController::class, 'embed'])->name('status-page.embed');

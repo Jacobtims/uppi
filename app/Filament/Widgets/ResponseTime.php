@@ -3,9 +3,10 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Check;
-use App\Models\Monitor;
 use Filament\Widgets\ChartWidget;
+use Livewire\Attributes\Lazy;
 
+#[Lazy]
 class ResponseTime extends ChartWidget
 {
     protected static ?string $heading = 'Performance';
@@ -13,10 +14,15 @@ class ResponseTime extends ChartWidget
     protected int|string|array $columnSpan = [
         'sm' => 12,
         'md' => 12,
-        'lg' => 7,
+        'lg' => 5,
     ];
 
     protected int $refreshInterval = 60;
+
+    public function getDescription(): ?string
+    {
+        return 'Response time per monitor in the last 7 days';
+    }
 
     protected function getMaxHeight(): string
     {
@@ -41,7 +47,9 @@ class ResponseTime extends ChartWidget
 
         foreach ($monitorData as $monitorId => $monitorChecks) {
             $monitor = $monitorChecks->first()?->monitor;
-            if (!$monitor) continue;
+            if (! $monitor) {
+                continue;
+            }
 
             $color = self::generatePastelColorBasedOnMonitorId($monitorId);
 
@@ -58,6 +66,7 @@ class ResponseTime extends ChartWidget
         }
 
         $firstMonitorData = $monitorData->first();
+
         return [
             'labels' => $firstMonitorData ? $firstMonitorData->pluck('hour')->toArray() : [],
             'datasets' => $datasets,
@@ -112,11 +121,6 @@ class ResponseTime extends ChartWidget
         $b = round(($b + $m) * 255);
 
         return "rgba($r, $g, $b, 0.8)";
-    }
-
-    public function getDescription(): ?string
-    {
-        return 'Response time per monitor in the last 7 days';
     }
 
     protected function getType(): string

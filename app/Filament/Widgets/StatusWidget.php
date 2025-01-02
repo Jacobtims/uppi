@@ -13,7 +13,7 @@ class StatusWidget extends BaseWidget
     protected int|string|array $columnSpan = [
         'sm' => 12,
         'md' => 12,
-        'lg' => 11,
+        'lg' => 12,
     ];
 
     protected function getStats(): array
@@ -31,11 +31,10 @@ class StatusWidget extends BaseWidget
             ->get()
             ->pluck('count')
             ->toArray();
-
-        $alertGraph = AlertTrigger::selectRaw('DATE(created_at) as date, COUNT(*) as count')
-            ->groupBy('date')
+        // only my own alert triggers
+        $alertGraph = auth()->user()->alertTriggers()->selectRaw('DATE(alert_triggers.created_at) as date, COUNT(alert_triggers.id) as count')
+            ->groupBy('date', 'user_id')
             ->orderBy('date')
-            ->where('created_at', '>=', now()->subDays(7))
             ->get()
             ->pluck('count')
             ->toArray();

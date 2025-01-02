@@ -102,12 +102,12 @@ class Monitor extends Model
         for ($date = $thirtyDaysAgo; $date <= $today; $date = $date->copy()->addDay()) {
             $dateString = $date->toDateString();
 
-            if (!isset($allDays[$dateString])) {
+            if (! isset($allDays[$dateString])) {
                 // No data for this day
                 $status[$dateString] = null;
             } else {
                 // If any record for this day had downtime, mark as false (down)
-                $status[$dateString] = !$allDays[$dateString]->contains('had_downtime', true);
+                $status[$dateString] = ! $allDays[$dateString]->contains('had_downtime', true);
             }
         }
 

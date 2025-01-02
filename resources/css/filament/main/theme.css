@@ -1,0 +1,94 @@
+@import '/vendor/filament/filament/resources/css/theme.css';
+
+@config 'tailwind.config.js';
+
+.fi-sidebar {
+    /*vertical center*/
+    @apply pt-6;
+}
+
+.fi-sidebar-header {
+    @apply bg-transparent ring-0 shadow-none !important;
+}
+
+.fi-sidebar-nav {
+    @apply flex flex-col gap-0.5;
+}
+
+.fi-sidebar-item {
+    @apply relative;
+}
+
+/* The vertical dash (hidden by default) */
+.fi-sidebar-item::before {
+    content: "";
+    @apply absolute left-[-1rem] w-[2px] bg-primary-600 dark:bg-white rounded-full
+    opacity-0 scale-y-0 transform origin-top transition-all duration-300 ease-in-out;
+    top: 0;
+    bottom: 0;
+}
+
+/* Sidebar link styling */
+.fi-sidebar-item-button {
+    @apply flex w-full items-center gap-3 rounded-lg px-2 py-1 font-medium
+    text-zinc-950 dark:text-white
+    hover:bg-zinc-950/5
+    transition-colors duration-200;
+}
+
+.fi-sidebar-item-button svg {
+    @apply h-6 w-6 shrink-0  transition-colors duration-200;
+}
+
+.fi-sidebar-item-label {
+    @apply truncate;
+}
+
+/* Active state: show dash, highlight bg & text */
+.fi-sidebar-item-active .fi-sidebar-item-button {
+    @apply bg-transparent;
+}
+
+.fi-sidebar-item-active::before {
+    @apply opacity-100 scale-y-100;
+}
+
+.fi-sidebar-item-active .fi-sidebar-item-label,
+.fi-sidebar-item-active svg {
+    @apply transition-colors duration-200;
+    stroke-width: 2;
+}
+
+.fi-main-ctn {
+    @apply !h-screen;
+}
+
+
+.fi-topbar {
+    @apply lg:hidden;
+}
+
+.fi-topbar nav {
+    @apply bg-transparent ring-0 shadow-none;
+}
+
+.fi-main {
+    @apply my-4 bg-white border ltr:rounded-tl-3xl rtl:rounded-tr-3xl rounded-bl-xl shadow-sm !max-w-full !overflow-y-auto flex-grow;
+}
+
+.fi-main:has(> .fi-resource-list-records-page) {
+    @apply lg:!p-0;
+}
+
+.fi-resource-list-records-page .fi-header {
+    @apply px-4 md:px-6 lg:px-8;
+}
+
+
+.fi-header-heading {
+    @apply text-2xl font-semibold;
+}
+
+.fi-resource-list-records-page .fi-ta-ctn {
+    @apply rounded-none ring-0 border-t border-gray-200 shadow-sm;
+}

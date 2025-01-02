@@ -3,7 +3,6 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\UserResource\Pages;
-use App\Filament\Admin\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use App\Traits\WithoutUserScopes;
 use Filament\Forms;
@@ -74,7 +73,7 @@ class UserResource extends Resource
                 Tables\Actions\Action::make('impersonate')
                     ->label('Impersonate')
                     ->icon('heroicon-o-arrow-right-end-on-rectangle')
-                    ->action(fn(User $user) => $user->impersonate()),
+                    ->action(fn (User $user) => $user->impersonate()),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

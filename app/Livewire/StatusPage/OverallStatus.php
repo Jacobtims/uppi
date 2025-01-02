@@ -4,8 +4,8 @@ namespace App\Livewire\StatusPage;
 
 use App\Models\StatusPage;
 use Illuminate\Support\Facades\Cache;
-use Livewire\Component;
 use Livewire\Attributes\Lazy;
+use Livewire\Component;
 
 #[Lazy]
 class OverallStatus extends Component
@@ -14,9 +14,9 @@ class OverallStatus extends Component
 
     public function mount(StatusPage $statusPage)
     {
-        $this->statusPage = $statusPage->load(['items' => function($query) {
+        $this->statusPage = $statusPage->load(['items' => function ($query) {
             $query->where('is_enabled', true)
-                ->with(['monitor' => function($query) {
+                ->with(['monitor' => function ($query) {
                     $query->where('is_enabled', true)
                         ->select('id', 'status');
                 }]);
@@ -45,7 +45,7 @@ class OverallStatus extends Component
         $isOperational = Cache::remember(
             "status_page_operational_{$this->statusPage->id}",
             now()->addMinutes(1),
-            fn() => $this->statusPage->isOk()
+            fn () => $this->statusPage->isOk()
         );
 
         return view('livewire.status-page.overall-status', [

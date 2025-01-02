@@ -9,9 +9,9 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Slack\SlackMessage;
 use NotificationChannels\Bird\BirdMessage;
+use NotificationChannels\Expo\ExpoMessage;
 use NotificationChannels\Messagebird\MessagebirdMessage;
 use NotificationChannels\Pushover\PushoverMessage;
-use NotificationChannels\Expo\ExpoMessage;
 
 class MonitorDownNotification extends Notification implements ShouldQueue
 {

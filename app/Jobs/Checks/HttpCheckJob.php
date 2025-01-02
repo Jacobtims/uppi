@@ -19,7 +19,7 @@ class HttpCheckJob extends CheckJob
             'output' => json_encode([
                 'headers' => $response->headers(),
                 'reason' => $response->reason(),
-            ], JSON_PRETTY_PRINT),
+            ]),
         ];
     }
 }

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 class CleanupChecksCommand extends Command
 {
     protected $signature = 'checks:cleanup';
+
     protected $description = 'Clean up old checks, keeping only the last successful check per day when all checks were OK';
 
     public function handle()
@@ -43,7 +44,7 @@ class CleanupChecksCommand extends Command
                     ->get();
 
                 // If all checks were OK, delete all but the last one
-                if ($checksForDay->every(fn($check) => $check->status === Status::OK)) {
+                if ($checksForDay->every(fn ($check) => $check->status === Status::OK)) {
                     $lastCheck = $checksForDay->sortByDesc('checked_at')->first();
 
                     $deleted = Check::query()

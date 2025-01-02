@@ -3,7 +3,6 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\AnomalyResource\Pages;
-use App\Filament\Admin\Resources\AnomalyResource\RelationManagers;
 use App\Models\Anomaly;
 use App\Traits\WithoutUserScopes;
 use Filament\Forms;

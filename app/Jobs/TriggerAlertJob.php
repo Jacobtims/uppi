@@ -51,6 +51,7 @@ class TriggerAlertJob implements ShouldQueue
             // If there's already an active anomaly, just associate the check
             if ($activeAnomaly) {
                 $this->associateCheckWithAnomaly($activeAnomaly);
+
                 return;
             }
 
@@ -78,7 +79,7 @@ class TriggerAlertJob implements ShouldQueue
     {
         DB::transaction(function () use ($monitor) {
             $activeAnomaly = $this->getActiveAnomaly($monitor);
-            if (!$activeAnomaly) {
+            if (! $activeAnomaly) {
                 return;
             }
 

@@ -17,7 +17,7 @@ class AnomaliesController extends Controller
                 'monitor',
                 'checks' => function ($query) {
                     $query->latest('checked_at');
-                }
+                },
             ])
             ->latest('started_at')
             ->paginate(15);
@@ -34,7 +34,7 @@ class AnomaliesController extends Controller
             'checks' => function ($query) {
                 $query->latest('checked_at');
             },
-            'triggers.alert'
+            'triggers.alert',
         ]));
     }
 }

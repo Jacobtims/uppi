@@ -50,7 +50,7 @@ class StatusPage extends Model
         }
 
         // Check if any enabled monitor is down
-        return !$this->items()
+        return ! $this->items()
             ->where('is_enabled', true)
             ->whereHas('monitor', function ($query) {
                 $query->where('status', Status::FAIL)

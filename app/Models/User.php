@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Checks\Status;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -15,7 +16,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 {
-    use HasFactory, HasUlids, Notifiable, HasApiTokens;
+    use HasApiTokens, HasFactory, HasUlids, Notifiable;
 
     protected $fillable = [
         'name',
@@ -31,16 +32,11 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 
     public function canAccessPanel(Panel $panel): bool
     {
-        if (!$this->is_admin && $panel->getId() === 'admin') {
+        if (! $this->is_admin && $panel->getId() === 'admin') {
             return false;
         }
 
         return true;
-    }
-
-    public function monitors(): HasMany
-    {
-        return $this->hasMany(Monitor::class);
     }
 
     public function checks(): HasManyThrough
@@ -63,6 +59,24 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         auth()->loginUsingId($this->id);
     }
 
+    public function isOk(): bool
+    {
+        return ! $this->monitors()
+            ->where('status', Status::FAIL)
+            ->where('is_enabled', true)
+            ->exists();
+    }
+
+    public function monitors(): HasMany
+    {
+        return $this->hasMany(Monitor::class);
+    }
+
+    public function alertTriggers()
+    {
+        return $this->hasManyThrough(AlertTrigger::class, Monitor::class);
+    }
+
     protected function casts(): array
     {
         return [
@@ -71,6 +85,4 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
             'is_admin' => 'boolean',
         ];
     }
-
-
 }

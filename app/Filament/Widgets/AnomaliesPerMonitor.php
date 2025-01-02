@@ -5,7 +5,9 @@ namespace App\Filament\Widgets;
 use App\Models\Anomaly;
 use App\Models\Monitor;
 use Filament\Widgets\ChartWidget;
+use Livewire\Attributes\Lazy;
 
+#[Lazy]
 class AnomaliesPerMonitor extends ChartWidget
 {
     protected static ?string $heading = 'Anomalies';
@@ -13,12 +15,17 @@ class AnomaliesPerMonitor extends ChartWidget
     protected int|string|array $columnSpan = [
         'sm' => 12,
         'md' => 12,
-        'lg' => 5,
+        'lg' => 6,
     ];
+
+    public function getDescription(): ?string
+    {
+        return 'Anomalies per monitor in the last 30 days';
+    }
 
     protected function getMaxHeight(): ?string
     {
-        return '300px';
+        return '180px';
     }
 
     protected function getData(): array
@@ -58,7 +65,7 @@ class AnomaliesPerMonitor extends ChartWidget
         ];
     }
 
-    protected function getJsonChartOptions(): array
+    protected function getOptions(): array
     {
         return [
             'plugins' => [
@@ -66,13 +73,10 @@ class AnomaliesPerMonitor extends ChartWidget
                     'display' => false,
                 ],
             ],
-            'height' => 300,
+            'chart' => [
+                'height' => 100,
+            ],
         ];
-    }
-
-    public function getDescription(): ?string
-    {
-        return 'Anomalies per monitor in the last 30 days';
     }
 
     protected function getType(): string

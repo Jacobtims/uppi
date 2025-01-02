@@ -12,13 +12,13 @@ class AppTokenController extends Controller
     {
         $token = PersonalAccessToken::where('activation_code', strtoupper($request->code))->where('expires_at', '>', now())->first();
 
-        if (!$token) {
+        if (! $token) {
             return response()->json(['message' => 'Invalid activation code'], 422);
         }
 
         DB::beginTransaction();
 
-        if (!(bool)$token->is_persistent) {
+        if (! (bool) $token->is_persistent) {
             $token->delete();
         }
 

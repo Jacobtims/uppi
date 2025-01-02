@@ -8,7 +8,6 @@ use Illuminate\Http\JsonResponse;
 
 class MonitorsController extends Controller
 {
-
     public function index(): JsonResponse
     {
         $this->authorize('viewAny', Monitor::class);
@@ -34,7 +33,7 @@ class MonitorsController extends Controller
             },
             'checks' => function ($query) {
                 $query->latest('checked_at')->limit(10);
-            }
+            },
         ]));
     }
 
@@ -63,7 +62,7 @@ class MonitorsController extends Controller
             'checks' => function ($query) {
                 $query->latest('checked_at');
             },
-            'triggers.alert'
+            'triggers.alert',
         ]));
     }
 }
