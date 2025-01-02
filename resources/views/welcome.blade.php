@@ -87,8 +87,11 @@
                 </a>
             </div>
             <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-                <a href="{{ $dashboardUrl }}" class="text-sm/6 font-semibold text-red-600">Get started <span
-                        aria-hidden="true">&rarr;</span></a>
+                <a href="https://www.producthunt.com/posts/uppi?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-uppi"
+                   target="_blank"><img
+                        src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=750291&theme=light"
+                        alt="Uppi - Uptime&#0032;monitoring&#0032;and&#0032;alerting&#0044;&#0032;open&#0045;source&#0032;&#0038;&#0032;free | Product Hunt"
+                        style="width: 250px; height: 54px;" width="250" height="54"/></a>
             </div>
         </nav>
         <!-- Mobile menu, show/hide based on menu open state. -->
@@ -163,6 +166,8 @@
                             janyksteenbeek/uppi
                         </a>
                     </div>
+
+
                 </div>
                 <div class="mt-16 flow-root sm:mt-24">
                     <div
