@@ -64,46 +64,35 @@ class StatusPageHistoryAggregator extends CacheTask
                 $anomalies = $item->monitor->anomalies()
                     ->where('started_at', '>=', $start)
                     ->where('started_at', '<=', $end)
-                    ->get()
-                    ->map(function ($anomaly) {
-                        return [
-                            'date' => Carbon::parse($anomaly->started_at)->startOfDay(),
-                            'had_downtime' => true,
-                        ];
-                    });
+                    ->get();
 
                 // Get all days where we had checks
                 $checks = $item->monitor->checks()
                     ->where('checked_at', '>=', $start)
                     ->where('checked_at', '<=', $end)
-                    ->get()
-                    ->groupBy(function ($check) {
-                        return Carbon::parse($check->checked_at)->startOfDay()->toDateString();
-                    })
-                    ->map(function ($dayChecks) {
-                        return [
-                            'date' => Carbon::parse($dayChecks->first()->checked_at)->startOfDay(),
-                            'had_downtime' => false,
-                        ];
-                    });
-
-                // Merge anomalies and checks
-                $allDays = $anomalies->concat($checks)
-                    ->groupBy(function ($item) {
-                        return $item['date']->toDateString();
-                    });
+                    ->get();
 
                 // Build the array with dates as keys
                 $status = collect();
                 for ($date = $start->copy(); $date <= $end; $date->addDay()) {
-                    $dateString = $date->toDateString();
+                    $dateString = $date->toDateString(); // Format: YYYY-MM-DD
 
-                    if (!isset($allDays[$dateString])) {
-                        // No data for this day
+                    // Get checks for this day
+                    $dayChecks = $checks->filter(function ($check) use ($date) {
+                        return $check->checked_at->startOfDay()->equalTo($date);
+                    });
+
+                    // Get anomalies for this day
+                    $dayAnomalies = $anomalies->filter(function ($anomaly) use ($date) {
+                        return $anomaly->started_at->startOfDay()->equalTo($date);
+                    });
+
+                    if ($dayChecks->isEmpty()) {
+                        // No checks for this day
                         $status[$dateString] = null;
                     } else {
-                        // If any record for this day had downtime, mark as false (down)
-                        $status[$dateString] = !$allDays[$dateString]->contains('had_downtime', true);
+                        // If we have anomalies for this day, mark as down
+                        $status[$dateString] = $dayAnomalies->isEmpty();
                     }
                 }
 

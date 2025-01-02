@@ -7,6 +7,7 @@ use App\Models\StatusPageItem;
 use Illuminate\Support\Collection;
 use Livewire\Attributes\Lazy;
 use Livewire\Component;
+use Carbon\Carbon;
 
 #[Lazy]
 class MonitorStatus extends Component
@@ -35,8 +36,8 @@ class MonitorStatus extends Component
         // Get historical data from cache
         $historicalStatus = (new StatusPageHistoryAggregator())
             ->forUser($this->item->monitor->user_id)
-            ->forId($this->item->id)
-            ->get() ?? collect();
+            ->get()
+            ->get($this->item->id, collect());
 
         // Get today's data in real-time
         $todayChecks = $this->item->monitor->checks()
@@ -54,6 +55,13 @@ class MonitorStatus extends Component
 
         // Merge historical and today's data
         $status30Days = $historicalStatus->merge($todayStatus);
+
+        // Sort by date and format for display
+        $status30Days = $status30Days
+            ->sortKeys()
+            ->mapWithKeys(function ($status, $date) {
+                return [Carbon::parse($date)->format('M j') => $status];
+            });
 
         return view('livewire.status-page.monitor-status', [
             'dates' => $status30Days->keys(),
