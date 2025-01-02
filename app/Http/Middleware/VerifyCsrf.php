@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 // @see https://github.com/livewire/livewire/discussions/7729
@@ -11,6 +10,8 @@ class VerifyCsrf extends \Illuminate\Foundation\Http\Middleware\ValidateCsrfToke
     protected array $exceptComponents = [
         'status-page.overall-status',
         'status-page.monitor-status',
+        'status-page.monitors-list',
+        'status-page.show',
     ];
 
     /**
