@@ -21,17 +21,9 @@ class StatusPageHistoryAggregator extends CacheTask
         return "status_page_history_{$this->statusPageId}_{$this->days}";
     }
 
-    public function ttl(): int
+    public static function getTtl(): int
     {
         return 60; // Cache for 1 hour
-    }
-
-    public static function getStatusPagesForUser(string $userId): Collection
-    {
-        return StatusPage::where('user_id', $userId)
-            ->where('is_enabled', true)
-            ->select('id')
-            ->get();
     }
 
     public function execute(): Collection

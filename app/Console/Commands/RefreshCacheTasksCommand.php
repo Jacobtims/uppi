@@ -24,10 +24,7 @@ class RefreshCacheTasksCommand extends Command
             ->each(function (User $user) {
                 $this->registry->getTasks()
                     ->each(function (string $taskClass) use ($user) {
-                        /** @var \App\CacheTasks\CacheTask $task */
-                        $task = new $taskClass();
-
-                        if ($task->ttl() <= 0) {
+                        if ($taskClass::getTtl() <= 0) {
                             return;
                         }
 

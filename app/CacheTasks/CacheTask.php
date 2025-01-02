@@ -10,8 +10,12 @@ abstract class CacheTask
     protected ?string $id = null;
 
     abstract public function key(): string;
-    abstract public function ttl(): int;
     abstract public function execute(): mixed;
+
+    /**
+     * Get the TTL for this task type in minutes
+     */
+    abstract public static function getTtl(): int;
 
     /**
      * Dispatch refresh jobs for this task
@@ -46,7 +50,7 @@ abstract class CacheTask
     {
         $data = Cache::remember(
             $this->getCacheKey(),
-            $this->ttl() * 60,
+            static::getTtl() * 60,
             fn () => $this->execute()
         );
 
@@ -62,7 +66,7 @@ abstract class CacheTask
         Cache::put(
             $this->getCacheKey(),
             $this->execute(),
-            $this->ttl() * 60
+            static::getTtl() * 60
         );
     }
 }

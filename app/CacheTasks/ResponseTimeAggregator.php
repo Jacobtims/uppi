@@ -106,4 +106,9 @@ class ResponseTimeAggregator extends CacheTask
 
         return end($intervals);
     }
+
+    public static function getTtl(): int
+    {
+        return 60; // Cache for 1 hour
+    }
 }
