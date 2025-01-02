@@ -2,7 +2,6 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\AlertTrigger;
 use App\Models\Anomaly;
 use App\Models\Monitor;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
@@ -39,12 +38,12 @@ class StatusWidget extends BaseWidget
             ->pluck('count')
             ->toArray();
 
-        $anomalyCount = auth()->user()->anomalies()->where('ended_at', null)->count();
+        $anomalyCount = auth()->user()->anomalies()->whereNull('ended_at')->count();
 
         return [
-            Stat::make('Need attention', $anomalyCount)->chart($anomalyGraph)->color($anomalyCount > 0 ? 'primary-600' : 'success'),
+            Stat::make('Need attention', $anomalyCount)->chart($anomalyGraph),
             Stat::make('Total monitors', Monitor::count())->chart($monitorGraph),
-            Stat::make('Incidents last 7 days', AlertTrigger::where('created_at', '>=', now()->subDays(7))->count())->chart($alertGraph),
+            Stat::make('Incidents last 7 days', auth()->user()->alertTriggers()->where('alert_triggers.created_at', '>=', now()->subDays(7))->count())->chart($alertGraph),
 
         ];
     }
