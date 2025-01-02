@@ -11,10 +11,6 @@ abstract class CacheTask
 
     abstract public function key(): string;
     abstract public function execute(): mixed;
-
-    /**
-     * Get the TTL for this task type in minutes
-     */
     abstract public static function getTtl(): int;
 
     /**

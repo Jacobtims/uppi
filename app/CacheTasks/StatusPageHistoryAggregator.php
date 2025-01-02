@@ -3,6 +3,7 @@
 namespace App\CacheTasks;
 
 use App\Models\Check;
+use App\Models\StatusPage;
 use App\Models\StatusPageItem;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -19,9 +20,21 @@ class StatusPageHistoryAggregator extends CacheTask
         return "status_page_history_{$this->statusPageId}_{$this->days}";
     }
 
-    public static function getTtl(): int
+    public static function ttl(): int
     {
         return 60;
+    }
+
+    public static function refreshForUser(string $userId): void
+    {
+        StatusPage::where('user_id', $userId)
+            ->where('is_enabled', true)
+            ->select('id')
+            ->get()
+            ->each(function (StatusPage $page) use ($userId) {
+                dispatch(new \App\Jobs\RefreshCacheTaskJob(static::class, $userId, [$page->id]))
+                    ->onQueue('cache');
+            });
     }
 
     public function execute(): Collection
