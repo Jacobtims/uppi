@@ -20,92 +20,94 @@ abstract class CheckJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    protected float $startTime;
+    protected float $endTime;
+
     public function __construct(protected Monitor $monitor)
     {
     }
 
     public function handle(): void
     {
-        $startTime = microtime(true);
+        $this->startTime = microtime(true);
 
         try {
             $result = $this->performCheck();
-            $endTime = microtime(true);
+            $this->endTime = microtime(true);
 
-            $checkStatus = $result['status'] ?? Status::FAIL;
-            $responseTime = $this->calculateResponseTime($startTime, $endTime);
-            $responseCode = $result['response_code'] ?? null;
-            $output = $result['output'] ?? null;
-
-            DB::transaction(function () use ($checkStatus, $responseTime, $responseCode, $output) {
-                // Create the check record
-                $check = new Check([
-                    'status' => $checkStatus,
-                    'response_time' => $responseTime,
-                    'response_code' => $responseCode,
-                    'output' => $output,
-                    'checked_at' => now(),
-                ]);
-
-                $this->monitor->checks()->save($check);
-
-                // Count recent checks with the same status
-                $recentChecks = $this->monitor->checks()
-                    ->latest('checked_at')
-                    ->take($this->monitor->consecutive_threshold)
-                    ->get();
-
-                // Only update status if we have enough consecutive checks with the same status
-                if ($recentChecks->count() >= $this->monitor->consecutive_threshold &&
-                    $recentChecks->every(fn($check) => $check->status === $checkStatus)) {
-                    $this->monitor->update(['status' => $checkStatus]);
-                }
-            });
-
-        } catch (ConnectionException $exception) {
-            $this->fail($exception, $startTime);
-        } catch (Exception $exception) {
-            $this->fail($exception, $startTime);
-
-            Log::error('Failed to perform monitor check ' . $this->monitor->id . ': ' . $exception->getMessage());
-            Sentry::captureException($exception);
+            $this->processResult($result);
+        } catch (ConnectionException|Exception $exception) {
+            $this->handleException($exception);
         }
+
+        $this->monitor->updateNextCheck();
     }
 
     abstract protected function performCheck(): array;
 
-    protected function calculateResponseTime(float $startTime, float $endTime): float
+    protected function processResult(array $result): void
     {
-        return ($endTime - $startTime) * 1000; // Convert to milliseconds
+        DB::transaction(function () use ($result) {
+            $check = $this->createCheck($result);
+            $this->updateMonitorStatus($check->status);
+        });
     }
 
-    protected function fail(Exception $exception, $startTime): void
+    protected function handleException(Exception $exception): void
     {
-        $endTime = microtime(true);
+        $this->endTime = microtime(true);
 
-        DB::transaction(function () use ($startTime, $endTime, $exception) {
-            // Create the check record
-            $check = new Check([
+        if (!$exception instanceof ConnectionException) {
+            Log::error("Failed to perform monitor check {$this->monitor->id}: {$exception->getMessage()}");
+            Sentry::captureException($exception);
+        }
+
+            $check = $this->createCheck([
                 'status' => Status::FAIL,
-                'response_time' => $this->calculateResponseTime($startTime, $endTime),
-                'response_code' => null,
                 'output' => $exception->getMessage(),
-                'checked_at' => now(),
             ]);
 
-            $this->monitor->checks()->save($check);
+            $this->updateMonitorStatus($check->status);
+    }
 
-            // Count recent failures
-            $recentChecks = $this->monitor->checks()
-                ->latest('checked_at')
-                ->take($this->monitor->consecutive_threshold)
-                ->get();
+    protected function createCheck(array $result): Check
+    {
+        
+        $check = new Check([
+            'status' => $result['status'] ?? Status::FAIL,
+            'response_time' => $this->calculateResponseTime(),
+            'response_code' => $result['response_code'] ?? null,
+            'output' => $result['output'] ?? null,
+            'checked_at' => now(),
+        ]);
 
-            // Only update status if we have enough consecutive failures
-            if ($recentChecks->count() >= $this->monitor->consecutive_threshold &&
-                $recentChecks->every(fn($check) => $check->status === Status::FAIL)) {
-                $this->monitor->update(['status' => Status::FAIL]);
+        $this->monitor->checks()->save($check);
+
+        return $check;
+    }
+
+    protected function updateMonitorStatus(Status $newStatus): void
+    {
+        $this->monitor->refresh();
+        // Get the most recent checks, including the current one
+        $recentChecks = $this->monitor->checks()
+            ->latest('checked_at')
+            ->take($this->monitor->consecutive_threshold)
+            ->get();
+
+        // Only update status if we have enough checks and they all have the same status
+        if ($recentChecks->count() >= $this->monitor->consecutive_threshold) {
+            $allSameStatus = $recentChecks->every(fn($check) => $check->status === $newStatus);
+
+            if ($allSameStatus) {
+                $this->monitor->status = $newStatus;
+                $this->monitor->save();
             }
-        });
+        }
+    }
+
+    protected function calculateResponseTime(): float
+    {
+        return ($this->endTime - $this->startTime) * 1000; // Convert to milliseconds
     }
 }

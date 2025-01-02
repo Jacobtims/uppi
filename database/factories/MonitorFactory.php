@@ -7,6 +7,7 @@ use App\Enums\Monitors\MonitorType;
 use App\Models\Monitor;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Symfony\Component\Uid\Ulid;
 
 class MonitorFactory extends Factory
 {
@@ -15,6 +16,7 @@ class MonitorFactory extends Factory
     public function definition(): array
     {
         return [
+        
             'name' => $this->faker->words(3, true),
             'type' => $this->faker->randomElement(MonitorType::cases()),
             'address' => $this->faker->url,
@@ -22,7 +24,7 @@ class MonitorFactory extends Factory
             'interval' => $this->faker->randomElement([1, 5, 15, 30, 60]),
             'consecutive_threshold' => $this->faker->randomElement([1, 2, 3]),
             'is_enabled' => true,
-            'status' => Status::OK,
+            'status' => Status::UNKNOWN,
             'user_id' => User::factory(),
             'next_check_at' => now(),
         ];

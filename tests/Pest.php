@@ -2,7 +2,7 @@
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
-
+use Illuminate\Support\Facades\Queue;
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -20,6 +20,7 @@ pest()->uses(Tests\TestCase::class)
     ->beforeEach(function () {
         // Fake all notifications
         Notification::fake();
+        Queue::fake();
     });
 
 /*

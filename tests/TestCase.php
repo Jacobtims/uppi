@@ -8,5 +8,5 @@ use Illuminate\Foundation\Testing\WithFaker;
 
 abstract class TestCase extends BaseTestCase
 {
-    protected $seed = true;
+
 }
