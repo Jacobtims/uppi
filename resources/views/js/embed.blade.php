@@ -3,6 +3,11 @@
     const UPPI_USER_ID = '{{ $user->id }}';
 
     function initStatusPageEmbed() {
+        if (window && window.__UPPI_INITIALIZED__) {
+            console.warn('[Uppi] Tried to initialize twice. Please check if you have correctly installed the embed script.');
+            return;
+        }
+
         document.querySelectorAll('[data-uppi-status]').forEach(container => {
             const slug = container.getAttribute('data-uppi-status');
             const type = container.getAttribute('data-type') || 'all';
@@ -26,6 +31,8 @@
                     iframe.style.height = `${e.data.height}px`;
                 }
             });
+
+            window.__UPPI_INITIALIZED__ = true;
         });
     }
 
