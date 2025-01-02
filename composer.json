@@ -12,7 +12,7 @@
         "php": "^8.2",
         "erusev/parsedown": "^1.7",
         "filament/filament": "^3.2",
-        "janyksteenbeek/laravel-bird-notifications": "^1.0",
+        "janyksteenbeek/laravel-bird-notifications": "^1.1",
         "laravel-notification-channels/expo": "^2.0",
         "laravel-notification-channels/messagebird": "dev-master",
         "laravel-notification-channels/pushover": "^4.0",
