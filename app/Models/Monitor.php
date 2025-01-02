@@ -29,6 +29,7 @@ class Monitor extends Model
         'type' => MonitorType::class,
         'status' => Status::class,
         'last_checked_at' => 'datetime',
+        'next_check_at' => 'datetime',
         'consecutive_threshold' => 'integer',
     ];
 
@@ -39,6 +40,10 @@ class Monitor extends Model
                 $builder->where('user_id', Auth::id());
             });
         }
+
+        static::creating(function (Monitor $monitor) {
+            $monitor->next_check_at = now();
+        });
     }
 
     public function alerts(): BelongsToMany
@@ -127,5 +132,21 @@ class Monitor extends Model
     public function lastCheck(): HasOne
     {
         return $this->hasOne(Check::class)->latestOfMany('checked_at');
+    }
+
+    public function updateNextCheck(): void
+    {
+        $this->update([
+            'last_checked_at' => now(),
+            'next_check_at' => now()->addMinutes($this->interval),
+        ]);
+    }
+
+    /**
+     * Get the status page items for this monitor
+     */
+    public function statusPageItems(): HasMany
+    {
+        return $this->hasMany(StatusPageItem::class);
     }
 }

@@ -182,13 +182,13 @@ return [
     'defaults' => [
         'supervisor-1' => [
             'connection' => 'redis',
-            'queue' => ['default'],
+            'queue' => ['default', 'cache'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 1,
             'maxTime' => 0,
             'maxJobs' => 0,
-            'memory' => 128,
+            'memory' => 256,
             'tries' => 1,
             'timeout' => 60,
             'nice' => 0,
@@ -199,7 +199,7 @@ return [
         'production' => [
             'supervisor-1' => [
                 'maxProcesses' => 15,
-                'balanceMaxShift' => 1,
+                'balanceMaxShift' => 2,
                 'balanceCooldown' => 3,
             ],
         ],

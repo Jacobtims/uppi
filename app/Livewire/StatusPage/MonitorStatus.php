@@ -2,8 +2,9 @@
 
 namespace App\Livewire\StatusPage;
 
+use App\CacheTasks\StatusPageHistoryAggregator;
 use App\Models\StatusPageItem;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Collection;
 use Livewire\Attributes\Lazy;
 use Livewire\Component;
 
@@ -16,7 +17,7 @@ class MonitorStatus extends Component
     {
         $this->item = $item->load(['monitor' => function ($query) {
             $query->with(['checks' => function ($query) {
-                $query->where('checked_at', '>=', now()->subDays(30))
+                $query->where('checked_at', '>=', now()->startOfDay())
                     ->orderBy('checked_at');
             }, 'anomalies' => function ($query) {
                 $query->where('started_at', '>=', now()->subDays(30));
@@ -31,15 +32,32 @@ class MonitorStatus extends Component
 
     public function render()
     {
-        $status30Days = Cache::remember(
-            "monitor_status_{$this->item->monitor_id}",
-            now()->addMinutes(5),
-            fn () => $this->item->monitor->status30Days()
-        );
+        // Get historical data from cache
+        $historicalStatus = (new StatusPageHistoryAggregator())
+            ->forUser($this->item->monitor->user_id)
+            ->forId($this->item->id)
+            ->get() ?? collect();
+
+        // Get today's data in real-time
+        $todayChecks = $this->item->monitor->checks()
+            ->where('checked_at', '>=', now()->startOfDay())
+            ->get();
+
+        $todayAnomalies = $this->item->monitor->anomalies()
+            ->where('started_at', '>=', now()->startOfDay())
+            ->exists();
+
+        $todayStatus = [];
+        if ($todayChecks->isNotEmpty()) {
+            $todayStatus[now()->format('Y-m-d')] = !$todayAnomalies;
+        }
+
+        // Merge historical and today's data
+        $status30Days = $historicalStatus->merge($todayStatus);
 
         return view('livewire.status-page.monitor-status', [
-            'dates' => collect($status30Days)->keys(),
-            'statuses' => collect($status30Days)->values(),
+            'dates' => $status30Days->keys(),
+            'statuses' => $status30Days->values(),
         ]);
     }
 }

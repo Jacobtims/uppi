@@ -3,8 +3,13 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Check;
+use App\Models\Monitor;
+use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Livewire\Attributes\Lazy;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 #[Lazy]
 class ResponseTime extends ChartWidget
@@ -19,9 +24,11 @@ class ResponseTime extends ChartWidget
 
     protected int $refreshInterval = 60;
 
+    protected array $intervals = [12, 6, 3, 1];
+
     public function getDescription(): ?string
     {
-        return 'Response time per monitor in the last 7 days';
+        return 'Response times in milliseconds';
     }
 
     protected function getMaxHeight(): string
@@ -31,100 +38,99 @@ class ResponseTime extends ChartWidget
 
     protected function getData(): array
     {
-        $checks = Check::query()
-            ->selectRaw('monitor_id, DATE_FORMAT(checked_at, "%d-%m %H") as hour, AVG(response_time) as avg_response_time')
-            ->where('checked_at', '>=', now()->subDays(7))
-            ->whereRaw('HOUR(checked_at) % 12 = 0')
-            ->whereHas('monitor', function ($query) {
-                $query->where('is_enabled', true);
-            })
-            ->groupBy(['monitor_id', 'hour'])
-            ->with('monitor:id,name')
-            ->get();
-
-        $monitorData = $checks->groupBy('monitor_id');
-        $datasets = [];
-
-        foreach ($monitorData as $monitorId => $monitorChecks) {
-            $monitor = $monitorChecks->first()?->monitor;
-            if (! $monitor) {
-                continue;
-            }
-
-            $color = self::generatePastelColorBasedOnMonitorId($monitorId);
-
-            $datasets[] = [
-                'label' => $monitor->name,
-                'data' => $monitorChecks->pluck('avg_response_time')->toArray(),
-                'type' => 'line',
-                'backgroundColor' => $color,
-                'borderColor' => $color,
-                'pointBackgroundColor' => $color,
-                'pointBorderColor' => $color,
-                'fill' => false,
-            ];
-        }
-
-        $firstMonitorData = $monitorData->first();
+        $interval = $this->findBestInterval();
+        $monitorData = $this->getAggregatedData($interval);
 
         return [
-            'labels' => $firstMonitorData ? $firstMonitorData->pluck('hour')->toArray() : [],
-            'datasets' => $datasets,
+            'labels' => $this->getLabels($monitorData),
+            'datasets' => $this->getDatasets($monitorData),
         ];
     }
 
-    public static function generatePastelColorBasedOnMonitorId(string $monitorId): string
+    protected function findBestInterval(): int
     {
-        // string to int
-        $monitorId = crc32($monitorId);
-        // Use monitor ID as seed for consistent color per monitor
-        srand($monitorId);
-
-        // Generate pastel RGB values
-        $hue = rand(0, 260);
-        $saturation = rand(15, 45); // Lower saturation for pastel
-        $lightness = rand(65, 85); // Higher lightness for pastel
-
-        // Convert HSL to RGB
-        $c = (1 - abs(2 * ($lightness / 100) - 1)) * ($saturation / 100);
-        $x = $c * (1 - abs(fmod($hue / 60, 2) - 1));
-        $m = ($lightness / 100) - ($c / 2);
-
-        if ($hue < 60) {
-            $r = $c;
-            $g = $x;
-            $b = 0;
-        } elseif ($hue < 120) {
-            $r = $x;
-            $g = $c;
-            $b = 0;
-        } elseif ($hue < 180) {
-            $r = 0;
-            $g = $c;
-            $b = $x;
-        } elseif ($hue < 240) {
-            $r = 0;
-            $g = $x;
-            $b = $c;
-        } elseif ($hue < 300) {
-            $r = $x;
-            $g = 0;
-            $b = $c;
-        } else {
-            $r = $c;
-            $g = 0;
-            $b = $x;
+        foreach ($this->intervals as $interval) {
+            $requiredChecksPerMonitor = 7 * (24 / $interval);
+            $checksCount = Check::where('checked_at', '>=', now()->subDays(7))
+                ->whereHas('monitor', function ($query) {
+                    $query->where('is_enabled', true);
+                })
+                ->select('monitor_id', DB::raw('COUNT(*) as total_checks'))
+                ->groupBy('monitor_id')
+                ->get();
+            $totalEnabledMonitors = Monitor::where('is_enabled', true)->count();
+            $monitorsMeetingRequirement = $checksCount->filter(function ($monitor) use ($requiredChecksPerMonitor) {
+                return $monitor->total_checks >= $requiredChecksPerMonitor;
+            })->count();
+            if ($monitorsMeetingRequirement === $totalEnabledMonitors) {
+                return $interval;
+            }
         }
+        return end($this->intervals);
+    }
 
-        $r = round(($r + $m) * 255);
-        $g = round(($g + $m) * 255);
-        $b = round(($b + $m) * 255);
+    protected function getAggregatedData(int $interval): Collection
+    {
+        return (new \App\CacheTasks\ResponseTimeAggregator($interval))
+            ->forUser(auth()->id())
+            ->get();
+    }
 
-        return "rgba($r, $g, $b, 0.8)";
+    protected function getLabels(Collection $monitorData): array
+    {
+        return $monitorData
+            ->pluck('hours')
+            ->flatten()
+            ->unique()
+            ->sort()
+            ->values()
+            ->toArray();
+    }
+
+    protected function getDatasets(Collection $monitorData): array
+    {
+        return $monitorData
+            ->map(function ($data) {
+                $color = self::generatePastelColorBasedOnMonitorId($data['monitor']->id);
+
+                return [
+                    'label' => $data['monitor']->name,
+                    'data' => $data['values'],
+                    'type' => 'line',
+                    'backgroundColor' => $color,
+                    'borderColor' => $color,
+                    'pointBackgroundColor' => $color,
+                    'pointBorderColor' => $color,
+                    'fill' => false,
+                ];
+            })
+            ->toArray();
     }
 
     protected function getType(): string
     {
         return 'line';
+    }
+
+    public static function generatePastelColorBasedOnMonitorId(string $monitorId): string
+    {
+        $colors = [
+            [145, 190, 230],
+            [230, 145, 145],
+            [145, 230, 145],
+            [230, 190, 145],
+            [190, 145, 230],
+            [145, 230, 190],
+            [230, 145, 190],
+            [190, 230, 145],
+            [145, 145, 230],
+            [230, 230, 145],
+        ];
+
+        $hash = crc32($monitorId);
+        $index = $hash % count($colors);
+        [$r, $g, $b] = $colors[$index];
+
+        return "rgba($r, $g, $b, 0.8)";
     }
 }

@@ -29,10 +29,7 @@ class DispatchMonitorChecks extends Command
         $monitors = Monitor::query()
             ->where('is_enabled', true)
             ->when(! $this->option('force'), function ($query) {
-                $query->where(function ($query) {
-                    $query->whereNull('last_checked_at')
-                        ->orWhereRaw('last_checked_at <= DATE_SUB(NOW(), INTERVAL `interval` MINUTE)');
-                });
+                $query->where('next_check_at', '<=', now());
             })
             ->when($this->option('monitor-id'), function ($query, $monitorId) {
                 $query->where('id', $monitorId);
@@ -43,7 +40,7 @@ class DispatchMonitorChecks extends Command
         $count = 0;
         foreach ($monitors as $monitor) {
             dispatch($monitor->makeCheckJob());
-            $monitor->update(['last_checked_at' => now()]);
+            $monitor->updateNextCheck();
             $count++;
         }
 
