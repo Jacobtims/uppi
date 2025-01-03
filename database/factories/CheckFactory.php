@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\Checks\Status;
+use App\Models\Check;
 use App\Models\Monitor;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Symfony\Component\Uid\Ulid;
@@ -12,6 +13,8 @@ use Symfony\Component\Uid\Ulid;
  */
 class CheckFactory extends Factory
 {
+    protected $model = Check::class;
+
     /**
      * Define the model's default state.
      *
