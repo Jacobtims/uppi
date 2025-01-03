@@ -223,12 +223,8 @@ test('can bulk enable and disable alerts', function () {
 
 it('cannot access someone else\'s alerts', function () {
     $alert = Alert::factory()->email()->create([
-        'user_id' => $this->user->id,
+        'user_id' => User::factory()->create()->id,
     ]);
-
-    $this->actingAs($this->user)
-        ->get(AlertResource::getUrl())
-        ->assertForbidden();
 
     $this->actingAs($this->user)
         ->get(AlertResource::getUrl('edit', ['record' => $alert]))
