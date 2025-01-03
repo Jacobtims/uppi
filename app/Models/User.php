@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements FilamentUser, MustVerifyEmail
@@ -89,5 +90,16 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
             'password' => 'hashed',
             'is_admin' => 'boolean',
         ];
+    }
+
+    public function createTemporaryDeviceAuthToken(): string
+    {
+        $activationCode = strtoupper(Str::random(6));
+        $token = $this->createToken('Mobile device (not activated)', expiresAt: now()->addMinutes(15));
+        $accessToken = $token->accessToken;
+        $accessToken->activation_code = $activationCode;
+        $accessToken->save();
+
+        return $activationCode;
     }
 }
