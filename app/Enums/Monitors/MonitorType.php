@@ -31,6 +31,7 @@ enum MonitorType: string implements HasIcon, HasLabel
         return match ($this) {
             self::HTTP => 'HTTP',
             self::TCP => 'TCP',
+            self::DUMMY => '',
         };
     }
 
@@ -39,6 +40,15 @@ enum MonitorType: string implements HasIcon, HasLabel
         return match ($this) {
             self::HTTP => 'heroicon-o-globe-alt',
             self::TCP => 'heroicon-o-server-stack',
+            self::DUMMY => 'heroicon-o-question-mark-circle',
         };
+    }
+
+    public static function options(): array
+    {
+        return [
+            self::HTTP->value => self::HTTP->getLabel(),
+            self::TCP->value => self::TCP->getLabel(),
+        ];
     }
 }

@@ -36,7 +36,7 @@ class MonitorResource extends Resource
                         Forms\Components\TextInput::make('name')
                             ->required(),
                         Forms\Components\Select::make('type')
-                            ->options(MonitorType::class)
+                            ->options(MonitorType::options())
                             ->required()
                             ->live(),
                         Forms\Components\TextInput::make('address')
