@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\Anomaly;
 use App\Models\Monitor;
 use Filament\Widgets\ChartWidget;
+use Illuminate\View\View;
 use Livewire\Attributes\Lazy;
 
 #[Lazy]
@@ -21,6 +22,11 @@ class AnomaliesPerMonitor extends ChartWidget
     public function getDescription(): ?string
     {
         return 'Anomalies per monitor in the last 30 days';
+    }
+
+    public function placeholder(): View
+    {
+        return view('filament.widgets.placeholder');
     }
 
     protected function getMaxHeight(): ?string

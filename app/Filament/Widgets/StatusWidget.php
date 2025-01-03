@@ -6,6 +6,7 @@ use App\Models\Anomaly;
 use App\Models\Monitor;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\View\View;
 
 class StatusWidget extends BaseWidget
 {
@@ -14,6 +15,11 @@ class StatusWidget extends BaseWidget
         'md' => 12,
         'lg' => 12,
     ];
+
+    public function placeholder(): View
+    {
+        return view('filament.widgets.placeholder');
+    }
 
     protected function getStats(): array
     {

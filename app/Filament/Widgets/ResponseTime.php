@@ -6,6 +6,7 @@ use App\Models\Check;
 use App\Models\Monitor;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
+use Illuminate\View\View;
 use Livewire\Attributes\Lazy;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +26,13 @@ class ResponseTime extends ChartWidget
     protected int $refreshInterval = 60;
 
     protected array $intervals = [12, 6, 3, 1];
+
+
+    public function placeholder(): View
+    {
+        return view('filament.widgets.placeholder');
+    }
+
 
     public function getDescription(): ?string
     {

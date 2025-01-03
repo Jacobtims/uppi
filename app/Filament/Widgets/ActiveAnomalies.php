@@ -6,6 +6,7 @@ use App\Models\Anomaly;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
+use Illuminate\View\View;
 
 class ActiveAnomalies extends BaseWidget
 {
@@ -16,6 +17,11 @@ class ActiveAnomalies extends BaseWidget
         'md' => 12,
         'lg' => 12,
     ];
+
+    public function placeholder(): View
+    {
+        return view('filament.widgets.placeholder');
+    }
 
     public function table(Table $table): Table
     {
