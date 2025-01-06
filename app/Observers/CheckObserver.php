@@ -18,7 +18,7 @@ class CheckObserver
         ]);
 
         // Dispatch job to handle alert triggering
-        TriggerAlertJob::dispatch($check);
+        TriggerAlertJob::dispatch($check)->onQueue('alerts');
     }
 
     /**
