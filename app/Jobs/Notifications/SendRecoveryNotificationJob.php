@@ -2,7 +2,7 @@
 
 namespace App\Jobs\Notifications;
 
-use App\Enums\AlertTriggerType;
+use App\Enums\Alerts\AlertTriggerType;
 use App\Models\Alert;
 use App\Models\AlertTrigger;
 use App\Models\Anomaly;
@@ -19,14 +19,16 @@ class SendRecoveryNotificationJob implements ShouldQueue
 
     public function __construct(
         protected Anomaly $anomaly,
-        protected Alert $alert
-    ) {}
+        protected Alert   $alert
+    )
+    {
+    }
 
     public function handle(): void
     {
         $monitor = $this->anomaly->monitor;
 
-        if (! $this->alert->is_enabled) {
+        if (!$this->alert->is_enabled) {
             return;
         }
 

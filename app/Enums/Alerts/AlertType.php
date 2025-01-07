@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Enums\Types;
+namespace App\Enums\Alerts;
 
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;

@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources;
 
-use App\Enums\Types\AlertType;
+use App\Enums\Alerts\AlertType;
 use App\Filament\Resources\AlertResource\Pages;
 use App\Models\Alert;
 use Filament\Forms;

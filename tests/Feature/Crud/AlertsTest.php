@@ -1,12 +1,11 @@
 <?php
 
-use App\Enums\Types\AlertType;
+use App\Enums\Alerts\AlertType;
 use App\Filament\Resources\AlertResource;
+use App\Filament\Resources\AlertResource\Pages\ManageAlerts;
 use App\Models\Alert;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
-use App\Filament\Resources\AlertResource\Pages\ManageAlerts;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertDatabaseMissing;
 
@@ -58,7 +57,7 @@ test('can create a slack alert through Uppi UI', function () {
         ->type->toBe(AlertType::SLACK)
         ->destination->toBe('#monitoring')
         ->is_enabled->toBeTrue();
-    
+
     expect($alert->config)
         ->toHaveKey('slack_token')
         ->and($alert->config['slack_token'])->toBe('xoxb-test-token');
@@ -84,7 +83,7 @@ test('can create a bird alert through Uppi UI', function () {
         ->name->toBe('Test Bird Alert')
         ->type->toBe(AlertType::BIRD)
         ->destination->toBe('+31612345678');
-    
+
     expect($alert->config)
         ->toHaveKey('bird_api_key')
         ->toHaveKey('bird_workspace_id')
@@ -110,7 +109,7 @@ test('can create a pushover alert through Uppi UI', function () {
         ->type->toBe(AlertType::PUSHOVER)
         ->destination->toBe('user-key')
         ->is_enabled->toBeTrue();
-    
+
     expect($alert->config)
         ->toHaveKey('pushover_api_token')
         ->and($alert->config['pushover_api_token'])->toBe('app-token');
@@ -127,7 +126,7 @@ test('cannot create an expo alert through Uppi UI', function () {
         ]);
 
     $test->assertHasActionErrors(['uppi_app_info']);
-    
+
     assertDatabaseMissing('alerts', [
         'name' => 'Test Expo Alert',
         'type' => AlertType::EXPO->value,

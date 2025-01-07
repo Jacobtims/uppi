@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Enums\AlertTriggerType;
+use App\Enums\Alerts\AlertTriggerType;
+use App\Enums\Alerts\AlertType;
 use App\Enums\Checks\Status;
 use App\Enums\Monitors\MonitorType;
-use App\Enums\Types\AlertType;
 use App\Models\Alert;
 use App\Models\AlertTrigger;
 use App\Models\Anomaly;
@@ -156,7 +156,7 @@ class DatabaseSeeder extends Seeder
                     ]);
 
                     // Handle anomaly creation and closure
-                    if ($status === Status::FAIL && ! $activeAnomaly) {
+                    if ($status === Status::FAIL && !$activeAnomaly) {
                         $activeAnomaly = $this->createAnomaly($monitor, $check, $checkTime);
                         $check->anomaly()->associate($activeAnomaly);
                         $check->save();

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Enums\Types\AlertType;
+use App\Enums\Alerts\AlertType;
 use App\Http\Controllers\Controller;
 use App\Models\Alert;
 use Illuminate\Http\JsonResponse;
