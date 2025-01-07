@@ -87,11 +87,10 @@
                 </a>
             </div>
             <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-                <a href="https://www.producthunt.com/posts/uppi?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-uppi"
-                   target="_blank"><img
-                        src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=750291&theme=light"
-                        alt="Uppi - Uptime&#0032;monitoring&#0032;and&#0032;alerting&#0044;&#0032;open&#0045;source&#0032;&#0038;&#0032;free | Product Hunt"
-                        style="width: 250px; height: 54px;" width="250" height="54"/></a>
+                <a href="{{ $dashboardUrl }}"
+                   class="rounded-md bg-red-600 px-3 py-2.5 font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
+                    Create a free account
+                </a>
             </div>
         </nav>
         <!-- Mobile menu, show/hide based on menu open state. -->
@@ -286,7 +285,8 @@
 
 <footer class="bg-white">
     <div class="mx-auto max-w-7xl overflow-hidden py-20 px-6 sm:py-24 lg:px-8">
-        <nav class="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12" aria-label="Footer">
+        <nav class="-mb-6 justify-center sm:columns-2 sm:flex sm:justify-center sm:space-x-12"
+             aria-label="Footer">
             <div class="pb-6"><a href="https://www.webmethod.nl/juridisch/algemene-voorwaarden"
                                  class="text-sm leading-6 text-gray-600 hover:text-gray-900">Terms</a>
             </div>
@@ -300,6 +300,12 @@
             <div class=" pb-6"><a href="https://github.com/janyksteenbeek/uppi"
                                   class="text-sm leading-6 text-gray-600 hover:text-gray-900">GitHub</a></div>
             <div class=" pb-6"><a href="https://x.com/janyksteenbeek">𝕏</a></div>
+            <a class="pb-6 lg:-mt-4"
+               href="https://www.producthunt.com/posts/uppi?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-uppi"
+               target="_blank"><img
+                    src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=750291&theme=light"
+                    alt="Uppi - Uptime&#0032;monitoring&#0032;and&#0032;alerting&#0044;&#0032;open&#0045;source&#0032;&#0038;&#0032;free | Product Hunt"
+                    style="width: 250px; height: 54px;" width="250" height="54"/></a>
         </nav>
         <div class="mt-10 flex justify-center"><a href="https://www.webmethod.nl?utm_source=uppi&utm_medium=footer"
                                                   class="text-gray-400 hover:text-gray-500"><img
