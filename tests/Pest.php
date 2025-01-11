@@ -20,7 +20,6 @@ pest()->uses(Tests\TestCase::class)
     ->beforeEach(function () {
         // Fake all notifications
         Notification::fake();
-        Queue::fake();
     });
 
 /*

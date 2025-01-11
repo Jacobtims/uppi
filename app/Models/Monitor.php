@@ -32,6 +32,8 @@ class Monitor extends Model
         'last_checked_at' => 'datetime',
         'next_check_at' => 'datetime',
         'consecutive_threshold' => 'integer',
+        'auto_create_update' => 'boolean',
+        'update_values' => 'array',
     ];
 
     protected static function booted(): void
@@ -60,6 +62,11 @@ class Monitor extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function updates(): BelongsToMany
+    {
+        return $this->belongsToMany(Update::class);
     }
 
     public function getDomainAttribute(): ?string

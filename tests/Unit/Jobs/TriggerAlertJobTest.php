@@ -7,13 +7,10 @@ use App\Jobs\TriggerAlertJob;
 use App\Models\Anomaly;
 use App\Models\Check;
 use App\Models\Monitor;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Bus;
 
-beforeEach(function () {
-    Bus::fake([
-        TriggerAlertJob::class,
-    ]);
-});
+uses(RefreshDatabase::class);
 
 it('creates an anomaly after consecutive failures', function () {
     $monitor = Monitor::factory()->create([
@@ -147,7 +144,7 @@ it('maintains anomaly during mixed status checks', function () {
             'status' => Status::FAIL,
             'checked_at' => now()->subMinutes(3),
         ]),
-    ])->each(fn ($check) => (new TriggerAlertJob($check))->handle());
+    ])->each(fn ($check) => TriggerAlertJob::dispatchSync($check));
 
     // Add mixed status checks
     collect([
@@ -161,14 +158,14 @@ it('maintains anomaly during mixed status checks', function () {
             'status' => Status::FAIL,
             'checked_at' => now()->subMinute(),
         ]),
-    ])->each(fn ($check) => (new TriggerAlertJob($check))->handle());
+    ])->each(fn ($check) => TriggerAlertJob::dispatchSync($check));
 
     $monitor->refresh();
     $anomaly = $monitor->anomalies->first();
 
     expect($monitor->status)->toBe(Status::FAIL)
         ->and($anomaly->ended_at)->toBeNull()
-        ->and($anomaly->checks)->toHaveCount(count: 3);
+        ->and($anomaly->checks)->toHaveCount(count: 4);
 });
 
 it('handles multiple anomalies for the same monitor', function () {

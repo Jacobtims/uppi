@@ -13,8 +13,7 @@ use App\Observers\UpdateObserver;
 use App\Observers\UserIdObserver;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-#[ObservedBy(UpdateObserver::class)]
-#[ObservedBy(UserIdObserver::class)]
+#[ObservedBy([UserIdObserver::class, UpdateObserver::class])]
 class Update extends Model
 {
     use HasUlids, HasFactory;

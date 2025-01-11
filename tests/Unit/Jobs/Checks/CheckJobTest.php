@@ -25,9 +25,7 @@ function createMonitor(array $attributes = []): Monitor
 }
 
 beforeEach(function () {
-    Bus::fake([
-        TriggerAlertJob::class,
-    ]);
+    Bus::fake();
 });
 
 it('creates a check record', function () {

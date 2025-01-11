@@ -18,10 +18,13 @@ class UpdateFactory extends Factory
     public function definition(): array
     {
         $from = now()->subDays(value: fake()->numberBetween(1, 30));
+        $title = fake()->sentence();    
+        $slug = now()->format('YmdHis') . '-' . str($title)->slug() . '-' . fake()->randomNumber(6, true);
 
         return [
             'user_id' => User::factory(),
-            'title' => fake()->sentence(),
+            'title' => $title,
+            'slug' => $slug,
             'content' => fake()->paragraph(),
             'from' => $from,
             'to' => $from->addDays(value: fake()->numberBetween(1, 30)),

@@ -68,6 +68,14 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
             ->exists();
     }
 
+    public function failingCount(): int
+    {
+        return $this->monitors()
+            ->where('status', Status::FAIL)
+            ->where('is_enabled', true)
+            ->count();
+    }
+
     public function monitors(): HasMany
     {
         return $this->hasMany(Monitor::class);

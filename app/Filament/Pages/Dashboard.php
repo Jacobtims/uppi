@@ -28,7 +28,6 @@ class Dashboard extends \Filament\Pages\Dashboard
     {
         return auth()->user()->isOk() ? 'Everything is looking good!' : 'There are some monitors that need your attention.';
     }
-
     public function getColumns(): int
     {
         return 3;

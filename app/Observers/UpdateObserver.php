@@ -3,11 +3,12 @@
 namespace App\Observers;
 
 use App\Models\Update;
+use Illuminate\Support\Str;
 
 class UpdateObserver
 {
-    public function creating(Update $update): void
+    public function creating(Update $model): void
     {
-        $update->slug = $update->slug ?? str($update->title)->slug();
+        $model->slug = $model->slug ?? now()->format('YmdHis') . '-' . str($model->title)->slug() . '-' . Str::random(6);
     }
 }

@@ -14,7 +14,9 @@ use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 
 class MonitorResource extends Resource
 {
@@ -23,6 +25,19 @@ class MonitorResource extends Resource
     protected static ?int $navigationSort = 2;
 
     protected static ?string $navigationIcon = 'heroicon-o-heart';
+
+
+    public static function getNavigationBadge(): ?string
+    {
+        $count = auth()->user()->failingCount();
+
+        if ($count === 0) {
+            return null;
+        }
+
+        return $count . ' failing ' . \Str::plural('monitor', $count);
+    }
+
 
     public static function getEloquentQuery(): Builder
     {
@@ -86,7 +101,54 @@ class MonitorResource extends Resource
                             ->helperText('Alerts to send when the monitor is down')
                             ->multiple()
                             ->relationship('alerts', 'name', modifyQueryUsing: fn (Builder $query) => $query->where('user_id', auth()->id()))
-                            ->preload()
+                            ->preload(),
+                        Forms\Components\Toggle::make('auto_create_update')
+                            ->label('Post update when anomaly is detected')
+                            ->helperText('Automatically create an update once an anomaly is detected (threshold reached) on the status pages where this monitor is being shown.')
+                            ->default(true)
+                            ->hintAction(
+                                Forms\Components\Actions\Action::make('customize_text')
+                                ->modalHeading('Customize update text')
+                                ->modalFooter(fn () => new HtmlString('<div class="text-sm text-gray-500">Use the following variables in your update text: <code>:monitor_name</code>, <code>:monitor_address</code>, <code>:monitor_type</code></div>'))
+                                ->form([
+                                    Forms\Components\TextInput::make('update_values.title')
+                                        ->label('Update title')
+                                        ->helperText('The title of the update that will be posted when an anomaly is detected.')
+                                        ->default(':monitor_name is experiencing issues'),
+                                    Forms\Components\MarkdownEditor::make('update_values.content')
+                                        ->label('Update content')
+                                        ->helperText('The content of the update that will be posted when an anomaly is detected.')
+                                        ->default("Our automated monitoring & alerting system has detected that :monitor_name is experiencing issues. Because of these issues, we've created this update to keep you informed.\n\nOur team has been notified and is investigating. We apologize for the inconvenience."),
+                                ])
+                                ->fillForm(function (?Monitor $record) {
+                                    if (!$record) {
+                                        return [];
+                                    }
+                                    
+                                    return [
+                                        'update_values' => [
+                                            'title' => $record->update_values['title'] ?? ':monitor_name is experiencing issues',
+                                            'content' => $record->update_values['content'] ?? "Our automated monitoring & alerting system has detected that :monitor_name is experiencing issues. Because of these issues, we've created this update to keep you informed.\n\nOur team has been notified and is investigating. We apologize for the inconvenience.",
+                                        ],
+                                    ];
+                                })
+                                ->action(function (?Monitor $record, array $data, Forms\Set $set) {
+                                    if ($record) {
+                                        $record->update([
+                                            'update_values' => [
+                                                'title' => $data['update_values']['title'],
+                                                'content' => $data['update_values']['content'],
+                                            ],
+                                        ]);
+                                    } else {
+                                        $set('update_values', [
+                                            'title' => $data['update_values']['title'],
+                                            'content' => $data['update_values']['content'],
+                                        ]);
+                                    }
+                                })
+                                ),
+
                     ])->columns(2),
             ]);
     }
