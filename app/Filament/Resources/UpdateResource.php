@@ -2,19 +2,22 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\StatusPage\UpdateStatus;
 use App\Enums\StatusPage\UpdateType;
 use App\Filament\Resources\UpdateResource\Pages;
 use App\Filament\Resources\UpdateResource\RelationManagers;
 use App\Models\Update;
+use Filament\Actions\Modal\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Collection;
 
 class UpdateResource extends Resource
 {
@@ -23,6 +26,20 @@ class UpdateResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-newspaper';
 
     protected static ?int $navigationSort = 6;
+
+    protected static function getStatusCollection(Get $get): Collection
+    {
+        $type = $get('type');
+        if (!$type) return collect(UpdateStatus::cases());
+
+        $updateType = is_string($type) ? UpdateType::tryFrom($type) : $type;
+        
+        return collect(UpdateStatus::cases())
+            ->filter(fn ($status) => in_array(
+                $status->value, 
+                array_column($updateType->getAvailableStatuses(), 'value')
+            ));
+    }
 
     public static function getEloquentQuery(): Builder
     {
@@ -34,49 +51,84 @@ class UpdateResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Content')
-                    ->description('The main content of your update')
+                Forms\Components\Section::make('Status')
+                    ->hiddenLabel()
+                    ->heading(null)
                     ->schema([
-                        Forms\Components\TextInput::make('title')
-                            ->required()
-                            ->maxLength(255)
+                        Forms\Components\ToggleButtons::make('status')
+                            ->label('Current Status')
+                            ->hiddenLabel()
+                            ->options(fn (Get $get) => static::getStatusCollection($get)
+                                ->mapWithKeys(fn ($status) => [$status->value => $status->getLabel()]))
+                            ->icons(fn (Get $get) => static::getStatusCollection($get)
+                                ->mapWithKeys(fn ($status) => [$status->value => $status->getIcon()]))
+                            ->colors(fn (Get $get) => static::getStatusCollection($get)
+                                ->mapWithKeys(fn ($status) => [$status->value => $status->getColor()]))
+                            ->grouped()
+                            ->default(UpdateStatus::NEW)
                             ->live()
-                            ->debounce(delay: 250)
-                            ->afterStateUpdated(fn (Set $set, $state) => $set('slug', str($state)->slug()))
-                            ->columnSpanFull(),
-                        Forms\Components\Textarea::make('content')
                             ->required()
-                            ->columnSpanFull(),
-                        Forms\Components\FileUpload::make('image')
-                            ->image()
-                            ->directory('updates')
-                            ->helperText('Optional: Add an image to your update'),
+                            ->inline()
+                            ->afterStateUpdated(function ($record, $state) {
+                                if(! $record) return;
+                                $record->update(['status' => $state]);
+
+                                Notification::make()
+                                    ->title('Status updated to ' . $state)
+                                    ->success()
+                                    ->send();
+                            })
+                            ->columnSpanFull()
+                    ]),
+                    Forms\Components\Section::make('Content')
+                    ->heading(null)
+                    ->schema([
+                        Forms\Components\Grid::make()
+                        ->columns(3)
+                            ->schema([
+                                Forms\Components\Grid::make()
+                                    ->schema([
+                                        Forms\Components\TextInput::make('title')
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->live()
+                                            ->debounce(delay: 250)
+                                            ->columnSpanFull()
+                                            ->afterStateUpdated(fn (Set $set, $state) => $set('slug', str($state)->slug())),
+                                        Forms\Components\MarkdownEditor::make('content')
+                                            ->required()
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->columnSpan(2),
+                                Forms\Components\Grid::make()
+                                    ->schema([
+                                        Forms\Components\Select::make('type')
+                                            ->required()
+                                            ->enum(UpdateType::class)
+                                            ->options(UpdateType::class)
+                                            ->live()
+                                            ->prefixIcon(fn (Get $get)  => UpdateType::tryFrom($get('type')?->value ?? $get('type'))->getIcon())
+                                            ->default(state: UpdateType::UPDATE)
+                                            ->columnSpanFull(),
+                                        Forms\Components\FileUpload::make('image')
+                                            ->image()
+                                            ->maxSize(2048)
+                                            ->directory('updates')
+                                            ->columnSpanFull()
+                                            ->helperText('Optional: Add an image to your update'),
+                                        Forms\Components\Toggle::make('is_featured')
+                                            ->label('Featured')
+                                            ->helperText('Pin this update to the top'),
+                                    ])
+                                    ->columnSpan(1),
+                            ]),
                     ]),
 
-                Forms\Components\Section::make('Settings')
-                    ->schema([
-                        Forms\Components\TextInput::make('slug')
-                            ->required()
-                            ->live()
-                            ->unique(ignoreRecord: true)
-                            ->maxLength(255)
-                            ->helperText('The URL-friendly version of the title'),
-                        Forms\Components\Select::make('type')
-                            ->required()
-                            ->options(UpdateType::class)
-                            ->live()
-                            ->prefixIcon(fn (UpdateType $state) => $state->getIcon())
-                            ->default(UpdateType::UPDATE),
-                        Forms\Components\Toggle::make('is_published')
-                            ->label('Published')
-                            ->helperText('Make this update visible to users')
-                            ->default(true),
-                        Forms\Components\Toggle::make('is_featured')
-                            ->label('Featured')
-                            ->helperText('Pin this update to the top'),
-                    ])->columns(2),
+                
 
-                Forms\Components\Section::make('Schedule')
+                Forms\Components\Section::make('Impact')
+                    ->collapsible()
+                    ->icon('heroicon-o-clock')
                     ->schema([
                         Forms\Components\DateTimePicker::make('from')
                             ->label('Start Date')
@@ -84,6 +136,36 @@ class UpdateResource extends Resource
                         Forms\Components\DateTimePicker::make('to')
                             ->label('End Date')
                             ->helperText('When does this update end?'),
+                        Forms\Components\Select::make('monitors')
+                            ->multiple()
+                            ->relationship('monitors', 'name',modifyQueryUsing: fn (Builder $query) => $query->where('user_id', auth()->id()))
+                            ->helperText('What monitors are impacted?'),
+                    ])->columns(2),
+
+                    Forms\Components\Section::make('Metadata')
+                    ->collapsible()
+                    ->icon('heroicon-o-cog')
+                    ->schema([
+                        Forms\Components\Select::make('status_pages')
+                        ->multiple()
+                        ->relationship(
+                            'statusPages', 
+                            'name',
+                            modifyQueryUsing: fn (Builder $query) => $query->where('user_id', auth()->id()))
+                        ->preload()
+                        ->searchable()
+                        ->helperText('Select the status pages to which this update should be added'),
+                        Forms\Components\TextInput::make('slug')
+                            ->required()
+                            ->live()
+                            ->unique(ignoreRecord: true)
+                            ->maxLength(255)
+                            ->helperText('The URL-friendly version of the title'),
+
+                            Forms\Components\Toggle::make('is_published')
+                            ->label('Published')
+                            ->helperText('Make this update visible to everyone')
+                            ->default(true),
                     ])->columns(2),
             ]);
     }
@@ -97,7 +179,8 @@ class UpdateResource extends Resource
                     ->searchable()
                     ->limit(50)
                     ->wrap(),
-                Tables\Columns\TextColumn::make('type')
+                Tables\Columns\TextColumn::make('type'),
+                Tables\Columns\TextColumn::make('status')
                     ->badge(),
                 Tables\Columns\IconColumn::make('is_published')
                     ->boolean()
@@ -107,17 +190,26 @@ class UpdateResource extends Resource
                     ->label('Featured'),
                 Tables\Columns\TextColumn::make('from')
                     ->dateTime()
+                    ->size('xs')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('to')
                     ->dateTime()
+                    ->size('xs')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('monitors.name')
+                    ->label('Monitors')
+                    ->wrap(),
+                    Tables\Columns\TextColumn::make('statusPages.name')
+                    ->label('Status Pages') 
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->options(UpdateStatus::class)
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

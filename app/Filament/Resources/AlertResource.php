@@ -16,9 +16,9 @@ final class AlertResource extends Resource
 {
     protected static ?string $model = Alert::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-bell';
+    protected static ?string $navigationIcon = 'heroicon-o-bell-alert';
 
-    protected static ?string $navigationLabel = 'Destinations';
+    protected static ?string $navigationLabel = 'Alerts';
 
     protected static ?int $navigationSort = 3;
 

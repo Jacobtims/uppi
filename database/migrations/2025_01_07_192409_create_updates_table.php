@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\StatusPage\UpdateStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +14,8 @@ return new class extends Migration
     {
         Schema::create('updates', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->foreignUlid('user_id')->constrained('users');
+            $table->foreignUlid('user_id')->constrained('users')->nullable()->cascadeOnDelete();
+            $table->foreignUlid('anomaly_id')->nullable()->constrained('anomalies')->nullOnDelete();
             $table->string('title');
             $table->text('content');
             $table->string('image')->nullable();
@@ -23,6 +25,7 @@ return new class extends Migration
             $table->dateTime('to')->nullable();
             $table->string('type');
             $table->boolean('is_featured')->default(false);
+            $table->string('status')->default(UpdateStatus::NEW);
             $table->timestamps();
         });
     }

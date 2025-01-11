@@ -11,6 +11,7 @@ use App\Models\AlertTrigger;
 use App\Models\Anomaly;
 use App\Models\Check;
 use App\Models\Monitor;
+use App\Models\StatusPage;
 use App\Models\Update;
 use App\Models\User;
 use Carbon\Carbon;
@@ -182,6 +183,9 @@ class DatabaseSeeder extends Seeder
                 }
             }
         }
+
+        // Generate status pages
+        StatusPage::factory()->count(1)->recycle([$janyk])->create();
         
         // Fill with random updates
         User::factory()

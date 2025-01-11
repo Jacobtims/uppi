@@ -92,3 +92,7 @@
 .fi-resource-list-records-page .fi-ta-ctn {
     @apply rounded-none ring-0 border-t border-gray-200 shadow-sm;
 }
+
+.fi-header-subheading {
+    @apply text-sm text-gray-500/90;
+}

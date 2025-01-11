@@ -42,5 +42,15 @@ enum UpdateType: string implements HasColor, HasLabel, HasIcon
             self::UPDATE => 'Update',
         };
     }
+
+    public function getAvailableStatuses(): array
+    {
+        return match ($this) {
+            self::ANOMALY => [UpdateStatus::NEW, UpdateStatus::UNDER_INVESTIGATION, UpdateStatus::IDENTIFIED, UpdateStatus::WORK_IN_PROGRESS, UpdateStatus::RECOVERING, UpdateStatus::MONITORING, UpdateStatus::POST_INCIDENT],
+            self::MAINTENANCE => [UpdateStatus::NEW, UpdateStatus::UNDER_INVESTIGATION, UpdateStatus::IDENTIFIED, UpdateStatus::WORK_IN_PROGRESS, UpdateStatus::MONITORING, UpdateStatus::COMPLETED],
+            self::SCHEDULED_MAINTENANCE => [UpdateStatus::NEW, UpdateStatus::WORK_IN_PROGRESS, UpdateStatus::MONITORING, UpdateStatus::COMPLETED],
+            self::UPDATE => [UpdateStatus::NEW, UpdateStatus::COMPLETED],
+        };
+    }
 }
 
