@@ -11,6 +11,7 @@ class VerifyCsrf extends \Illuminate\Foundation\Http\Middleware\ValidateCsrfToke
         'status-page.overall-status',
         'status-page.monitor-status',
         'status-page.monitors-list',
+        'status-page.updates-list',
         'status-page.show',
     ];
 
