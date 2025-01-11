@@ -2,7 +2,7 @@
     <div class="relative">
         <!-- Main timeline line -->
         @if($updates->isNotEmpty())
-            <div class="absolute left-0 top-0 -translate-x-1/2 w-0.5 h-full bg-gray-200"></div>
+            <div class="absolute left-[16px] top-0 -translate-x-1/2 w-0.5 h-full bg-gray-200"></div>
         @endif
 
         <div class="space-y-8">
@@ -10,7 +10,7 @@
                 <div class="relative">
                     <!-- Timeline dot with status color -->
                     <div @class([
-                        'absolute left-0 -translate-x-1/2 w-4 h-4 rounded-full border-2 border-white ring-2 z-10 bg-white',
+                        'absolute left-[16px] -translate-x-1/2 w-4 h-4 rounded-full border-2 border-white ring-2 z-10 bg-white',
                         'ring-green-500 bg-green-100' => $update->status === \App\Enums\StatusPage\UpdateStatus::COMPLETED,
                         'ring-yellow-500 bg-yellow-100' => in_array($update->status, [
                             \App\Enums\StatusPage\UpdateStatus::MONITORING,
