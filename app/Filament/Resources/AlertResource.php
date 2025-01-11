@@ -171,6 +171,14 @@ final class AlertResource extends Resource
             ->filters([
                 //
             ])
+            ->emptyStateHeading('No alerts set up yet')
+            ->emptyStateDescription('Set up alerts to different destinations to notify you when something is wrong.')
+            ->emptyStateIcon('heroicon-o-bell-alert')
+            ->emptyStateActions([
+                \Filament\Tables\Actions\CreateAction::make()
+                    ->label('Create alert')
+                    ->icon('heroicon-o-plus'),
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),

@@ -123,6 +123,14 @@ class MonitorResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
+            ->emptyStateHeading('Start monitoring your website')
+            ->emptyStateDescription('Set up your first monitor to check the status of your website, API or other service.')
+            ->emptyStateIcon('heroicon-o-heart')
+            ->emptyStateActions([
+                \Filament\Tables\Actions\CreateAction::make()
+                    ->label('Create a monitor')
+                    ->icon('heroicon-o-plus'),
+            ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\BulkAction::make('enable')

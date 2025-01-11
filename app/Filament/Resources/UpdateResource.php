@@ -214,6 +214,14 @@ class UpdateResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
+            ->emptyStateHeading(heading: 'You haven\'t shared any updates yet')
+            ->emptyStateDescription('Updates are a great way to keep your users informed about what\'s happening with your service. Announce maintenance, outages, and other important updates.')
+            ->emptyStateIcon('heroicon-o-newspaper')
+            ->emptyStateActions([
+                \Filament\Tables\Actions\CreateAction::make()
+                    ->label('Create update')
+                    ->icon('heroicon-o-plus'),
+            ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\BulkAction::make('publish')

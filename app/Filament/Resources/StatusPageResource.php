@@ -104,6 +104,14 @@ class StatusPageResource extends Resource
                     ->trueLabel('Enabled Pages')
                     ->falseLabel('Disabled Pages'),
             ])
+            ->emptyStateHeading(heading: 'Create your first public status page')
+            ->emptyStateDescription('Set up a status page to keep your users informed. Share your public link with your users, or embed the widget on your website.')
+            ->emptyStateIcon('heroicon-o-eye')
+            ->emptyStateActions([
+                \Filament\Tables\Actions\CreateAction::make()
+                    ->label('Create status page')
+                    ->icon('heroicon-o-plus'),
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('embed')
