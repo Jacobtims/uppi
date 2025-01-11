@@ -30,7 +30,7 @@ class UpdateResource extends Resource
     protected static function getStatusCollection(Get $get): Collection
     {
         $type = $get('type');
-        if (!$type) return collect(UpdateStatus::cases());
+        if (!$type) return collect([]);
 
         $updateType = is_string($type) ? UpdateType::tryFrom($type) : $type;
         
@@ -59,11 +59,11 @@ class UpdateResource extends Resource
                             ->label('Current Status')
                             ->hiddenLabel()
                             ->options(fn (Get $get) => static::getStatusCollection($get)
-                                ->mapWithKeys(fn ($status) => [$status->value => $status->getLabel()]))
+                                ->mapWithKeys(fn ($status) => [$status->value => $status?->getLabel()]))
                             ->icons(fn (Get $get) => static::getStatusCollection($get)
-                                ->mapWithKeys(fn ($status) => [$status->value => $status->getIcon()]))
+                                ->mapWithKeys(fn ($status) => [$status->value => $status?->getIcon()]))
                             ->colors(fn (Get $get) => static::getStatusCollection($get)
-                                ->mapWithKeys(fn ($status) => [$status->value => $status->getColor()]))
+                                ->mapWithKeys(fn ($status) => [$status->value => $status?->getColor()]))
                             ->grouped()
                             ->default(UpdateStatus::NEW)
                             ->live()
@@ -105,9 +105,15 @@ class UpdateResource extends Resource
                                         Forms\Components\Select::make('type')
                                             ->required()
                                             ->enum(UpdateType::class)
+                                            ->disablePlaceholderSelection()
                                             ->options(UpdateType::class)
                                             ->live()
-                                            ->prefixIcon(fn (Get $get)  => UpdateType::tryFrom($get('type')?->value ?? $get('type'))->getIcon())
+                                            ->prefixIcon(function (Get $get) {
+                                                $type = $get('type');
+                                                if(!$type) return null;
+                                                $updateType = is_string($type) ? UpdateType::tryFrom($type) : $type;
+                                                return $updateType?->getIcon();
+                                            })
                                             ->default(state: UpdateType::UPDATE)
                                             ->columnSpanFull(),
                                         Forms\Components\FileUpload::make('image')

@@ -45,7 +45,7 @@
                                 'bg-blue-100 text-blue-700' => $update->status === \App\Enums\StatusPage\UpdateStatus::NEW,
                             ])>
                                 <x-dynamic-component 
-                                    :component="$update->status->getIcon()" 
+                                    :component="$update->status?->getIcon()" 
                                     class="w-3 h-3"
                                 />
                                 {{ $update->status->getLabel() }}
@@ -58,7 +58,7 @@
                                 'bg-green-100 text-green-700' => $update->type === \App\Enums\StatusPage\UpdateType::UPDATE,
                             ])>
                                 <x-dynamic-component 
-                                    :component="$update->type->getIcon()" 
+                                    :component="$update->type?->getIcon()" 
                                     class="w-3 h-3"
                                 />
                                 {{ $update->type->getLabel() }}

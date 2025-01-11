@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\StatusPage\UpdateStatus;
 use App\Enums\StatusPage\UpdateType;
 use App\Models\User;
 use App\Models\Update;
@@ -27,6 +28,7 @@ class UpdateFactory extends Factory
             'is_published' => fake()->boolean(),
             'is_featured' => fake()->boolean(),
             'type' => fake()->randomElement(UpdateType::cases()),
+            'status' => fake()->randomElement(UpdateStatus::cases()),
         ];
     }
 }
