@@ -2,7 +2,7 @@
     <div class="relative">
         <!-- Main timeline line -->
         @if($updates->isNotEmpty())
-            <div class="absolute left-[16px] top-0 -translate-x-1/2 w-0.5 h-full bg-gray-200"></div>
+            <div class="absolute left-4 sm:left-[16px] top-0 -translate-x-1/2 w-0.5 h-full bg-gray-200"></div>
         @endif
 
         <div class="space-y-8">
@@ -10,7 +10,7 @@
                 <div class="relative">
                     <!-- Timeline dot with status color -->
                     <div @class([
-                        'absolute left-[16px] -translate-x-1/2 w-4 h-4 rounded-full border-2 border-white ring-2 z-10 bg-white',
+                        'absolute left-4 sm:left-[16px] -translate-x-1/2 w-4 h-4 rounded-full border-2 border-white ring-2 z-10 bg-white',
                         'ring-green-500 bg-green-100' => $update->status === \App\Enums\StatusPage\UpdateStatus::COMPLETED,
                         'ring-yellow-500 bg-yellow-100' => in_array($update->status, [
                             \App\Enums\StatusPage\UpdateStatus::MONITORING,
@@ -26,9 +26,9 @@
                     ])></div>
 
                     <!-- Content card -->
-                    <div class="ml-12 bg-white shadow rounded-lg border border-neutral-100 p-4">
+                    <div class="ml-8 sm:ml-12 bg-white shadow rounded-lg border border-neutral-100 p-4">
                         <!-- Header -->
-                        <div class="flex items-center gap-2">
+                        <div class="flex flex-wrap items-center gap-2">
                             <div @class([
                                 'inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium',
                                 'bg-green-100 text-green-700' => $update->status === \App\Enums\StatusPage\UpdateStatus::COMPLETED,
@@ -71,31 +71,33 @@
                                     <span>Featured</span>
                                 </div>
                             @endif
-                            <span class="text-sm text-gray-500 ml-auto">
+                            <span class="text-sm text-gray-500 sm:ml-auto mt-2 sm:mt-0 w-full sm:w-auto order-last sm:order-none">
                                 {{ $update->created_at->diffForHumans() }}
                             </span>
                         </div>
 
                         <!-- Title and content -->
                         <h3 class="text-lg font-semibold mt-2">{{ $update->title }}</h3>
-                        <div class="prose prose-sm mt-2 text-gray-600 markdown">
+                        <div class="prose prose-sm mt-2 text-gray-600 markdown max-w-none">
                             {!! str($update->content)->markdown() !!}
                         </div>
 
                         <!-- Footer -->
                         <div class="mt-4 flex flex-wrap items-center gap-2">
                             @if($update->from || $update->to)
-                                <div class="flex items-center gap-2 text-xs text-gray-500">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                                <div class="flex items-center gap-2 text-xs text-gray-500 flex-wrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 shrink-0">
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
                                     </svg>
-                                    @if($update->from)
-                                        <span>{{ $update->from->format('M j, Y g:i A') }}</span>
-                                    @endif
-                                    @if($update->to)
-                                        <span class="text-gray-400">→</span>
-                                        <span>{{ $update->to->format('M j, Y g:i A') }}</span>
-                                    @endif
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        @if($update->from)
+                                            <span>{{ $update->from->format('M j, Y g:i A') }}</span>
+                                        @endif
+                                        @if($update->to)
+                                            <span class="text-gray-400 shrink-0">→</span>
+                                            <span>{{ $update->to->format('M j, Y g:i A') }}</span>
+                                        @endif
+                                    </div>
                                 </div>
                             @endif
 
@@ -103,7 +105,7 @@
                                 <div class="flex flex-wrap gap-2">
                                     @foreach($update->monitors as $monitor)
                                         <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 text-gray-700 text-xs">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3 shrink-0">
                                                 <path fill-rule="evenodd" d="M2 10a8 8 0 1116 0 8 8 0 01-16 0zm8 1a1 1 0 100-2 1 1 0 000 2zm-3-1a1 1 0 11-2 0 1 1 0 012 0zm7 1a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
                                             </svg>
                                             {{ $monitor->name }}
