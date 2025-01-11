@@ -9,6 +9,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      # Cache Composer dependencies
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      # Setup PHP
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -16,6 +25,15 @@ jobs:
           tools: composer:v2
           coverage: xdebug
 
+      # Cache Node.js dependencies
+      - name: Cache Node modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: node-modules-
+
+      # Setup Node
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -43,4 +61,4 @@ jobs:
         run: php artisan migrate --force
 
       - name: Run tests
-        run: ./vendor/bin/pest --ci
+        run: ./vendor/bin/pest --ci --parallel
