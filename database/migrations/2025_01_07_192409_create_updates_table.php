@@ -16,13 +16,12 @@ return new class extends Migration
             $table->foreignUlid('user_id')->constrained('users');
             $table->string('title');
             $table->text('content');
-            $table->string('image');
-            $table->string('slug')->unique();
+            $table->string('image')->nullable();
+            $table->string('slug')->unique()->index();
             $table->boolean('is_published')->default(false);
             $table->dateTime('from')->nullable();
             $table->dateTime('to')->nullable();
             $table->string('type');
-            $table->text('body');
             $table->boolean('is_featured')->default(false);
             $table->timestamps();
         });
