@@ -10,13 +10,9 @@ use Illuminate\View\View;
 
 class ActiveAnomalies extends BaseWidget
 {
-    protected static ?string $heading = '';
+    protected static ?string $heading = null;
 
-    protected int|string|array $columnSpan = [
-        'sm' => 12,
-        'md' => 12,
-        'lg' => 12,
-    ];
+    protected int|string|array $columnSpan = 'full';
 
     public function placeholder(): View
     {

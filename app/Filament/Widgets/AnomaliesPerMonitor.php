@@ -14,9 +14,8 @@ class AnomaliesPerMonitor extends ChartWidget
     protected static ?string $heading = 'Anomalies';
 
     protected int|string|array $columnSpan = [
-        'sm' => 12,
-        'md' => 12,
-        'lg' => 6,
+        'md' => 3,
+        'lg' => 1,
     ];
 
     public function getDescription(): ?string

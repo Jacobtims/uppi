@@ -10,11 +10,7 @@ use Illuminate\View\View;
 
 class StatusWidget extends BaseWidget
 {
-    protected int|string|array $columnSpan = [
-        'sm' => 12,
-        'md' => 12,
-        'lg' => 12,
-    ];
+    protected int|string|array $columnSpan = 'full';
 
     public function placeholder(): View
     {
