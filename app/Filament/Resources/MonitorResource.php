@@ -6,6 +6,8 @@ use App\Enums\Monitors\MonitorType;
 use App\Filament\Resources\MonitorResource\Pages;
 use App\Filament\Resources\MonitorResource\RelationManagers\AlertsRelationManager;
 use App\Models\Monitor;
+use Filament\Actions\Action;
+use Filament\Actions\CreateAction;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -35,7 +37,11 @@ class MonitorResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->required(),
-                        Forms\Components\Select::make('type')
+                        Forms\Components\ToggleButtons::make('type')
+                            ->inline()
+                            ->grouped()
+                            ->enum(MonitorType::class)
+                            ->default(MonitorType::HTTP->value)
                             ->options(MonitorType::options())
                             ->required()
                             ->live(),
@@ -76,6 +82,11 @@ class MonitorResource extends Resource
                             ->maxLength(255)
                             ->helperText('Custom User-Agent string for HTTP requests')
                             ->live(),
+                        Forms\Components\Select::make('alerts')
+                            ->helperText('Alerts to send when the monitor is down')
+                            ->multiple()
+                            ->relationship('alerts', 'name', modifyQueryUsing: fn (Builder $query) => $query->where('user_id', auth()->id()))
+                            ->preload()
                     ])->columns(2),
             ]);
     }

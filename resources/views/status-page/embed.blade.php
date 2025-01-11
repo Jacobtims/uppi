@@ -14,10 +14,13 @@
             <livewire:status-page.overall-status :statusPage="$statusPage" />
         @elseif($type === 'monitors')
             <livewire:status-page.monitors-list :statusPage="$statusPage" />
+        @elseif($type === 'updates')
+            <livewire:status-page.updates-list :statusPage="$statusPage" />
         @else
             <div>
                 <livewire:status-page.overall-status :statusPage="$statusPage" />
                 <livewire:status-page.monitors-list :statusPage="$statusPage" />
+                <livewire:status-page.updates-list :statusPage="$statusPage" />
             </div>
         @endif
     </div>

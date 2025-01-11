@@ -44,9 +44,9 @@ class StatusPage extends Model
         return $this->isOk() ? Status::OK : Status::FAIL;
     }
 
-    public function updates(): HasMany
+    public function updates(): BelongsToMany
     {
-        return $this->hasMany(Update::class);
+        return $this->belongsToMany(Update::class);
     }
 
     public function isOk(): bool

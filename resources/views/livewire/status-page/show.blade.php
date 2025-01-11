@@ -14,5 +14,6 @@
     <div class="max-w-2xl mx-auto px-2">
         <livewire:status-page.overall-status :statusPage="$statusPage" />
         <livewire:status-page.monitors-list :statusPage="$statusPage" />
+        <livewire:status-page.updates-list :statusPage="$statusPage" />
     </div>
 </div>
