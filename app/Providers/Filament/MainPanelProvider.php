@@ -7,6 +7,8 @@ use App\Filament\Widgets\ActiveAnomalies;
 use App\Filament\Widgets\AnomaliesPerMonitor;
 use App\Filament\Widgets\ResponseTime;
 use App\Filament\Widgets\StatusWidget;
+use DutchCodingCompany\FilamentSocialite\FilamentSocialitePlugin;
+use DutchCodingCompany\FilamentSocialite\Provider as SocialiteProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -94,6 +96,19 @@ class MainPanelProvider extends PanelProvider
                     ->label('Connections')
                     ->url(fn(): string => PersonalAccessTokenResource::getUrl())
                     ->icon('heroicon-o-device-phone-mobile'),
-            ]);
+            ])->plugin(FilamentSocialitePlugin::make()->providers([
+                SocialiteProvider::make('github')
+                    ->label('GitHub')
+                    ->icon('fab-github')
+                    ->color(Color::hex('#24292e'))
+                    ->outlined(true)
+                    ->stateless(false),
+                SocialiteProvider::make('gitlab')
+                    ->label('GitLab')
+                    ->icon('fab-gitlab')
+                    ->color(Color::hex('#FCA326'))
+                    ->outlined(true)
+                    ->stateless(false),
+            ]));
     }
 }
