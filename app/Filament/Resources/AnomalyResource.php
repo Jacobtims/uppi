@@ -46,7 +46,7 @@ class AnomalyResource extends Resource
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('monitor.address')
-                    ->description(fn ($record) => $record->monitor->port)
+                    ->description(fn($record) => $record->monitor->port)
                     ->sortable()
                     ->label('Address')
                     ->searchable(),
@@ -63,12 +63,13 @@ class AnomalyResource extends Resource
                 Tables\Columns\TextColumn::make('duration')
                     ->label('Duration')
                     ->sortable()
-                    ->state(fn ($record) => $record->ended_at ? $record->ended_at->diffForHumans($record->started_at, true) : null),
+                    ->state(fn($record) => $record->ended_at ? $record->ended_at->diffForHumans($record->started_at, true) : null),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('started_at', 'desc')
             ->filters([
                 //
             ])
