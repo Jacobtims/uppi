@@ -8,7 +8,7 @@ return new class extends Migration {
     public function up()
     {
         Schema::create('socialite_users', function (Blueprint $table) {
-            $table->ulid()->primary();
+            $table->ulid('id')->primary();
 
             $table->foreignUlid('user_id')->constrained()->cascadeOnDelete();
             $table->string('provider');
