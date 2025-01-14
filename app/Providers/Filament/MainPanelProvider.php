@@ -112,8 +112,10 @@ class MainPanelProvider extends PanelProvider
                             ->color(Color::hex('#FCA326'))
                             ->outlined(true)
                             ->stateless(false),
+
                     ])
                     ->registration(true)
+                    ->showDivider(false)
                     ->socialiteUserModelClass(SocialiteUser::class)
             );
     }
