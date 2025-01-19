@@ -11,8 +11,15 @@ class ResponseTimeAggregator extends CacheTask
 {
     public function __construct(
         private readonly ?int $interval = null,
-        private readonly int $days = 7
-    ) {}
+        private readonly int  $days = 7
+    )
+    {
+    }
+
+    public static function getTtl(): int
+    {
+        return 120;
+    }
 
     public function key(): string
     {
@@ -20,9 +27,30 @@ class ResponseTimeAggregator extends CacheTask
         return "response_time_aggregated_{$interval}_{$this->days}";
     }
 
-    public static function getTtl(): int
+    private function findBestInterval(): int
     {
-        return 60;
+        if ($this->userId === null) {
+            throw new \RuntimeException('Cache task must be scoped to a user');
+        }
+
+        $intervals = [12, 6, 3, 1];
+        $checksCount = Check::where('checked_at', '>=', now()->subDays(7))
+            ->whereHas('monitor', function ($query) {
+                $query->where('is_enabled', true)
+                    ->where('user_id', $this->userId);
+            })
+            ->select('monitor_id', DB::raw('COUNT(*) as total_checks'))
+            ->groupBy('monitor_id')
+            ->get();
+
+        foreach ($intervals as $interval) {
+            $requiredChecksPerMonitor = 7 * (24 / $interval);
+            if ($checksCount->every(fn($check) => $check->total_checks >= $requiredChecksPerMonitor)) {
+                return $interval;
+            }
+        }
+
+        return end($intervals);
     }
 
     public function execute(): Collection
@@ -51,7 +79,7 @@ class ResponseTimeAggregator extends CacheTask
 
             foreach ($monitorChecks as $check) {
                 $checkedAt = Carbon::parse($check->checked_at);
-                $hour = (int) floor($checkedAt->hour / $interval) * $interval;
+                $hour = (int)floor($checkedAt->hour / $interval) * $interval;
                 $intervalStart = $checkedAt->copy()->hour($hour)->minute(0)->second(0);
                 $label = $intervalStart->format('d-m H') . 'h';
 
@@ -79,31 +107,5 @@ class ResponseTimeAggregator extends CacheTask
                 'values' => $values,
             ];
         })->values();
-    }
-
-    private function findBestInterval(): int
-    {
-        if ($this->userId === null) {
-            throw new \RuntimeException('Cache task must be scoped to a user');
-        }
-
-        $intervals = [12, 6, 3, 1];
-        $checksCount = Check::where('checked_at', '>=', now()->subDays(7))
-            ->whereHas('monitor', function ($query) {
-                $query->where('is_enabled', true)
-                    ->where('user_id', $this->userId);
-            })
-            ->select('monitor_id', DB::raw('COUNT(*) as total_checks'))
-            ->groupBy('monitor_id')
-            ->get();
-
-        foreach ($intervals as $interval) {
-            $requiredChecksPerMonitor = 7 * (24 / $interval);
-            if ($checksCount->every(fn ($check) => $check->total_checks >= $requiredChecksPerMonitor)) {
-                return $interval;
-            }
-        }
-
-        return end($intervals);
     }
 }
