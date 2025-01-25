@@ -36,7 +36,7 @@ class StatusPageResource extends Resource
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('slug')
-                            ->prefix('https://uppi.dev/s/')
+                            ->prefix(url('s/'))
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
@@ -72,9 +72,9 @@ class StatusPageResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('slug')
                     ->label('URL')
-                    ->prefix('https://uppi.dev/s/')
+                    ->prefix(url('s') . '/')
                     ->copyable()
-                    ->copyableState(fn($record) => 'https://uppi.dev/s/' . $record->slug)
+                    ->copyableState(fn($record) => url('s/' . $record->slug))
                     ->iconPosition(IconPosition::After)
                     ->icon('heroicon-o-link')
                     ->tooltip('Click to copy')
