@@ -28,5 +28,6 @@ yarn-error.log
 frankenphp
 frankenphp-worker.php
 composer.lock
+package-lock.json
 bun.lockb
 pnpm-lock.yaml
