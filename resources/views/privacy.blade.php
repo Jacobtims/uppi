@@ -11,7 +11,7 @@
 </head>
 <body class="bg-gray-100 text-gray-800">
 <div class="container mx-auto px-4 py-8">
-    <a href="{{ url('/'} }}"><img src="{{ asset('logo.svg') }}" alt="Uppi" class="w-24 mb-8"></a>
+    <a href="{{ url('/') }}"><img src="{{ asset('logo.svg') }}" alt="Uppi" class="w-24 mb-8"></a>
     <h1 class="text-3xl font-bold mb-4">Privacy Policy</h1>
     <p class="text-sm text-gray-600 mb-6">Last updated: 21 december 2024</p>
 
