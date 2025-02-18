@@ -1,6 +1,6 @@
 <footer class="px-4 py-8 flex justify-between gap-8">
     <div class="text-center hidden sm:block text-xs text-gray-400">
-        Uppi is a free and open source project built by <a
+        Uppi is a free and public source project built by <a
             href="https://www.janyksteenbeek.nl/?utm_source=uppi&utm_medium=footer"
             class="text-gray-400 font-medium hover:text-gray-700">Janyk Steenbeek</a>.
         Consider <a href="https://github.com/sponsors/janyksteenbeek"

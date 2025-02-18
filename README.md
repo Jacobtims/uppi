@@ -5,7 +5,7 @@
 [![GitHub issues](https://img.shields.io/github/issues/janyksteenbeek/uppi)](https://github.com/janyksteenbeek/uppi/issues)
 
 A robust uptime monitoring solution built with Laravel, designed to track the availability of your web services and
-notify you when issues arise.
+notify you when issues arise. Free and public source.
 
 ## Features
 
