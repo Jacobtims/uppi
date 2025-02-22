@@ -1,4 +1,5 @@
 FROM ghcr.io/janyksteenbeek/web-docker:latest
+RUN apk add sqlite-libs
 
 RUN rm -rf /app/public
 COPY . /app
