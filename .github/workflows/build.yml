@@ -43,6 +43,16 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=sha,format=long
 
+      - name: Build assets
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies and build
+        run: |
+          bun install
+          bun run build
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
