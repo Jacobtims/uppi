@@ -1,6 +1,5 @@
 FROM ghcr.io/janyksteenbeek/web-docker:latest
-RUN apk add sqlite-libs
-RUN apk remove --purge nodejs npm
+RUN apk remove nodejs npm node
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | PROFILE="${BASH_ENV}" bash
 RUN echo node > .nvmrc
 RUN nvm install
