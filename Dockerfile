@@ -1,5 +1,6 @@
 FROM ghcr.io/janyksteenbeek/web-docker:latest
 RUN apk add sqlite-libs
+RUN apk add --no-cache nodejs npm
 
 RUN rm -rf /app/public
 COPY . /app
