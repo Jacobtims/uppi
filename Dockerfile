@@ -1,6 +1,6 @@
 FROM ghcr.io/janyksteenbeek/web-docker:latest
 RUN apk del nodejs npm
-RUN curl -fsSL https://bun.sh/install | bash
+RUN curl -fsSL https://bun.sh/install | sh
 
 RUN rm -rf /app/public
 COPY . /app
