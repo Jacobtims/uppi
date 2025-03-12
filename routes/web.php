@@ -7,12 +7,24 @@ use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
+    if (!config('app.marketing')) {
+        return redirect('dashboard');
+    }
+
     if (auth()->check()) {
         return redirect(\App\Filament\Pages\Dashboard::getUrl());
     }
 
     return view('welcome');
 });
+
+Route::get('robots.txt', function () {
+    if (!config('app.marketing')) {
+        return response()->view('robots.deny')->header('Content-Type', 'text/plain');
+    }
+    return response()->view('robots.allow')->header('Content-Type', 'text/plain');
+});
+
 Route::get('/s/{statusPage:slug}', [StatusPageController::class, 'show'])->name('status-page.show');
 Route::get('/s/{statusPage:slug}/status.json', [StatusPageController::class, 'statusJson'])->name('status-page.status-json');
 Route::get('/s/{statusPage:slug}/embed', [StatusPageController::class, 'embed'])->name('status-page.embed');
