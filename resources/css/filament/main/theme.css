@@ -2,8 +2,44 @@
 
 @config 'tailwind.config.js';
 
+/* 
+ * Base layout and element styling 
+ */
+.fi-body {
+    @apply h-full;
+}
+
+.fi-main-ctn {
+    @apply !h-screen;
+}
+
+.fi-main {
+    @apply my-4 bg-white border ltr:rounded-tl-3xl rtl:rounded-tr-3xl rounded-bl-xl shadow-sm !max-w-full !overflow-y-auto flex-grow;
+}
+
+.fi-topbar {
+    @apply lg:hidden;
+}
+
+.fi-topbar nav {
+    @apply bg-transparent ring-0 shadow-none;
+}
+
+/* 
+ * Header styling 
+ */
+.fi-header-heading {
+    @apply text-2xl font-semibold;
+}
+
+.fi-header-subheading {
+    @apply text-sm text-gray-500/90;
+}
+
+/* 
+ * Sidebar styling 
+ */
 .fi-sidebar {
-    /*vertical center*/
     @apply pt-6;
 }
 
@@ -37,7 +73,7 @@
 }
 
 .fi-sidebar-item-button svg {
-    @apply h-6 w-6 shrink-0  transition-colors duration-200;
+    @apply h-6 w-6 shrink-0 transition-colors duration-200;
 }
 
 .fi-sidebar-item-label {
@@ -59,23 +95,9 @@
     stroke-width: 2;
 }
 
-.fi-main-ctn {
-    @apply !h-screen;
-}
-
-
-.fi-topbar {
-    @apply lg:hidden;
-}
-
-.fi-topbar nav {
-    @apply bg-transparent ring-0 shadow-none;
-}
-
-.fi-main {
-    @apply my-4 bg-white border ltr:rounded-tl-3xl rtl:rounded-tr-3xl rounded-bl-xl shadow-sm !max-w-full !overflow-y-auto flex-grow;
-}
-
+/* 
+ * Resource list page styling 
+ */
 .fi-main:has(> .fi-resource-list-records-page) {
     @apply lg:!p-0;
 }
@@ -84,15 +106,188 @@
     @apply px-4 md:px-6 lg:px-8;
 }
 
-
-.fi-header-heading {
-    @apply text-2xl font-semibold;
-}
-
 .fi-resource-list-records-page .fi-ta-ctn {
     @apply rounded-none ring-0 border-t border-gray-200 shadow-sm;
 }
 
-.fi-header-subheading {
-    @apply text-sm text-gray-500/90;
+/* 
+ * Auth/Login Page Styling 
+ */
+.fi-simple-layout {
+    @apply bg-gray-50 dark:bg-gray-900 flex gap-8 w-screen overflow-hidden  inset-0 ;
+}
+
+.fi-simple-layout .fi-logo {
+    @apply md:hidden;
+}
+
+.fi-simple-main-ctn {
+    @apply w-full flex items-center justify-center;
+    height: 100%;
+}
+
+.fi-simple-main {
+    @apply p-0 shadow-none ring-0 bg-transparent !w-full !max-w-none overflow-hidden flex rounded-xl !my-0;
+}
+
+/* Two-column layout for auth pages */
+.fi-simple-page {
+    @apply grid grid-cols-1 lg:grid-cols-2 min-h-svh w-full overflow-hidden rounded-xl shadow-xl;
+    display: grid !important;
+    grid-template-rows: auto;
+    height: 100%;
+}
+
+/* Fix for modal forms positioning */
+.fi-simple-page > form {
+    @apply absolute top-0 left-0 w-0 h-0 overflow-hidden opacity-0 pointer-events-none;
+    grid-row: 1;
+}
+
+/* Position the auth-banner in the first column */
+.fi-simple-page > div.h-full {
+    @apply col-span-1 row-span-1;
+    grid-column: 1;
+    grid-row: 1;
+    height: 100%;
+}
+
+/* Style the form side of auth pages */
+.fi-simple-page > section {
+    @apply bg-white dark:bg-gray-900 p-6 md:p-8 lg:p-12 flex flex-col justify-center rounded-r-xl;
+    grid-column: 2;
+    grid-row: 1;
+    height: 100%;
+}
+
+/* On mobile, stack the columns properly */
+@media (max-width: 1023px) {
+    .fi-simple-page > section {
+        grid-column: 1;
+        grid-row: 1;
+    }
+}
+
+.fi-simple-page .fi-form, .fi-simple-page .fi-form + div {
+    @apply mt-6 max-w-sm mx-auto w-full;
+}
+
+/* Header styling in simple pages */
+.fi-simple-header {
+    @apply mx-auto max-w-sm;
+}
+
+.fi-simple-header-heading {
+    @apply text-xl font-semibold !text-gray-950;
+}
+
+.fi-simple-header-subheading {
+    @apply mt-2 text-sm text-gray-500;
+}
+
+.fi-simple-header-logo {
+    @apply mb-6;
+}
+
+/* 
+ * Form element styling 
+ */
+.fi-input, .fi-input-wrapper {
+    @apply !border-gray-200 focus:!border-primary-500 !rounded-lg;
+}
+
+.fi-input {
+    @apply !py-2.5 !px-3;
+}
+
+.fi-form-actions {
+    @apply w-full;
+}
+
+.fi-fieldset-item {
+    @apply space-y-1;
+}
+
+.fi-fieldset-item-label {
+    @apply text-sm font-medium text-gray-700;
+}
+
+/* Checkbox styling */
+.fi-checkbox {
+    @apply !rounded !ring-0 !border-gray-300;
+}
+
+/* 
+ * Button styling 
+ */
+.fi-btn {
+    @apply !rounded-lg transition-all duration-200;
+}
+
+.fi-btn-size-md {
+    @apply !py-2.5;
+}
+
+/* Primary button specific styling */
+.fi-btn-primary {
+    @apply !ring-0 !shadow-sm hover:!shadow-md;
+}
+
+/* 
+ * Social login buttons 
+ */
+.fi-social-auth-buttons {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-3 mt-6;
+}
+
+.fi-social-auth-button {
+    @apply !rounded-lg !py-2.5 !shadow-none !border-gray-300 !text-sm;
+}
+
+/* 
+ * Custom divider styling 
+ */
+.fi-auth-divider {
+    @apply relative my-6 flex items-center;
+}
+
+.fi-auth-divider::before, 
+.fi-auth-divider::after {
+    content: "";
+    @apply flex-grow border-t border-gray-200;
+}
+
+.fi-auth-divider-label {
+    @apply mx-3 text-sm text-gray-500;
+}
+
+.fi-simple-layout footer {
+    @apply hidden;
+}
+
+/* 
+ * Custom aurora background effect 
+ */
+.aurora-bg {
+    @apply absolute inset-0 z-[-1] opacity-70;
+    background: radial-gradient(circle at center, rgba(0, 255, 157, 0.4) 0%, transparent 70%);
+    animation: aurora 15s ease infinite;
+}
+
+@keyframes aurora {
+    0% {
+        transform: translate(0, 0) scale(1);
+    }
+    25% {
+        transform: translate(-10%, 10%) scale(1.1);
+    }
+    50% {
+        transform: translate(5%, -5%) scale(0.9);
+    }
+    75% {
+        transform: translate(10%, 5%) scale(1.05);
+    }
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
 }

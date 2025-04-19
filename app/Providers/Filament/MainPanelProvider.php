@@ -81,8 +81,9 @@ class MainPanelProvider extends PanelProvider
                 fn() => view('blob')
             )
             ->renderHook(
-                PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
-                fn() => view('blob', ['fixed' => true])
+                PanelsRenderHook::SIMPLE_PAGE_START,
+                fn() => view('auth-banner'),
+                scopes: [\Filament\Pages\Auth\Login::class, \Filament\Pages\Auth\Register::class, \Filament\Pages\Auth\EmailVerification\EmailVerificationPrompt::class, \Filament\Pages\Auth\PasswordReset\RequestPasswordReset::class]
             )
             ->renderHook(
                 PanelsRenderHook::FOOTER,
