@@ -1,5 +1,7 @@
 <div class="my-8">
-    <h2 class="font-medium text-neutral-900 text-lg mb-4 pl-1">System Updates</h2>
+    @if($updates->isNotEmpty())
+        <h2 class="font-medium text-neutral-900 text-lg my-2 pl-1">System Updates</h2>
+    @endif
     
     <div class="relative">
         <!-- Main timeline line -->

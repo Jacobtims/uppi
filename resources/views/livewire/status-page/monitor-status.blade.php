@@ -9,9 +9,9 @@
         <div class="flex items-center gap-2 ml-auto">
             <span @class([
                 'flex items-center justify-center rounded-full w-3 h-3',
-                'bg-green-500' => $item->monitor->status === \App\Enums\Checks\Status::OK,
-                'bg-red-500' => $item->monitor->status === \App\Enums\Checks\Status::FAIL,
-                'bg-yellow-500' => $item->monitor->status === \App\Enums\Checks\Status::UNKNOWN,
+                'bg-green-600' => $item->monitor->status === \App\Enums\Checks\Status::OK,
+                'bg-red-600' => $item->monitor->status === \App\Enums\Checks\Status::FAIL,
+                'bg-yellow-600' => $item->monitor->status === \App\Enums\Checks\Status::UNKNOWN,
             ])></span>
             <span @class([
                 'text-sm font-medium',
@@ -22,17 +22,27 @@
         </div>
     </div>
     <div class="grid grid-flow-col justify-stretch gap-2">
+        @php
+            $daysCount = count($dates);
+            $lastSevenDaysStart = $daysCount - 7;
+            $lastFourteenDaysStart = $daysCount - 14;
+            $lastThirtyDaysStart = $daysCount - 30;
+        @endphp
+        
         @foreach($dates as $index => $date)
             <div
-                x-data="{ open: false }"
-                @mouseenter="open = true"
-                @mouseleave="open = false"
                 @class([
                     'relative h-8 rounded-lg',
+                    'hidden lg:block' => $index < $lastThirtyDaysStart,
+                    'hidden md:block lg:block' => $index < $lastFourteenDaysStart && $index >= $lastThirtyDaysStart,
+                    'hidden sm:block md:block lg:block' => $index < $lastSevenDaysStart && $index >= $lastFourteenDaysStart,
                     'bg-green-100 border border-green-200' => $statuses[$index] === true,
                     'bg-red-100 border border-red-200' => $statuses[$index] === false,
                     'bg-neutral-100 border border-neutral-200' => $statuses[$index] === null,
                 ])
+                x-data="{ open: false }"
+                @mouseenter="open = true"
+                @mouseleave="open = false"
             >
                 <div class="h-full flex items-end">
                     @if($statuses[$index] === true)
@@ -53,5 +63,12 @@
                 </div>
             </div>
         @endforeach
+    </div>
+    <div class="mt-3 text-xs text-neutral-500 flex justify-between">
+        <span class="sm:hidden">Last 7 days</span>
+        <span class="hidden sm:block md:hidden">Last 14 days</span>
+        <span class="hidden md:block lg:hidden">Last 30 days</span>
+        <span class="hidden lg:block">Last 30 days</span>
+        <span>{{ \Carbon\Carbon::now()->subDays(29)->format('M j') }} - {{ \Carbon\Carbon::now()->format('M j') }}</span>
     </div>
 </div>
