@@ -92,8 +92,7 @@ class StatusPageHistoryAggregator extends CacheTask
         $anomaliesQuery = DB::table('anomalies')
             ->select(DB::raw('monitor_id, DATE(started_at) as date'))
             ->whereIn('monitor_id', $monitorIds)
-            ->whereBetween('started_at', [$start, $end])
-            ->whereNull('deleted_at');
+            ->whereBetween('started_at', [$start, $end]);
 
         $anomalyDates = $anomaliesQuery->get();
 
