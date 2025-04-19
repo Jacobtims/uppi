@@ -9,7 +9,7 @@
     <!-- Aurora background effect -->
     <div class="absolute inset-0 z-0">
         <div class="aurora-bg"></div>
-        <div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image: url('{{  asset('auth-bg.webp') }}')"></div>
+        <div class="absolute inset-0 bg-cover bg-primary-700 bg-blend-luminosity bg-center opacity-60" style="background-image: url('{{  asset('auth-bg.webp') }}')"></div>
     </div>
 
     <div class="absolute top-16 left-8 w-full z-10">
