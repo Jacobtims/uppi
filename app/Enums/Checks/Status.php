@@ -41,7 +41,7 @@ enum Status: string implements \Filament\Support\Contracts\HasIcon, HasColor
     public function label(): string
     {
         return match ($this) {
-            self::OK => 'Operational',
+            self::OK => 'OK',
             self::FAIL => 'Down',
             self::UNKNOWN => 'Unknown',
         };

@@ -36,8 +36,8 @@
                     'hidden lg:block' => $index < $lastThirtyDaysStart,
                     'hidden md:block lg:block' => $index < $lastFourteenDaysStart && $index >= $lastThirtyDaysStart,
                     'hidden sm:block md:block lg:block' => $index < $lastSevenDaysStart && $index >= $lastFourteenDaysStart,
-                    'bg-green-100 border border-green-200' => $statuses[$index] === true,
-                    'bg-red-100 border border-red-200' => $statuses[$index] === false,
+                    'bg-green-300 border border-green-400' => $statuses[$index] === true,
+                    'bg-red-300 border border-red-400' => $statuses[$index] === false,
                     'bg-neutral-100 border border-neutral-200' => $statuses[$index] === null,
                 ])
                 x-data="{ open: false }"
@@ -59,7 +59,7 @@
                     class="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 px-3 py-2 rounded-lg bg-neutral-800 text-white text-xs whitespace-nowrap z-10 shadow-lg"
                 >
                     <div class="font-medium mb-0.5">{{ \Carbon\Carbon::parse($date)->format('F j, Y') }}</div>
-                    <div>{{ $statuses[$index] === true ? '✓ Operational' : ($statuses[$index] === false ? '✕ Disruption' : 'No data available') }}</div>
+                    <div>{{ $statuses[$index] === true ? '✓ OK' : ($statuses[$index] === false ? '✕ Disruption' : 'No data available') }}</div>
                 </div>
             </div>
         @endforeach
@@ -67,8 +67,14 @@
     <div class="mt-3 text-xs text-neutral-500 flex justify-between">
         <span class="sm:hidden">Last 7 days</span>
         <span class="hidden sm:block md:hidden">Last 14 days</span>
-        <span class="hidden md:block lg:hidden">Last 30 days</span>
-        <span class="hidden lg:block">Last 30 days</span>
-        <span>{{ \Carbon\Carbon::now()->subDays(29)->format('M j') }} - {{ \Carbon\Carbon::now()->format('M j') }}</span>
+        <span class="hidden md:block">Last 30 days</span>
+
+        <span class="hidden md:block">{{ \Carbon\Carbon::now()->subDays(29)->format('M j') }} - {{ \Carbon\Carbon::now()->format('M j') }}</span>
+        <span class="sm:hidden">{{ \Carbon\Carbon::now()->subDays(6)->format('M j') }} - {{ \Carbon\Carbon::now()->format('M j') }}</span>
+        <span class="hidden sm:block md:hidden">{{ \Carbon\Carbon::now()->subDays(13)->format('M j') }} - {{ \Carbon\Carbon::now()->format('M j') }}</span>
+
+        
+        
+
     </div>
 </div>
