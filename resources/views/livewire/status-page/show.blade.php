@@ -1,19 +1,21 @@
-<div>
-    <div class="max-w-2xl mx-auto my-4 px-2">
-        <div class="bg-white shadow rounded-lg border border-neutral-100 p-4">
-            <div class="flex items-center justify-between">
+<div class="min-h-screen bg-gradient-to-b from-neutral-50 to-white px-4 py-12">
+    <div class="max-w-2xl mx-auto">
+        <!-- Header -->
+        <div class="bg-white rounded-2xl shadow-sm border border-neutral-100 p-7 mb-8">
+            <div class="flex items-center">
                 @if($statusPage->logo_url)
-                    <img src="{{ Storage::url($statusPage->logo_url) }}" alt="{{ $statusPage->name }}" class="h-8">
+                    <img src="{{ Storage::url($statusPage->logo_url) }}" alt="{{ $statusPage->name }}" class="h-12 object-contain">
                 @else
-                    <h1 class="text-xl font-bold">{{ $statusPage->name }}</h1>
+                    <h1 class="text-2xl font-medium text-neutral-900">{{ $statusPage->name }}</h1>
                 @endif
             </div>
         </div>
-    </div>
 
-    <div class="max-w-2xl mx-auto px-2">
-        <livewire:status-page.overall-status :statusPage="$statusPage" />
-        <livewire:status-page.monitors-list :statusPage="$statusPage" />
-        <livewire:status-page.updates-list :statusPage="$statusPage" />
+        <!-- Content -->
+        <div class="space-y-8">
+            <livewire:status-page.overall-status :statusPage="$statusPage" />
+            <livewire:status-page.monitors-list :statusPage="$statusPage" />
+            <livewire:status-page.updates-list :statusPage="$statusPage" />
+        </div>
     </div>
 </div>
