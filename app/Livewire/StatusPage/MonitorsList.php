@@ -25,37 +25,54 @@ class MonitorsList extends Component
     public function placeholder()
     {
         return <<<'HTML'
-        <div class="animate-pulse space-y-4">
-            <div class="bg-gray-100 rounded-lg p-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3 flex-1">
-                        <div class="w-3 h-3 rounded-full bg-gray-300"></div>
-                        <div class="h-5 bg-gray-300 rounded w-1/3"></div>
-                    </div>
-                    <div class="flex space-x-2">
-                        <div class="w-16 h-5 bg-gray-300 rounded"></div>
+        <div>
+            <h2 class="font-medium text-neutral-900 text-lg mb-4 pl-1">Service Status</h2>
+            <div class="flex flex-col gap-4">
+                <div class="animate-pulse bg-white rounded-2xl shadow-sm border border-neutral-100 p-6">
+                    <div class="flex flex-col space-y-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="h-6 w-6 bg-neutral-200 rounded-md"></div>
+                                <div class="h-5 bg-neutral-200 rounded-lg w-36"></div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-neutral-200"></div>
+                                <div class="h-5 bg-neutral-200 rounded-lg w-16"></div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-30 gap-2">
+                            <div class="h-8 rounded-lg border border-neutral-200 bg-neutral-200"></div>
+                            <div class="h-8 rounded-lg border border-neutral-200 bg-neutral-200"></div>
+                            <div class="h-8 rounded-lg border border-neutral-200 bg-neutral-200"></div>
+                            <div class="h-8 rounded-lg border border-neutral-200 bg-neutral-200"></div>
+                            <div class="h-8 rounded-lg border border-neutral-200 bg-neutral-200"></div>
+                            <div class="h-8 rounded-lg border border-neutral-200 bg-neutral-200"></div>
+                            <div class="h-8 rounded-lg border border-neutral-200 bg-neutral-200"></div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="bg-gray-100 rounded-lg p-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3 flex-1">
-                        <div class="w-3 h-3 rounded-full bg-gray-300"></div>
-                        <div class="h-5 bg-gray-300 rounded w-1/4"></div>
-                    </div>
-                    <div class="flex space-x-2">
-                        <div class="w-16 h-5 bg-gray-300 rounded"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-gray-100 rounded-lg p-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3 flex-1">
-                        <div class="w-3 h-3 rounded-full bg-gray-300"></div>
-                        <div class="h-5 bg-gray-300 rounded w-2/5"></div>
-                    </div>
-                    <div class="flex space-x-2">
-                        <div class="w-16 h-5 bg-gray-300 rounded"></div>
+                
+                <div class="animate-pulse bg-white rounded-2xl shadow-sm border border-neutral-100 p-6">
+                    <div class="flex flex-col space-y-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="h-6 w-6 bg-neutral-200 rounded-md"></div>
+                                <div class="h-5 bg-neutral-200 rounded-lg w-28"></div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-neutral-200"></div>
+                                <div class="h-5 bg-neutral-200 rounded-lg w-16"></div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-30 gap-2">
+                            <div class="h-8 rounded-lg border border-neutral-200 bg-neutral-200"></div>
+                            <div class="h-8 rounded-lg border border-neutral-200 bg-neutral-200"></div>
+                            <div class="h-8 rounded-lg border border-neutral-200 bg-neutral-200"></div>
+                            <div class="h-8 rounded-lg border border-neutral-200 bg-neutral-200"></div>
+                            <div class="h-8 rounded-lg border border-neutral-200 bg-neutral-200"></div>
+                            <div class="h-8 rounded-lg border border-neutral-200 bg-neutral-200"></div>
+                            <div class="h-8 rounded-lg border border-neutral-200 bg-neutral-200"></div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -26,15 +26,13 @@ class OverallStatus extends Component
     public function placeholder()
     {
         return <<<'HTML'
-        <div class="animate-pulse">
-            <div class="p-4 rounded-lg bg-gray-200">
-                <div class="flex items-center space-x-3">
-                    <div class="w-4 h-4 rounded-full bg-gray-300"></div>
-                    <div class="h-6 bg-gray-300 rounded w-32"></div>
+        <div class="animate-pulse bg-white rounded-2xl shadow-sm border border-neutral-100 p-7">
+            <div class="flex flex-col items-center py-8">
+                <div class="bg-neutral-200 rounded-full p-5 mb-5 h-24 w-24 flex items-center justify-center">
+                    <div class="h-14 w-14 rounded-full bg-neutral-300"></div>
                 </div>
-                <div class="mt-2">
-                    <div class="h-4 bg-gray-300 rounded w-48"></div>
-                </div>
+                <div class="h-8 bg-neutral-200 rounded-lg w-48 mb-2"></div>
+                <div class="h-5 bg-neutral-200 rounded-lg w-64"></div>
             </div>
         </div>
         HTML;
