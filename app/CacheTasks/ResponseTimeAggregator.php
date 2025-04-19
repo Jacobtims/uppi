@@ -23,8 +23,7 @@ class ResponseTimeAggregator extends CacheTask
 
     public function key(): string
     {
-        $interval = $this->interval ?? $this->findBestInterval();
-        return "response_time_aggregated_{$interval}_{$this->days}";
+        return "response_time_aggregated_{$this->days}";
     }
 
     private function findBestInterval(): int
@@ -34,26 +33,18 @@ class ResponseTimeAggregator extends CacheTask
         }
 
         $intervals = [12, 6, 3, 1];
-        
-        // Get the minimum check count across all monitors in a single query
-        $minChecksCount = DB::table('checks')
-            ->join('monitors', 'checks.monitor_id', '=', 'monitors.id')
-            ->where('checks.checked_at', '>=', now()->subDays(7))
-            ->where('monitors.is_enabled', true)
-            ->where('monitors.user_id', $this->userId)
-            ->groupBy('monitors.id')
-            ->select(DB::raw('COUNT(*) as total_checks'))
-            ->min('total_checks');
-        
-        // If no results found, default to the smallest interval
-        if ($minChecksCount === null) {
-            return end($intervals);
-        }
-        
-        // Find the largest interval that satisfies the requirement
+        $checksCount = Check::where('checked_at', '>=', now()->subDays(value: 7))
+            ->whereHas('monitor', function ($query) {
+                $query->where('is_enabled', true)
+                    ->where('user_id', $this->userId);
+            })
+            ->select('monitor_id', DB::raw('COUNT(checks.id) as total_checks'))
+            ->groupBy('monitor_id')
+            ->get();
+
         foreach ($intervals as $interval) {
             $requiredChecksPerMonitor = 7 * (24 / $interval);
-            if ($minChecksCount >= $requiredChecksPerMonitor) {
+            if ($checksCount->every(fn($check) => $check->total_checks >= $requiredChecksPerMonitor)) {
                 return $interval;
             }
         }
@@ -76,7 +67,6 @@ class ResponseTimeAggregator extends CacheTask
                 $query->where('is_enabled', true)
                     ->where('user_id', $this->userId);
             })
-            ->select('monitor_id', 'checked_at', 'response_time')
             ->orderBy('monitor_id')
             ->orderBy('checked_at')
             ->get();
