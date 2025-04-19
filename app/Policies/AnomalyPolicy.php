@@ -14,7 +14,7 @@ class AnomalyPolicy
 
     public function view(User $user, Anomaly $anomaly): bool
     {
-        return $user->id === $anomaly->monitor->user_id;
+        return $user->id === $anomaly->monitor?->user_id;
     }
 
     public function create(User $user): bool
@@ -24,21 +24,21 @@ class AnomalyPolicy
 
     public function update(User $user, Anomaly $anomaly): bool
     {
-        return $user->id === $anomaly->monitor->user_id;
+        return $user->id === $anomaly->monitor?->user_id;
     }
 
     public function delete(User $user, Anomaly $anomaly): bool
     {
-        return $user->id === $anomaly->monitor->user_id;
+        return $user->id === $anomaly->monitor?->user_id;
     }
 
     public function restore(User $user, Anomaly $anomaly): bool
     {
-        return $user->id === $anomaly->monitor->user_id;
+        return $user->id === $anomaly->monitor?->user_id;
     }
 
     public function forceDelete(User $user, Anomaly $anomaly): bool
     {
-        return $user->id === $anomaly->monitor->user_id;
+        return $user->id === $anomaly->monitor?->user_id;
     }
 }

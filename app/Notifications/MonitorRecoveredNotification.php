@@ -71,8 +71,8 @@ class MonitorRecoveredNotification extends Notification implements ShouldQueue
         $duration = $this->anomaly->started_at->diffForHumans($this->anomaly->ended_at, true);
 
         return ExpoMessage::create()
-            ->title("✅ Monitor Recovered: {$monitor->name}")
-            ->body("The monitor {$monitor->name} is back UP and recovered after {$duration}")
+            ->title("✅ {$monitor->name} UP")
+            ->body("{$monitor->name} is back UP after {$duration}")
             ->ttl(3600);
     }
 

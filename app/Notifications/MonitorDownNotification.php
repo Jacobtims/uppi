@@ -66,8 +66,8 @@ class MonitorDownNotification extends Notification implements ShouldQueue
         $lastCheck = $this->anomaly->checks->last();
 
         return ExpoMessage::create()
-            ->title("🔴 Monitor Down: {$monitor->name}")
-            ->body("The monitor {$monitor->name} is down and not responding. Last check output: {$lastCheck?->output}")
+            ->title("🔴 {$monitor->name} DOWN")
+            ->body("{$monitor->name} is down since {$this->anomaly->started_at->format('Y-m H:i:s')}. Last check output: {$lastCheck?->output}")
             ->ttl(3600)
             ->priority('high');
     }
