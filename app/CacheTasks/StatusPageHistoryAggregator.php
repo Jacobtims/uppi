@@ -7,6 +7,7 @@ use App\Models\StatusPage;
 use App\Models\StatusPageItem;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class StatusPageHistoryAggregator extends CacheTask
 {
@@ -47,7 +48,7 @@ class StatusPageHistoryAggregator extends CacheTask
         $start = $today->copy()->subDays($this->days);
         $end = $today->copy()->subDay()->endOfDay();
 
-        // Get enabled items
+        // Get enabled items and their monitors in a single efficient query
         $query = StatusPageItem::query()
             ->where('status_page_id', $this->statusPageId)
             ->where('is_enabled', true)
@@ -63,7 +64,7 @@ class StatusPageHistoryAggregator extends CacheTask
             $query->where('id', $this->id);
         }
 
-        $items = $query->get();
+        $items = $query->with('monitor')->get();
 
         if ($items->isEmpty()) {
             return collect();
@@ -71,32 +72,42 @@ class StatusPageHistoryAggregator extends CacheTask
 
         $monitorIds = $items->pluck('monitor_id');
 
-        // Get all checks grouped by date and monitor
-        $checks = Check::selectRaw('monitor_id, DATE(checked_at) as date')
+        // Get all dates with checks in a single query using a more efficient approach
+        // This leverages the composite index on monitor_id, checked_at, deleted_at
+        $checkDates = DB::table('checks')
+            ->select(DB::raw('monitor_id, DATE(checked_at) as date'))
             ->whereIn('monitor_id', $monitorIds)
             ->whereBetween('checked_at', [$start, $end])
-            ->groupBy('monitor_id', 'date')
-            ->get()
-            ->groupBy('monitor_id')
-            ->map(fn ($checks) => $checks->pluck('date'));
+            ->whereNull('deleted_at')
+            ->groupBy('monitor_id', DB::raw('DATE(checked_at)'))
+            ->get();
 
-        // Get all anomalies grouped by date and monitor
-        $anomalies = StatusPageItem::with(['monitor.anomalies' => function ($query) use ($start, $end) {
-                $query->whereBetween('started_at', [$start, $end])
-                    ->whereNull('ended_at')
-                    ->selectRaw('monitor_id, DATE(started_at) as date');
-            }])
-            ->whereIn('id', $items->pluck('id'))
-            ->get()
-            ->mapWithKeys(function ($item) {
-                return [$item->monitor_id => $item->monitor->anomalies->pluck('date')];
-            });
+        // Create a lookup array for quick access to check dates by monitor
+        $checksLookup = [];
+        foreach ($checkDates as $check) {
+            $checksLookup[$check->monitor_id][] = $check->date;
+        }
+
+        // Get all anomalies in a single query
+        $anomaliesQuery = DB::table('anomalies')
+            ->select(DB::raw('monitor_id, DATE(started_at) as date'))
+            ->whereIn('monitor_id', $monitorIds)
+            ->whereBetween('started_at', [$start, $end])
+            ->whereNull('ended_at');
+
+        $anomalyDates = $anomaliesQuery->get();
+
+        // Create a lookup array for quick access to anomaly dates by monitor
+        $anomaliesLookup = [];
+        foreach ($anomalyDates as $anomaly) {
+            $anomaliesLookup[$anomaly->monitor_id][] = $anomaly->date;
+        }
 
         $result = collect();
         foreach ($items as $item) {
             $status = collect();
-            $monitorChecks = $checks->get($item->monitor_id, collect());
-            $monitorAnomalies = $anomalies->get($item->monitor_id, collect());
+            $monitorChecks = collect($checksLookup[$item->monitor_id] ?? []);
+            $monitorAnomalies = collect($anomaliesLookup[$item->monitor_id] ?? []);
 
             for ($date = $start->copy(); $date <= $end; $date->addDay()) {
                 $dateString = $date->toDateString();

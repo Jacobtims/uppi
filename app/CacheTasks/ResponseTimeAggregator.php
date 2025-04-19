@@ -34,18 +34,26 @@ class ResponseTimeAggregator extends CacheTask
         }
 
         $intervals = [12, 6, 3, 1];
-        $checksCount = Check::where('checked_at', '>=', now()->subDays(7))
-            ->whereHas('monitor', function ($query) {
-                $query->where('is_enabled', true)
-                    ->where('user_id', $this->userId);
-            })
-            ->select('monitor_id', DB::raw('COUNT(*) as total_checks'))
-            ->groupBy('monitor_id')
-            ->get();
-
+        
+        // Get the minimum check count across all monitors in a single query
+        $minChecksCount = DB::table('checks')
+            ->join('monitors', 'checks.monitor_id', '=', 'monitors.id')
+            ->where('checks.checked_at', '>=', now()->subDays(7))
+            ->where('monitors.is_enabled', true)
+            ->where('monitors.user_id', $this->userId)
+            ->groupBy('monitors.id')
+            ->select(DB::raw('COUNT(*) as total_checks'))
+            ->min('total_checks');
+        
+        // If no results found, default to the smallest interval
+        if ($minChecksCount === null) {
+            return end($intervals);
+        }
+        
+        // Find the largest interval that satisfies the requirement
         foreach ($intervals as $interval) {
             $requiredChecksPerMonitor = 7 * (24 / $interval);
-            if ($checksCount->every(fn($check) => $check->total_checks >= $requiredChecksPerMonitor)) {
+            if ($minChecksCount >= $requiredChecksPerMonitor) {
                 return $interval;
             }
         }
