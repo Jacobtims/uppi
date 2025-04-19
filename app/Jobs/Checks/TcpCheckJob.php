@@ -19,18 +19,25 @@ class TcpCheckJob extends CheckJob
     protected function performCheck(): array
     {
         try {
+            $timing = microtime(true);
             $socket = $this->tcpService->connect(
                 $this->monitor->address,
                 $this->monitor->port ?? 80
             );
-
             $this->tcpService->close($socket);
+            $duration = microtime(true) - $timing;
 
             return [
                 'status' => Status::OK,
+                'duration' => $duration,
             ];
         } catch (Exception $e) {
-            throw $e;
+            return [
+                'status' => Status::FAIL,
+                'output' => [
+                    'error' => $e->getMessage(),
+                ],
+            ];
         }
     }
 }
