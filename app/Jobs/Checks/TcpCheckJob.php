@@ -34,9 +34,7 @@ class TcpCheckJob extends CheckJob
         } catch (Exception $e) {
             return [
                 'status' => Status::FAIL,
-                'output' => [
-                    'error' => $e->getMessage(),
-                ],
+                'output' => $e->getMessage(),
             ];
         }
     }
