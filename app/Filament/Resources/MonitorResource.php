@@ -74,7 +74,7 @@ class MonitorResource extends Resource
                         Forms\Components\TextInput::make('address')
                             ->required(fn (Get $get) => $get('type') !== MonitorType::PULSE->value)
                             ->live()
-                            ->url(fn (Get $get) => $get('type') === MonitorType::TCP->value ? null : 'https://'.$get('address'))
+                            ->url(fn (Get $get) => $get('type') === MonitorType::HTTP->value ? 'https://'.$get('address') : null)
                             ->numeric(fn (Get $get) => $get('type') === MonitorType::PULSE->value)
                             ->label(fn (Get $get) => $get('type') === MonitorType::PULSE->value ? 'Maximum age of check-in' : 'Address')
                             ->helperText(fn (Get $get) => $get('type') === MonitorType::PULSE->value ? 'The maximum age of the check-in minutes. If the latest check-in is older than this, the monitor will be marked as down.' : 'The address of the server to check. If the server is not reachable, the monitor will be marked as down.')
