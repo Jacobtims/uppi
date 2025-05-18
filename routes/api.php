@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AnomaliesController;
 use App\Http\Controllers\Api\AppTokenController;
 use App\Http\Controllers\Api\MonitorsController;
+use App\Http\Controllers\Api\PulseController;
 use App\Http\Controllers\Api\PushController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -12,6 +13,9 @@ Route::get('/profile', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::post('app/token', AppTokenController::class);
+
+// Public route for pulse check-in that doesn't require authentication
+Route::any('pulse/{id}', [PulseController::class, 'checkIn']);
 
 Route::middleware('auth:sanctum')->group(function () {
 

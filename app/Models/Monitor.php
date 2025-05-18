@@ -17,6 +17,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 #[ObservedBy(UserIdObserver::class)]
 class Monitor extends Model
@@ -46,6 +48,10 @@ class Monitor extends Model
 
         static::creating(function (Monitor $monitor) {
             $monitor->next_check_at = now();
+
+            if ($monitor->type === MonitorType::PULSE) {
+                $monitor->address = Str::random(32);
+            }
         });
     }
 
