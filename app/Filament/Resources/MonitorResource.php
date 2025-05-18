@@ -31,11 +31,11 @@ class MonitorResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        if (! auth()->check()) {
+        if (! Auth::check()) {
             return null;
         }
         
-        $count = auth()->user()->failingCount();
+        $count = Auth::user()->failingCount();
 
         if ($count === 0) {
             return null;
@@ -47,7 +47,7 @@ class MonitorResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('user_id', auth()->id());
+        return parent::getEloquentQuery()->where('user_id', Auth::id());
     }
 
     public static function form(Form $form): Form
@@ -63,6 +63,11 @@ class MonitorResource extends Resource
                             ->grouped()
                             ->enum(MonitorType::class)
                             ->default(MonitorType::HTTP->value)
+                            ->icons([
+                                MonitorType::HTTP->value => 'heroicon-o-globe-alt',
+                                MonitorType::TCP->value => 'heroicon-o-server-stack',
+                                MonitorType::PULSE->value => 'heroicon-o-clock',
+                            ])
                             ->options(MonitorType::options())
                             ->required()
                             ->live(),
@@ -70,62 +75,66 @@ class MonitorResource extends Resource
                             ->required(fn (Get $get) => $get('type') !== MonitorType::PULSE->value)
                             ->live()
                             ->url(fn (Get $get) => $get('type') === MonitorType::TCP->value ? null : 'https://'.$get('address'))
-                            ->hidden(fn (Get $get) => $get('type') === MonitorType::PULSE->value),
+                            ->numeric(fn (Get $get) => $get('type') === MonitorType::PULSE->value)
+                            ->label(fn (Get $get) => $get('type') === MonitorType::PULSE->value ? 'Maximum age of check-in' : 'Address')
+                            ->helperText(fn (Get $get) => $get('type') === MonitorType::PULSE->value ? 'The maximum age of the check-in minutes. If the latest check-in is older than this, the monitor will be marked as down.' : 'The address of the server to check. If the server is not reachable, the monitor will be marked as down.')
+                            ->suffix(fn (Get $get) => $get('type') === MonitorType::PULSE->value ? 'minutes' : null),
                         Forms\Components\TextInput::make('port')
                             ->numeric()
                             ->requiredIf('type', MonitorType::TCP->value)
                             ->hidden(fn (Get $get) => $get('type') !== MonitorType::TCP->value)
                             ->live(),
-                        Forms\Components\Group::make([
-                            Forms\Components\TextInput::make('pulse_url')
-                                ->label('Pulse Check-in URL')
-                                ->disabled()
-                                ->readOnly()
-                                ->prefixIcon('heroicon-s-globe-alt')
-                                ->dehydrated(false)
-                                ->placeholder('URL will be generated after saving')
-                                ->helperText('This URL should be added to your cron job to check in with the server. If the endpoint doesn\'t get called within the interval, the monitor will be marked as down until it gets called again.')
-                                ->formatStateUsing(fn (?Monitor $record) => $record ? url('/api/pulse/' . $record->id) . '?token=' . $record->address : null)
-                                ->suffixAction(
-                                    Forms\Components\Actions\Action::make('copy_url')
-                                        ->label('Copy URL')
-                                        ->icon('heroicon-o-clipboard')
-                                        ->action(fn () => null)
-                                        ->extraAttributes(fn ($state) => [
-                                            'data-copy' => $state,
-                                            'onclick' => 'navigator.clipboard.writeText(this.dataset.copy);',
-                                        ])
-                                )
-                            ,
-                            Forms\Components\Actions::make([
-                                Forms\Components\Actions\Action::make('generate_token')
-                                    ->label('Generate New Token')
-                                    ->action(function (Monitor $record) {
-                                        $token = $record->generatePulseToken();
-                                        $fullUrl = url('/api/pulse/' . $record->id) . '?token=' . $token;
-                                    })
-                                    ->color('warning')
-                                    ->requiresConfirmation()
-                                    ->modalDescription('This will generate a new token. Any existing token will be invalidated and old URLs will stop working.')
-                                    ->modalSubmitActionLabel('Generate')
-                                    ->visible(fn (?Monitor $record) => $record && $record->type === MonitorType::PULSE)
-                                    ->icon('heroicon-o-key'),
-                               
-                            ])
-                                ->visible(fn (?Monitor $record, Get $get) => $record || $get('type') === MonitorType::PULSE->value),
-                        ])
-                            ->visible(fn (Get $get) => $get('type') === MonitorType::PULSE->value)
-                            ->columnSpanFull()
-                            ->hidden(fn (Get $get) => $get('type') !== MonitorType::PULSE->value),
-                        Forms\Components\Placeholder::make('pulse_info')
-                            ->label('Pulse Information')
-                            ->content('A token will be generated automatically when you save this monitor.')
-                            ->helperText('You\'ll see the full URL with token after saving')
+                      
+                        Forms\Components\Section::make('pulse_info')
+                            ->heading('Pulse Information')
                             ->visible(fn (Get $get, ?Monitor $record) => $get('type') === MonitorType::PULSE->value && (!$record || !$record->address))
-                            ->hidden(fn (Get $get, ?Monitor $record) => $get('type') !== MonitorType::PULSE->value || ($record && $record->address)),
+                            ->hidden(fn (Get $get, ?Monitor $record) => $get('type') !== MonitorType::PULSE->value || ($record && $record->address))
+                            ->schema([
+                            Forms\Components\Group::make([
+                                Forms\Components\TextInput::make('pulse_url')
+                                    ->label('Pulse Check-in URL')
+                                    ->disabled()
+                                    ->readOnly()
+                                    ->prefixIcon('heroicon-s-globe-alt')
+                                    ->dehydrated(false)
+                                    ->placeholder('URL will be generated after saving')
+                                    ->helperText('This URL should be added to your cron job to check in with the server. The check-in will be marked as down if the endpoint doesn\'t get called within the interval.')
+                                    ->formatStateUsing(fn (?Monitor $record) => $record ? url('/api/pulse/' . $record->id) . '?token=' . $record->address : null)
+                                    ->suffixAction(
+                                        Forms\Components\Actions\Action::make('copy_url')
+                                            ->label('Copy URL')
+                                            ->icon('heroicon-o-clipboard')
+                                            ->action(fn () => null)
+                                            ->extraAttributes(fn ($state) => [
+                                                'x-data' => '',
+                                                'data-copy' => $state,
+                                                'x-on:click' => 'navigator.clipboard.writeText($el.dataset.copy); $tooltip("URL copied")',
+                                            ])
+                                    )
+                                ,
+                                Forms\Components\Actions::make([
+                                    Forms\Components\Actions\Action::make('generate_token')
+                                        ->label('Generate New Token')
+                                        ->action(function (Monitor $record) {
+                                            $token = $record->generatePulseToken();
+                                            $fullUrl = url('/api/pulse/' . $record->id) . '?token=' . $token;
+                                        })
+                                        ->color('warning')
+                                        ->requiresConfirmation()
+                                        ->modalDescription('This will generate a new token. Any existing token will be invalidated and old URLs will stop working.')
+                                        ->modalSubmitActionLabel('Generate')
+                                        ->visible(fn (?Monitor $record) => $record && $record->type === MonitorType::PULSE)
+                                        ->icon('heroicon-o-key'),
+                                   
+                                ])
+                                    ->visible(fn (?Monitor $record, Get $get) => $record || $get('type') === MonitorType::PULSE->value),
+                            ])
+                                ->visible(fn (Get $get) => $get('type') === MonitorType::PULSE->value)
+                                ->columnSpanFull()
+                                ->hidden(fn (Get $get) => $get('type') !== MonitorType::PULSE->value),
                         Forms\Components\TextInput::make('curl_example')
                             ->dehydrated(false)
-                            ->label('CURL Command')
+                            ->label('cURL Command')
                             ->readOnly()
                             ->disabled()
                             ->formatStateUsing(function (?Monitor $record, Get $get) {
@@ -154,10 +163,12 @@ class MonitorResource extends Resource
                                         ->success()
                                         ->send())
                                     ->extraAttributes(fn ($state) => [
+                                        'x-data' => '',
                                         'data-copy' => $state,
-                                        'onclick' => 'navigator.clipboard.writeText(this.dataset.copy);',
+                                        'x-on:click' => 'navigator.clipboard.writeText($el.dataset.copy); $tooltip("CURL copied")',
                                     ])
                             ),
+                        ]),
                         Forms\Components\Toggle::make('is_enabled')
                             ->required()
                             ->default(true)

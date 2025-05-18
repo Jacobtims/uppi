@@ -15,7 +15,7 @@ Route::get('/profile', function (Request $request) {
 Route::post('app/token', AppTokenController::class);
 
 // Public route for pulse check-in that doesn't require authentication
-Route::any('pulse/{id}', [PulseController::class, 'checkIn']);
+Route::any('pulse/{id}', [PulseController::class, 'checkIn'])->middleware('signed');
 
 Route::middleware('auth:sanctum')->group(function () {
 
