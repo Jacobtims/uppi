@@ -290,9 +290,11 @@ class MonitorResource extends Resource
                     ->size('xs')
                     ->label('Alerts')
                     ->wrap()
-                    ->wrap(),
+                    ->wrap(), 
                 Tables\Columns\TextColumn::make('last_checked_at')
-                    ->dateTime()
+                     ->since()
+                    ->tooltip(fn (Monitor $record) => $record->last_checked_at?->format('j F Y, g:i a'))
+                    ->description(fn (Monitor $record) => ($record->last_checkin_at ? 'Checked in ' . $record->last_checkin_at?->diffForHumans() : null))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

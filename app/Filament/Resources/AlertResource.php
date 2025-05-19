@@ -6,11 +6,16 @@ use App\Enums\Alerts\AlertType;
 use App\Filament\Resources\AlertResource\Pages;
 use App\Models\Alert;
 use Filament\Forms;
+use Filament\Forms\Components\Actions;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Forms\Set;
+use NotificationChannels\Telegram\TelegramUpdates;
+use Filament\Notifications\Notification;
 
 final class AlertResource extends Resource
 {
@@ -21,6 +26,12 @@ final class AlertResource extends Resource
     protected static ?string $navigationLabel = 'Alerts';
 
     protected static ?int $navigationSort = 3;
+
+
+    public static function registrationCode(): string
+    {
+        return auth()->user()->id . ':' . md5(date('Y-m-d') . auth()->user()->id);
+    }
 
     public static function form(Form $form): Form
     {
@@ -59,6 +70,7 @@ final class AlertResource extends Resource
                             AlertType::SLACK => 'The Slack channel to send the alert to.',
                             AlertType::BIRD => 'The phone number to send the alert to.',
                             AlertType::MESSAGEBIRD => 'The phone number to send the alert to.',
+                            AlertType::TELEGRAM => 'The Telegram chat ID to send the alert to.',
                             AlertType::PUSHOVER => 'Your PushOver User Key. Failure alerts will be sent with a emergency priority every 60 seconds for 3 minutes. Recovery alerts will be sent with a high priority.',
                             default => null,
                         };
@@ -123,6 +135,66 @@ final class AlertResource extends Resource
                     ->columnSpanFull()
                     ->live()
                     ->visible(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::PUSHOVER),
+
+                Forms\Components\Section::make([
+                    Forms\Components\Section::make([
+
+                    Placeholder::make('telegram_bot_token')
+                    ->label('Registering with our Telegram bot')
+                    ->content('In order to receive alerts, you must register with our bot, @uppialertbot. Click the button below to open the bot, and paste the command "/register YOUR_USER_ID" to register.')
+                    ->helperText('After registering, you won\'t receive confirmation in Telegram. Press the button below to get your Chat ID.')
+                    ->columnSpanFull(),
+
+                    Actions::make([
+                        Forms\Components\Actions\Action::make('register')
+                            ->label('@uppialertbot on Telegram')
+                            ->outlined()
+                            ->icon('heroicon-o-arrow-top-right-on-square')
+                            ->url('https://t.me/uppialertbot')
+                            ->openUrlInNewTab(),
+                    ]),
+
+                    Forms\Components\TextInput::make('config.telegram_bot_token')
+                        ->dehydrated(false)
+                        ->required()
+                        ->label('Paste the following command in a chat with @uppialertbot')
+                        ->formatStateUsing(fn() => '/register ' . self::registrationCode())
+                        ->helperText('After sending the command, please click the button below'),
+
+                        Actions::make([
+                            Forms\Components\Actions\Action::make('get_chat_id')
+                                ->label('I have registered with the bot on Telegram. Attach my chat ID to this alert')
+                                ->icon('heroicon-o-check')
+                                ->action(function (Set $set) {
+                                    $updates = collect(
+                                        TelegramUpdates::create()
+                                        ->latest()
+                                    ->options([
+                                        'timeout' => 2,
+                                    ])
+                                    ->get()['result'])->where('message.text', '/register ' . self::registrationCode())->first();
+
+                                    if (!$updates) {
+                                        Notification::make()
+                                            ->title('We couldn\'t find your registration command')
+                                            ->body('Make sure you\'re talking to @uppialertbot and not another bot. Try to send the registration command again, and if the problem persists, try again later.')
+                                            ->danger()
+                                            ->send();
+                                        return;
+                                    }
+
+                                    $set('destination', $updates['message']['chat']['id']);
+
+                                    Notification::make()
+                                        ->title('Your chat ID has been attached to this alert')
+                                        ->body('You can now send alerts to this chat: ' . $updates['message']['chat']['username'])
+                                        ->success()
+                                        ->send();
+                                }),
+                        ]),            
+                      ]),
+                ])
+                ->visible(fn(Get $get) => AlertType::tryFrom($get('type')) === AlertType::TELEGRAM),
 
                 Forms\Components\Section::make([
                     Forms\Components\TextInput::make('config.bird_api_key')

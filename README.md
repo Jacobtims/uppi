@@ -14,6 +14,7 @@ notify you when issues arise. Free and public source.
 - **Dashboard Overview**: Visual representation of your monitors' status
 - **Anomaly Detection**: Track and manage service disruptions
 - **Flexible Notifications**: Multiple notification channels for alerts
+- **Cron-mob monitoring**: Easy Check-in style monitoring for your recurring background tasks
 - **Public Status Pages**: Share your service status with your users, or embed it in your website
 
 ## Installation

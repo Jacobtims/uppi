@@ -11,6 +11,7 @@ use Illuminate\Notifications\Slack\SlackMessage;
 use NotificationChannels\Bird\BirdMessage;
 use NotificationChannels\Expo\ExpoMessage;
 use NotificationChannels\Messagebird\MessagebirdMessage;
+use NotificationChannels\Telegram\TelegramMessage;
 use NotificationChannels\Pushover\PushoverMessage;
 
 class MonitorDownNotification extends Notification implements ShouldQueue
@@ -49,6 +50,16 @@ class MonitorDownNotification extends Notification implements ShouldQueue
     public function toBird(object $notifiable): BirdMessage
     {
         return new BirdMessage("🔴 Monitor DOWN: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address})");
+    }
+
+    public function toTelegram($notifiable)
+    {
+        return TelegramMessage::create()
+            ->to($notifiable->telegram_user_id)
+            ->content("🔴 Monitor DOWN: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address})")
+            ->line("Down since: {$this->anomaly->started_at->format('Y-m-d H:i:s')}")
+            ->line("Last check output: {$this->anomaly->checks->last()?->output}")
+            ->button('Open '.config('app.name'), url('/'));
     }
 
     public function toPushover(object $notifiable): PushoverMessage

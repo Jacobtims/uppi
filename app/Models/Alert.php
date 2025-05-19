@@ -111,6 +111,15 @@ class Alert extends Model
         return PushoverReceiver::withUserKey($this->destination)->withApplicationToken($this->config['pushover_api_token']);
     }
 
+    public function routeNotificationForTelegram(Notification $notification)
+    {
+        if ($this->type !== AlertType::TELEGRAM) {
+            return null;
+        }
+
+        return $this->destination;
+    }
+
     public function routeNotificationForBird(Notification $notification): ?BirdRoute
     {
         if ($this->type !== AlertType::BIRD) {

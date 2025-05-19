@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Carbon\Carbon;
 
 class MonitorResource extends Resource
 {
@@ -94,7 +95,9 @@ class MonitorResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('last_checked_at')
-                    ->dateTime()
+                    ->since()
+                    ->tooltip(fn (Monitor $record) => $record->last_checked_at?->toDateTimeLocalString())
+                    ->description(fn (Monitor $record) => $record->last_checkin_at?->diffForHumans())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

@@ -75,7 +75,6 @@ class MainPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->viteTheme('resources/css/filament/main/theme.css')
             ->renderHook(
                 PanelsRenderHook::CONTENT_START,
                 fn() => view('blob')
@@ -93,6 +92,11 @@ class MainPanelProvider extends PanelProvider
                 PanelsRenderHook::SIDEBAR_NAV_END,
                 fn() => view('sidebar-user')
             )
+            ->renderHook(
+                PanelsRenderHook::STYLES_AFTER ,
+                fn() => view('head-start')
+            )
+            ->viteTheme('resources/css/filament/main/theme.css')
             ->userMenuItems([
                 MenuItem::make()
                     ->label('Connections')

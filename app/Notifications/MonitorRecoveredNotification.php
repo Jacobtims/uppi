@@ -11,6 +11,7 @@ use Illuminate\Notifications\Slack\SlackMessage;
 use NotificationChannels\Bird\BirdMessage;
 use NotificationChannels\Expo\ExpoMessage;
 use NotificationChannels\Messagebird\MessagebirdMessage;
+use NotificationChannels\Telegram\TelegramMessage;
 use NotificationChannels\Pushover\PushoverMessage;
 
 class MonitorRecoveredNotification extends Notification implements ShouldQueue
@@ -54,6 +55,16 @@ class MonitorRecoveredNotification extends Notification implements ShouldQueue
         $downTimeShort = $this->anomaly->started_at->diffForHumans($this->anomaly->ended_at, true);
 
         return new BirdMessage("✅ Monitor Recovered: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address}): {$downTimeShort}");
+    }
+
+    public function toTelegram($notifiable)
+    {
+        return TelegramMessage::create()
+                ->content("✅ Monitor Recovered: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address})")
+                ->line("Recovered at: {$this->anomaly->ended_at->format('Y-m-d H:i:s')} ")
+                ->line("Downtime duration: {$this->anomaly->started_at->diffForHumans($this->anomaly->ended_at, true)}")
+                ->line("Last check output: {$this->anomaly->checks->last()?->output}")
+            ->button('Open '.config('app.name'), url('/'));
     }
 
     public function toPushover(object $notifiable): PushoverMessage

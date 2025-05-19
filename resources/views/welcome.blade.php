@@ -211,6 +211,15 @@
 
                         <div class="relative ">
                             <dt class="inline font-semibold text-gray-900">
+                                Cron-job monitoring.
+                            </dt>
+                            <dd class="inline">
+                                Monitor your recurring background tasks with ease. Add a check-in URL to your cron job to get notified when your background task did not run as expected.
+                            </dd>
+                        </div>
+
+                        <div class="relative ">
+                            <dt class="inline font-semibold text-gray-900">
                                 Alert Routing.
                             </dt>
                             <dd class="inline">
