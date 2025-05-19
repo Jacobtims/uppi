@@ -72,9 +72,9 @@ class MonitorResource extends Resource
                             ->required()
                             ->live(),
                         Forms\Components\TextInput::make('address')
-                            ->required(fn (Get $get) => $get('type') !== MonitorType::PULSE->value)
+                            ->required()
                             ->live()
-                            ->url(fn (Get $get) => $get('type') === MonitorType::HTTP->value ? 'https://'.$get('address') : null)
+                            ->url(fn (Get $get) => $get('type') === MonitorType::HTTP->value)
                             ->numeric(fn (Get $get) => $get('type') === MonitorType::PULSE->value)
                             ->label(fn (Get $get) => $get('type') === MonitorType::PULSE->value ? 'Maximum age of check-in' : 'Address')
                             ->helperText(fn (Get $get) => $get('type') === MonitorType::PULSE->value ? 'The maximum age of the check-in minutes. If the latest check-in is older than this, the monitor will be marked as down.' : 'The address of the server to check. If the server is not reachable, the monitor will be marked as down.')
@@ -84,7 +84,6 @@ class MonitorResource extends Resource
                             ->requiredIf('type', MonitorType::TCP->value)
                             ->hidden(fn (Get $get) => $get('type') !== MonitorType::TCP->value)
                             ->live(),
-                      
                         Forms\Components\Section::make('pulse_info')
                             ->heading('Pulse Information')
                             ->visible(fn (Get $get, ?Monitor $record) => $get('type') === MonitorType::PULSE->value && (!$record || !$record->address))
@@ -99,7 +98,7 @@ class MonitorResource extends Resource
                                     ->dehydrated(false)
                                     ->placeholder('URL will be generated after saving')
                                     ->helperText('This URL should be added to your cron job to check in with the server. The check-in will be marked as down if the endpoint doesn\'t get called within the interval.')
-                                    ->formatStateUsing(fn (?Monitor $record) => $record ? url('/api/pulse/' . $record->id) . '?token=' . $record->address : null)
+                                    ->formatStateUsing(fn (?Monitor $record) => $record ? \URL::signedRoute('pulse.checkin', ['id' => $record->id]) : null)
                                     ->suffixAction(
                                         Forms\Components\Actions\Action::make('copy_url')
                                             ->label('Copy URL')

@@ -16,7 +16,7 @@ class PulseCheckJob extends CheckJob
     protected function performCheck(): array
     {
         // Get the last check-in time
-        $lastCheckedAt = $this->monitor->last_checked_at;
+        $lastCheckedAt = $this->monitor->last_checkin_at;
         
         // If no last check-in or the last check-in was more than the configured threshold time ago
         if ($lastCheckedAt === null || now()->diffInMinutes($lastCheckedAt) > $this->monitor->address) {

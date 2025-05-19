@@ -32,6 +32,7 @@ class Monitor extends Model
         'type' => MonitorType::class,
         'status' => Status::class,
         'last_checked_at' => 'datetime',
+        'last_checkin_at' => 'datetime',
         'next_check_at' => 'datetime',
         'consecutive_threshold' => 'integer',
         'auto_create_update' => 'boolean',
@@ -48,10 +49,6 @@ class Monitor extends Model
 
         static::creating(function (Monitor $monitor) {
             $monitor->next_check_at = now();
-
-            if ($monitor->type === MonitorType::PULSE) {
-                $monitor->address = Str::random(32);
-            }
         });
     }
 

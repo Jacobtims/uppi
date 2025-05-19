@@ -18,39 +18,17 @@ class PulseController extends Controller
      * @param string $id The monitor ID to check-in for
      * @return Response
      */
-    public function checkIn(Request $request, string $id)
-    {
-        $monitor = Monitor::findOrFail($id);
-        
-        // Validate the token if it exists on the monitor
-        if ($monitor->pulse_token) {
-            // Get token from query parameter OR from request body
-            $token = $request->query('token') ?? $request->input('token');
-            
-            if (empty($token)) {
-                throw ValidationException::withMessages([
-                    'token' => ['Token is required for this pulse monitor.'],
-                ]);
-            }
-            
-            if (!Hash::check($token, $monitor->pulse_token)) {
-                throw ValidationException::withMessages([
-                    'token' => ['Invalid token for this pulse monitor.'],
-                ]);
-            }
-        }
-        
-        // Update the last_checked_at timestamp to show the pulse was received
+    public function checkIn(Monitor $monitor)
+    {   
         $monitor->update([
-            'last_checked_at' => now(),
+            'last_checkin_at' => now(),
         ]);
         
-        // Return the response with the next expected check-in time
         return response()->json([
             'status' => 'success',
-            'message' => 'Pulse check-in received',
-            'next_check_expected_before' => now()->addMinutes($monitor->interval)->toDateTimeString(),
-            'last_check_in' => $monitor->last_checked_at->toDateTimeString(),
+            'next_check_expected_before' => now()->addMinutes($monitor->address)->toDateTimeString(),
+            'last_check_in' => $monitor->last_checkin_at->toDateTimeString(),
+            'monitor' => $monitor,
         ]);
     }
 } 
