@@ -85,9 +85,8 @@ class MonitorResource extends Resource
                             ->hidden(fn (Get $get) => $get('type') !== MonitorType::TCP->value)
                             ->live(),
                         Forms\Components\Section::make('pulse_info')
-                            ->heading('Pulse Information')
-                            ->visible(fn (Get $get, ?Monitor $record) => $get('type') === MonitorType::PULSE->value && (!$record || !$record->address))
-                            ->hidden(fn (Get $get, ?Monitor $record) => $get('type') !== MonitorType::PULSE->value || ($record && $record->address))
+                            ->heading('Check-in')
+                            ->visible(fn (Get $get, ?Monitor $record) => $get('type') === MonitorType::PULSE->value)
                             ->schema([
                             Forms\Components\Group::make([
                                 Forms\Components\TextInput::make('pulse_url')
