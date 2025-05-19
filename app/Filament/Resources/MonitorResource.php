@@ -97,7 +97,7 @@ class MonitorResource extends Resource
                                     ->dehydrated(false)
                                     ->placeholder('URL will be generated after saving')
                                     ->helperText('This URL should be added to your cron job to check in with the server. The check-in will be marked as down if the endpoint doesn\'t get called within the interval.')
-                                    ->formatStateUsing(fn (?Monitor $record) => $record ? \URL::signedRoute('pulse.checkin', ['id' => $record->id]) : null)
+                                    ->formatStateUsing(fn (?Monitor $record) => $record ? \URL::signedRoute('pulse.checkin', ['monitor' => $record->id]) : null)
                                     ->suffixAction(
                                         Forms\Components\Actions\Action::make('copy_url')
                                             ->label('Copy URL')
@@ -124,7 +124,7 @@ class MonitorResource extends Resource
                                     if ($record && $record->type === MonitorType::PULSE) {
                                         $token = $get('address');
                                         $tokenParam = $token ? $token : 'YOUR_TOKEN';
-                                        return "curl -X POST " .    \URL::signedRoute('pulse.checkin', ['id' => $record->id]);
+                                        return "curl -X POST " .    \URL::signedRoute('pulse.checkin', ['monitor' => $record]);
                                     }
                                     
                                         return 'The example commands will be available after creating the monitor';
@@ -155,7 +155,7 @@ class MonitorResource extends Resource
                                 ->formatStateUsing(function (?Monitor $record, Get $get) {
                                     // If we're looking at an existing record with a token
                                     if ($record && $record->type === MonitorType::PULSE) {
-                                        return "wget -O /dev/null -q " .    \URL::signedRoute('pulse.checkin', ['id' => $record->id]);
+                                        return "wget -O /dev/null -q " .    \URL::signedRoute('pulse.checkin', ['monitor' => $record]);
                                     } else {
                                         return 'Generate a token first to see example commands';
                                     }
