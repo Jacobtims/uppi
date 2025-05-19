@@ -26,7 +26,7 @@ class PulseController extends Controller
         
         return response()->json([
             'status' => 'success',
-            'next_check_expected_before' => now()->addMinutes($monitor->address)->toDateTimeString(),
+            'next_check_expected_before' => now()->addMinutes((int)$monitor->address)->toDateTimeString(),
             'last_check_in' => $monitor->last_checkin_at->toDateTimeString(),
             'monitor' => $monitor,
         ]);
