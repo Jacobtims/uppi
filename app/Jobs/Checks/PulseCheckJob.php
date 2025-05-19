@@ -7,18 +7,13 @@ use App\Models\Monitor;
 
 class PulseCheckJob extends CheckJob
 {
-    public function __construct(protected Monitor $monitor)
-    {
-        parent::__construct($monitor);
-    }
-
     protected function performCheck(): array
     {
         // Get the last check-in time
         $lastCheckedAt = $this->monitor->last_checkin_at;
 
         // If no last check-in or the last check-in was more than the configured threshold time ago
-        if ($lastCheckedAt === null || now()->diffInMinutes($lastCheckedAt) > $this->monitor->address) {
+        if ($lastCheckedAt === null || now()->diffInMinutes($lastCheckedAt) > (int)$this->monitor->address) {
             return [
                 'status' => Status::FAIL,
                 'output' => 'Pulse check-in missed. Last check-in: '.
