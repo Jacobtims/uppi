@@ -55,7 +55,6 @@ class MonitorDownNotification extends Notification implements ShouldQueue
     public function toTelegram($notifiable)
     {
         return TelegramMessage::create()
-            ->to($notifiable->telegram_user_id)
             ->content("🔴 Monitor DOWN: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address})")
             ->line("Down since: {$this->anomaly->started_at->format('Y-m-d H:i:s')}")
             ->line("Last check output: {$this->anomaly->checks->last()?->output}")
