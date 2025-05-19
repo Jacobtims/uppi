@@ -12,13 +12,7 @@ class CheckObserver
      */
     public function created(Check $check): void
     {
-        // Update monitor status
-        $check->monitor->update([
-            'status' => $check->status,
-        ]);
-
-        // Dispatch job to handle alert triggering
-        TriggerAlertJob::dispatch($check)->onQueue('alerts');
+        TriggerAlertJob::dispatch($check)->delay(now()->addSeconds(2))->onQueue('alerts');
     }
 
     /**
