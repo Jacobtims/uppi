@@ -109,64 +109,78 @@ class MonitorResource extends Resource
                                                 'x-on:click' => 'navigator.clipboard.writeText($el.dataset.copy); $tooltip("URL copied")',
                                             ])
                                     )
-                                ,
-                                Forms\Components\Actions::make([
-                                    Forms\Components\Actions\Action::make('generate_token')
-                                        ->label('Generate New Token')
-                                        ->action(function (Monitor $record) {
-                                            $token = $record->generatePulseToken();
-                                            $fullUrl = url('/api/pulse/' . $record->id) . '?token=' . $token;
-                                        })
-                                        ->color('warning')
-                                        ->requiresConfirmation()
-                                        ->modalDescription('This will generate a new token. Any existing token will be invalidated and old URLs will stop working.')
-                                        ->modalSubmitActionLabel('Generate')
-                                        ->visible(fn (?Monitor $record) => $record && $record->type === MonitorType::PULSE)
-                                        ->icon('heroicon-o-key'),
-                                   
-                                ])
-                                    ->visible(fn (?Monitor $record, Get $get) => $record || $get('type') === MonitorType::PULSE->value),
+                                
                             ])
                                 ->visible(fn (Get $get) => $get('type') === MonitorType::PULSE->value)
                                 ->columnSpanFull()
                                 ->hidden(fn (Get $get) => $get('type') !== MonitorType::PULSE->value),
-                        Forms\Components\TextInput::make('curl_example')
-                            ->dehydrated(false)
-                            ->label('cURL Command')
-                            ->readOnly()
-                            ->disabled()
-                            ->formatStateUsing(function (?Monitor $record, Get $get) {
-                                // If we're looking at an existing record with a token
-                                if ($record && $record->type === MonitorType::PULSE && $record->address) {
-                                    $token = $get('address');
-                                    $tokenParam = $token ? $token : 'YOUR_TOKEN';
-                                    return "curl -X POST " . url('/api/pulse/' . $record->id) . "?token=" . $tokenParam;
-                                }
-                                // If we're creating a new record
-                                if (!$record && $get('type') === MonitorType::PULSE->value) {
-                                    return 'The example commands will be available after creating the monitor';
-                                }
-                                return 'Generate a token first to see example commands';
-                            })
-                            ->helperText('Add one of these commands to your cron job')
-                            ->visible(fn (Get $get) => $get('type') === MonitorType::PULSE->value)
-                            ->hidden(fn (Get $get) => $get('type') !== MonitorType::PULSE->value)
-                            ->suffixAction(
-                                Forms\Components\Actions\Action::make('copy_curl')
-                                    ->label('Copy CURL')
-                                    ->icon('heroicon-o-clipboard')
-                                    ->action(fn () => Notification::make()
-                                        ->title('CURL copied')
-                                        ->body('The CURL command has been copied to your clipboard.')
-                                        ->success()
-                                        ->send())
-                                    ->extraAttributes(fn ($state) => [
-                                        'x-data' => '',
-                                        'data-copy' => $state,
-                                        'x-on:click' => 'navigator.clipboard.writeText($el.dataset.copy); $tooltip("CURL copied")',
-                                    ])
-                            ),
-                        ]),
+                                Forms\Components\TextInput::make('curl_example')
+                                ->dehydrated(false)
+                                ->label('cURL Command')
+                                ->readOnly()
+                                ->disabled()
+                                ->formatStateUsing(function (?Monitor $record, Get $get) {
+                                    // If we're looking at an existing record with a token
+                                    if ($record && $record->type === MonitorType::PULSE) {
+                                        $token = $get('address');
+                                        $tokenParam = $token ? $token : 'YOUR_TOKEN';
+                                        return "curl -X POST " .    \URL::signedRoute('pulse.checkin', ['id' => $record->id]);
+                                    }
+                                    
+                                        return 'The example commands will be available after creating the monitor';
+                                })
+                                ->helperText('Add one of these commands to your cron job')
+                                ->visible(fn (Get $get) => $get('type') === MonitorType::PULSE->value)
+                                ->hidden(fn (Get $get) => $get('type') !== MonitorType::PULSE->value)
+                                ->suffixAction(
+                                    Forms\Components\Actions\Action::make('copy_curl')
+                                        ->label('Copy CURL')
+                                        ->icon('heroicon-o-clipboard')
+                                        ->action(fn () => Notification::make()
+                                            ->title('CURL copied')
+                                            ->body('The CURL command has been copied to your clipboard.')
+                                            ->success()
+                                            ->send())
+                                        ->extraAttributes(fn ($state) => [
+                                            'x-data' => '',
+                                            'data-copy' => $state,
+                                            'x-on:click' => 'navigator.clipboard.writeText($el.dataset.copy); $tooltip("CURL copied")',
+                                        ])
+                                ),
+                                Forms\Components\TextInput::make('wget_example')
+                                ->dehydrated(false)
+                                ->label('wget Command')
+                                ->readOnly()
+                                ->disabled()
+                                ->formatStateUsing(function (?Monitor $record, Get $get) {
+                                    // If we're looking at an existing record with a token
+                                    if ($record && $record->type === MonitorType::PULSE) {
+                                        return "wget -O /dev/null -q " .    \URL::signedRoute('pulse.checkin', ['id' => $record->id]);
+                                    } else {
+                                        return 'Generate a token first to see example commands';
+                                    }
+                                })
+                                ->helperText('Add one of these commands to your cron job')
+                                ->visible(fn (Get $get) => $get('type') === MonitorType::PULSE->value)
+                                ->hidden(fn (Get $get) => $get('type') !== MonitorType::PULSE->value)
+                                ->suffixAction(
+                                    Forms\Components\Actions\Action::make('copy_wget')
+                                        ->label('Copy wget')
+                                        ->icon('heroicon-o-clipboard')
+                                        ->action(fn () => Notification::make()
+                                            ->title('wget copied')
+                                            ->body('The wget command has been copied to your clipboard.')
+                                            ->success()
+                                            ->send())
+                                        ->extraAttributes(fn ($state) => [
+                                            'x-data' => '',
+                                            'data-copy' => $state,
+                                            'x-on:click' => 'navigator.clipboard.writeText($el.dataset.copy); $tooltip("CURL copied")',
+                                        ])
+                                ),
+                            ])->columns(2),
+                  
+                        
                         Forms\Components\Toggle::make('is_enabled')
                             ->required()
                             ->default(true)
@@ -255,9 +269,7 @@ class MonitorResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('type')
-                    ->searchable()
-                    ->description(fn ($record) => ! $record->is_enabled ? 'Inactive' : null),
+              
                 Tables\Columns\TextColumn::make('status')
                     ->badge(),
                 Tables\Columns\TextColumn::make('address')
@@ -267,18 +279,17 @@ class MonitorResource extends Resource
                 Tables\Columns\TextColumn::make('expects')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                    Tables\Columns\TextColumn::make('type')
+                    ->searchable()
+                    ->description(fn ($record) => ! $record->is_enabled ? 'Inactive' : $record->interval.' min, '.$record->consecutive_threshold.'x'),
                 Tables\Columns\IconColumn::make('is_enabled')
                     ->boolean()
                     ->label('Enabled')
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('interval')
-                    ->numeric()
-                    ->sortable()
-                    ->suffix(' min')
-                    ->description(description: fn ($record) => $record->consecutive_threshold.'x'),
                 Tables\Columns\TextColumn::make('alerts.name')
                     ->size('xs')
                     ->label('Alerts')
+                    ->wrap()
                     ->wrap(),
                 Tables\Columns\TextColumn::make('last_checked_at')
                     ->dateTime()
@@ -289,36 +300,38 @@ class MonitorResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'ok' => 'OK',
+                        'fail' => 'Failed',
+                        'pending' => 'Pending'
+                    ]),
+                Tables\Filters\Filter::make('last_checked_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('from'),
+                        Forms\Components\DatePicker::make('until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('last_checked_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['until'], 
+                                fn (Builder $query, $date): Builder => $query->whereDate('last_checked_at', '<=', $date),
+                            );
+                    })
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('copy_pulse_url')
-                    ->label('Copy Pulse URL')
-                    ->icon('heroicon-o-clipboard')
-                    ->color('gray')
-                    ->visible(fn (Monitor $record) => $record->type === MonitorType::PULSE)
-                    ->action(function (Monitor $record) {
-                        // Generate a new token and notify the user
-                        $token = $record->generatePulseToken();
-                        $fullUrl = url('/api/pulse/' . $record->id) . '?token=' . $token;
-                        
-                        Notification::make()
-                            ->title('New Pulse URL Generated')
-                            ->body("Your check-in URL with new token:\n```\n{$fullUrl}\n```\n\nCopy this URL now - you won't see the token again.")
-                            ->warning()
-                            ->persistent()
-                            ->actions([
-                                \Filament\Notifications\Actions\Action::make('copy_url')
-                                    ->label('Copy URL')
-                                    ->icon('heroicon-o-clipboard')
-                                    ->action(fn () => null)
-                                    ->extraAttributes([
-                                        'x-on:click' => 'navigator.clipboard.writeText("'.$fullUrl.'"); $tooltip("URL copied")',
-                                    ]),
-                            ])
-                            ->send();
-                    }),
+                Tables\Actions\Action::make('toggle_enabled')
+                    ->label(null)
+                    ->iconButton()
+                    ->tooltip(fn (Monitor $record) => $record->is_enabled ? 'Disable' : 'Enable')
+                    ->action(fn (Monitor $record) => $record->update(['is_enabled' => ! $record->is_enabled]))
+                    ->icon('heroicon-o-power')
+                    ->color(fn (Monitor $record) => $record->is_enabled ? 'success' : 'gray'),
+                Tables\Actions\EditAction::make()
             ])
             ->emptyStateHeading('Start monitoring your website')
             ->emptyStateDescription('Set up your first monitor to check the status of your website, API or other service.')
