@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class StatusPageItem extends Model
 {
-    use HasUlids, HasFactory;
+    use HasFactory, HasUlids;
 
     protected $casts = [
         'is_enabled' => 'boolean',

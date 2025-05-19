@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    if (!config('app.marketing')) {
+    if (! config('app.marketing')) {
         return redirect('dashboard');
     }
 
@@ -19,9 +19,10 @@ Route::get('/', function () {
 });
 
 Route::get('robots.txt', function () {
-    if (!config('app.marketing')) {
+    if (! config('app.marketing')) {
         return response()->view('robots.deny')->header('Content-Type', 'text/plain');
     }
+
     return response()->view('robots.allow')->header('Content-Type', 'text/plain');
 });
 

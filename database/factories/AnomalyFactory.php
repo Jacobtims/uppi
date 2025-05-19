@@ -59,4 +59,4 @@ class AnomalyFactory extends Factory
             'ended_at' => now(),
         ]);
     }
-} 
+}

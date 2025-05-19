@@ -33,7 +33,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 
     public function canAccessPanel(Panel $panel): bool
     {
-        if (!$this->is_admin && $panel->getId() === 'admin') {
+        if (! $this->is_admin && $panel->getId() === 'admin') {
             return false;
         }
 
@@ -62,7 +62,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 
     public function isOk(): bool
     {
-        return !$this->monitors()
+        return ! $this->monitors()
             ->where('status', Status::FAIL)
             ->where('is_enabled', true)
             ->exists();

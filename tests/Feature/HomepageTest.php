@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Config;
 
 it('returns the marketing page when not logged in and marketing is enabled', function () {
     Config::set('app.marketing', true);
-    
+
     $response = $this->get('/');
 
     $response->assertStatus(200);
@@ -14,7 +14,7 @@ it('returns the marketing page when not logged in and marketing is enabled', fun
 
 it('redirects to dashboard when marketing is disabled', function () {
     Config::set('app.marketing', false);
-    
+
     $response = $this->get('/');
 
     $response->assertRedirect('/dashboard');

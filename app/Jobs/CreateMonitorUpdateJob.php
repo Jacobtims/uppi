@@ -26,7 +26,7 @@ class CreateMonitorUpdateJob implements ShouldQueue
         $monitor = $this->anomaly->monitor;
 
         // Skip if auto-update is disabled
-        if (!$monitor->auto_create_update) {
+        if (! $monitor->auto_create_update) {
             return;
         }
 
@@ -83,7 +83,7 @@ class CreateMonitorUpdateJob implements ShouldQueue
         $counter = 1;
 
         while (Update::where('slug', $slug)->exists()) {
-            $slug = $baseSlug . '-' . $counter++;
+            $slug = $baseSlug.'-'.$counter++;
         }
 
         return $slug;
@@ -100,4 +100,4 @@ class CreateMonitorUpdateJob implements ShouldQueue
 
         return str_replace(array_keys($variables), array_values($variables), $template);
     }
-} 
+}

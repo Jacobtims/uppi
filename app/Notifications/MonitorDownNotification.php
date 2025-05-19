@@ -11,8 +11,8 @@ use Illuminate\Notifications\Slack\SlackMessage;
 use NotificationChannels\Bird\BirdMessage;
 use NotificationChannels\Expo\ExpoMessage;
 use NotificationChannels\Messagebird\MessagebirdMessage;
-use NotificationChannels\Telegram\TelegramMessage;
 use NotificationChannels\Pushover\PushoverMessage;
+use NotificationChannels\Telegram\TelegramMessage;
 
 class MonitorDownNotification extends Notification implements ShouldQueue
 {
@@ -57,7 +57,7 @@ class MonitorDownNotification extends Notification implements ShouldQueue
         return TelegramMessage::create()
             ->content("🔴 Monitor DOWN: {$this->anomaly->monitor->name} ({$this->anomaly->monitor->address})")
             ->line("Down since: {$this->anomaly->started_at->format('Y-m-d H:i:s')}")
-            ->line("Last check output: {$this->anomaly->checks->last()?->output}")
+            ->line("Last check output: ```{$this->anomaly->checks->last()?->output}```")
             ->button('Open '.config('app.name'), url('/'));
     }
 

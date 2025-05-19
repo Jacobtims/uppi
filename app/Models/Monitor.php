@@ -17,13 +17,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 #[ObservedBy(UserIdObserver::class)]
 class Monitor extends Model
 {
-    use HasUlids, HasFactory;
+    use HasFactory, HasUlids;
 
     protected $guarded = [];
 

@@ -2,7 +2,7 @@
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\Queue;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -51,7 +51,7 @@ expect()->extend('toBeOne', function () {
 /**
  * Assert that a notification was sent
  */
-function assertNotificationSent(string $notification, callable $callback = null)
+function assertNotificationSent(string $notification, ?callable $callback = null)
 {
     Notification::assertSent($notification, $callback);
 }

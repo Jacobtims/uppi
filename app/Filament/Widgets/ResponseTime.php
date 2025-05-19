@@ -4,13 +4,11 @@ namespace App\Filament\Widgets;
 
 use App\Models\Check;
 use App\Models\Monitor;
-use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
-use Illuminate\View\View;
-use Livewire\Attributes\Lazy;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\View\View;
+use Livewire\Attributes\Lazy;
 
 #[Lazy]
 class ResponseTime extends ChartWidget
@@ -26,12 +24,10 @@ class ResponseTime extends ChartWidget
 
     protected array $intervals = [12, 6, 3, 1];
 
-
     public function placeholder(): View
     {
         return view('filament.widgets.placeholder');
     }
-
 
     public function getDescription(): ?string
     {
@@ -73,6 +69,7 @@ class ResponseTime extends ChartWidget
                 return $interval;
             }
         }
+
         return end($this->intervals);
     }
 

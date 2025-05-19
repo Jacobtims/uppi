@@ -37,9 +37,9 @@ class AlertFactory extends Factory
         return $this->state(function (array $attributes) {
             return [
                 'type' => AlertType::SLACK,
-                'destination' => '#' . $this->faker->word,
+                'destination' => '#'.$this->faker->word,
                 'config' => [
-                    'slack_token' => 'xoxb-' . $this->faker->uuid,
+                    'slack_token' => 'xoxb-'.$this->faker->uuid,
                 ],
             ];
         });
@@ -50,7 +50,7 @@ class AlertFactory extends Factory
         return $this->state(function (array $attributes) {
             return [
                 'type' => AlertType::BIRD,
-                'destination' => '+' . $this->faker->numerify('##############'),
+                'destination' => '+'.$this->faker->numerify('##############'),
                 'config' => [
                     'bird_api_key' => $this->faker->uuid,
                     'bird_workspace_id' => $this->faker->uuid,
@@ -78,7 +78,7 @@ class AlertFactory extends Factory
         return $this->state(function (array $attributes) {
             return [
                 'type' => AlertType::EXPO,
-                'destination' => 'ExponentPushToken[' . $this->faker->regexify('[A-Za-z0-9]{24}') . ']',
+                'destination' => 'ExponentPushToken['.$this->faker->regexify('[A-Za-z0-9]{24}').']',
             ];
         });
     }

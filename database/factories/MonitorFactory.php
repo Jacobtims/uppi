@@ -7,7 +7,6 @@ use App\Enums\Monitors\MonitorType;
 use App\Models\Monitor;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Symfony\Component\Uid\Ulid;
 
 class MonitorFactory extends Factory
 {

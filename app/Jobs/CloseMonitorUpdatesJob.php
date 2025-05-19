@@ -29,4 +29,4 @@ class CloseMonitorUpdatesJob implements ShouldQueue
             ->where('created_at', '>=', $this->anomaly->started_at)
             ->update(['status' => UpdateStatus::COMPLETED]);
     }
-} 
+}

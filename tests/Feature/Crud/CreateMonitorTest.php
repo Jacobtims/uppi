@@ -146,4 +146,4 @@ test('enforces minimum values for interval and threshold', function () {
         ])
         ->call('create')
         ->assertHasErrors(['data.interval', 'data.consecutive_threshold']);
-}); 
+});

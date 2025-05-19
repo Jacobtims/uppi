@@ -11,10 +11,8 @@ class ResponseTimeAggregator extends CacheTask
 {
     public function __construct(
         private readonly ?int $interval = null,
-        private readonly int  $days = 7
-    )
-    {
-    }
+        private readonly int $days = 7
+    ) {}
 
     public static function getTtl(): int
     {
@@ -44,7 +42,7 @@ class ResponseTimeAggregator extends CacheTask
 
         foreach ($intervals as $interval) {
             $requiredChecksPerMonitor = 7 * (24 / $interval);
-            if ($checksCount->every(fn($check) => $check->total_checks >= $requiredChecksPerMonitor)) {
+            if ($checksCount->every(fn ($check) => $check->total_checks >= $requiredChecksPerMonitor)) {
                 return $interval;
             }
         }
@@ -77,11 +75,11 @@ class ResponseTimeAggregator extends CacheTask
 
             foreach ($monitorChecks as $check) {
                 $checkedAt = Carbon::parse($check->checked_at);
-                $hour = (int)floor($checkedAt->hour / $interval) * $interval;
+                $hour = (int) floor($checkedAt->hour / $interval) * $interval;
                 $intervalStart = $checkedAt->copy()->hour($hour)->minute(0)->second(0);
-                $label = $intervalStart->format('d-m H') . 'h';
+                $label = $intervalStart->format('d-m H').'h';
 
-                if (!isset($intervalData[$label])) {
+                if (! isset($intervalData[$label])) {
                     $intervalData[$label] = [
                         'total_response_time' => 0,
                         'count' => 0,

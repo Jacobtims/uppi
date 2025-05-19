@@ -9,10 +9,8 @@ class TcpConnectionService
     /**
      * Open a TCP connection to the given host and port
      *
-     * @param string $hostname
-     * @param int $port
-     * @param int $timeout
      * @return resource
+     *
      * @throws Exception
      */
     public function connect(string $hostname, int $port, int $timeout = 5)
@@ -28,7 +26,7 @@ class TcpConnectionService
             timeout: $timeout
         );
 
-        if (!$socket) {
+        if (! $socket) {
             throw new Exception($errstr, $errno);
         }
 
@@ -38,8 +36,7 @@ class TcpConnectionService
     /**
      * Close a TCP connection
      *
-     * @param resource $socket
-     * @return void
+     * @param  resource  $socket
      */
     public function close($socket): void
     {

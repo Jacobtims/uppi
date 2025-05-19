@@ -14,7 +14,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-test('it creates update with default text when no custom values', function () {    
+test('it creates update with default text when no custom values', function () {
     $user = User::factory()->create();
     $monitor = Monitor::factory()->for($user)->create(['auto_create_update' => true]);
     $statusPage = StatusPage::factory()->for($user)->create();
@@ -22,7 +22,7 @@ test('it creates update with default text when no custom values', function () {
         ->for($statusPage)
         ->for($monitor)
         ->create(['is_enabled' => true]);
-    
+
     $anomaly = Anomaly::factory()->for($monitor)->create();
 
     $update = $statusPage->updates()->first();
@@ -40,7 +40,7 @@ test('it creates update with default text when no custom values', function () {
         ->and($update->statusPages->pluck('id')->contains($statusPage->id))->toBeTrue();
 });
 
-test('it creates update with custom text when provided', function () {    
+test('it creates update with custom text when provided', function () {
     $user = User::factory()->create();
     $monitor = Monitor::factory()->for($user)->create([
         'auto_create_update' => true,
@@ -54,7 +54,7 @@ test('it creates update with custom text when provided', function () {
         ->for($statusPage)
         ->for($monitor)
         ->create(['is_enabled' => true]);
-    
+
     $anomaly = Anomaly::factory()->for($monitor)->create();
 
     $update = $statusPage->updates()->first();
@@ -81,7 +81,7 @@ test('it skips update creation when auto create is disabled', function () {
         ->for($statusPage)
         ->for($monitor)
         ->create(['is_enabled' => true]);
-    
+
     $anomaly = Anomaly::factory()->for($monitor)->create();
 
     CreateMonitorUpdateJob::dispatchSync($anomaly);
@@ -106,7 +106,7 @@ test('it closes open updates when anomaly is resolved', function () {
         ->for($monitor)
         ->startedAgo('1 hour')
         ->create();
-    
+
     // Create updates in different states
     $openUpdate = Update::factory()->create([
         'status' => UpdateStatus::UNDER_INVESTIGATION,
@@ -133,4 +133,4 @@ test('it closes open updates when anomaly is resolved', function () {
         ->and($completedUpdate->fresh()->status)->toBe(UpdateStatus::COMPLETED)
         ->and($oldUpdate->fresh()->status)->toBe(UpdateStatus::UNDER_INVESTIGATION)
         ->and($monitor->updates()->count())->toBe(3);
-}); 
+});

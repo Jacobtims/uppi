@@ -35,9 +35,9 @@ class MainPanelProvider extends PanelProvider
             ->default()
             ->id('main')
             ->path('')
-            ->brandLogo(fn() => asset('logo.svg'))
+            ->brandLogo(fn () => asset('logo.svg'))
             ->brandLogoHeight('2rem')
-            ->favicon(fn() => asset('favicon.png'))
+            ->favicon(fn () => asset('favicon.png'))
             ->login()
             ->colors([
                 'primary' => Color::Red,
@@ -77,30 +77,30 @@ class MainPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 PanelsRenderHook::CONTENT_START,
-                fn() => view('blob')
+                fn () => view('blob')
             )
             ->renderHook(
                 PanelsRenderHook::SIMPLE_PAGE_START,
-                fn() => view('auth-banner'),
+                fn () => view('auth-banner'),
                 scopes: [\Filament\Pages\Auth\Login::class, \Filament\Pages\Auth\Register::class, \Filament\Pages\Auth\EmailVerification\EmailVerificationPrompt::class, \Filament\Pages\Auth\PasswordReset\RequestPasswordReset::class]
             )
             ->renderHook(
                 PanelsRenderHook::FOOTER,
-                fn() => view('footer')
+                fn () => view('footer')
             )
             ->renderHook(
                 PanelsRenderHook::SIDEBAR_NAV_END,
-                fn() => view('sidebar-user')
+                fn () => view('sidebar-user')
             )
             ->renderHook(
-                PanelsRenderHook::STYLES_AFTER ,
-                fn() => view('head-start')
+                PanelsRenderHook::STYLES_AFTER,
+                fn () => view('head-start')
             )
             ->viteTheme('resources/css/filament/main/theme.css')
             ->userMenuItems([
                 MenuItem::make()
                     ->label('Connections')
-                    ->url(fn(): string => PersonalAccessTokenResource::getUrl())
+                    ->url(fn (): string => PersonalAccessTokenResource::getUrl())
                     ->icon('heroicon-o-device-phone-mobile'),
             ])->plugin(
                 FilamentSocialitePlugin::make()

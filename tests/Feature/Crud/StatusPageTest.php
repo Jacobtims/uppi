@@ -138,12 +138,12 @@ test('can add monitors to status page', function () {
         'ownerRecord' => $statusPage,
         'pageClass' => StatusPageResource\Pages\EditStatusPage::class,
     ])
-    ->callTableAction('create', data: [
-        'name' => 'Test Monitor',
-        'monitor_id' => $monitor->id,
-        'is_enabled' => true,
-        'is_showing_favicon' => true,
-    ]);
+        ->callTableAction('create', data: [
+            'name' => 'Test Monitor',
+            'monitor_id' => $monitor->id,
+            'is_enabled' => true,
+            'is_showing_favicon' => true,
+        ]);
 
     assertDatabaseHas('status_page_items', [
         'name' => 'Test Monitor',
@@ -172,7 +172,7 @@ test('can remove monitors from status page', function () {
         'ownerRecord' => $statusPage,
         'pageClass' => StatusPageResource\Pages\EditStatusPage::class,
     ])
-    ->callTableAction('delete', $item);
+        ->callTableAction('delete', $item);
 
     assertDatabaseMissing('status_page_items', [
         'id' => $item->id,
@@ -198,11 +198,11 @@ test('can toggle monitor visibility on status page', function () {
         'ownerRecord' => $statusPage,
         'pageClass' => StatusPageResource\Pages\EditStatusPage::class,
     ])
-    ->mountTableAction('edit', $item->id)
-    ->setTableActionData([
-        'is_enabled' => false,
-    ])
-    ->callMountedTableAction();
+        ->mountTableAction('edit', $item->id)
+        ->setTableActionData([
+            'is_enabled' => false,
+        ])
+        ->callMountedTableAction();
 
     expect($item->fresh()->is_enabled)->toBeFalse();
 });
@@ -226,11 +226,11 @@ test('can toggle favicon visibility on status page', function () {
         'ownerRecord' => $statusPage,
         'pageClass' => StatusPageResource\Pages\EditStatusPage::class,
     ])
-    ->mountTableAction('edit', $item->id)
-    ->setTableActionData([
-        'is_showing_favicon' => false,
-    ])
-    ->callMountedTableAction();
+        ->mountTableAction('edit', $item->id)
+        ->setTableActionData([
+            'is_showing_favicon' => false,
+        ])
+        ->callMountedTableAction();
 
     expect($item->fresh()->is_showing_favicon)->toBeFalse();
 });

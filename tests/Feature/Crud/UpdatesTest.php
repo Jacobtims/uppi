@@ -161,12 +161,12 @@ test('can edit an update', function () {
     Livewire::test(UpdateResource\Pages\EditUpdate::class, [
         'record' => $update->getKey(),
     ])
-    ->set([
-        'data.title' => 'Updated Title',
-        'data.content' => 'Updated content',
-    ])
-    ->call('save')
-    ->assertHasNoErrors();
+        ->set([
+            'data.title' => 'Updated Title',
+            'data.content' => 'Updated content',
+        ])
+        ->call('save')
+        ->assertHasNoErrors();
 
     $this->assertDatabaseHas('updates', [
         'id' => $update->id,
@@ -184,9 +184,9 @@ test('can toggle update featured status', function () {
     Livewire::test(UpdateResource\Pages\EditUpdate::class, [
         'record' => $update->getKey(),
     ])
-    ->set('data.is_featured', true)
-    ->call('save')
-    ->assertHasNoErrors();
+        ->set('data.is_featured', true)
+        ->call('save')
+        ->assertHasNoErrors();
 
     expect($update->fresh()->is_featured)->toBeTrue();
 });
@@ -222,5 +222,5 @@ test('cannot access updates from other users', function () {
     $this->get(UpdateResource::getUrl('edit', [
         'record' => $update->getKey(),
     ]))
-    ->assertNotFound();
-}); 
+        ->assertNotFound();
+});

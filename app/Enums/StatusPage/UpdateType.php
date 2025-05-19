@@ -6,7 +6,7 @@ use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
-enum UpdateType: string implements HasColor, HasLabel, HasIcon
+enum UpdateType: string implements HasColor, HasIcon, HasLabel
 {
     case ANOMALY = 'anomaly';
     case MAINTENANCE = 'maintenance';
@@ -53,4 +53,3 @@ enum UpdateType: string implements HasColor, HasLabel, HasIcon
         };
     }
 }
-

@@ -5,7 +5,6 @@ namespace App\CacheTasks;
 use App\Models\Check;
 use App\Models\StatusPage;
 use App\Models\StatusPageItem;
-use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -111,12 +110,13 @@ class StatusPageHistoryAggregator extends CacheTask
             for ($date = $start->copy(); $date <= $end; $date->addDay()) {
                 $dateString = $date->toDateString();
 
-                if (!$monitorChecks->contains($dateString)) {
+                if (! $monitorChecks->contains($dateString)) {
                     $status[$dateString] = null;
+
                     continue;
                 }
 
-                $status[$dateString] = !$monitorAnomalies->contains($dateString);
+                $status[$dateString] = ! $monitorAnomalies->contains($dateString);
             }
 
             $result[$item->id] = $status;

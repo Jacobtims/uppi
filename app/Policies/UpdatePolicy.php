@@ -16,7 +16,7 @@ class UpdatePolicy
     {
         return true;
     }
-    
+
     public function create(User $user): bool
     {
         return true;
@@ -26,7 +26,7 @@ class UpdatePolicy
     {
         return $user->id === $update->user_id;
     }
-    
+
     public function delete(User $user, Update $update): bool
     {
         return $user->id === $update->user_id;

@@ -2,13 +2,11 @@
 
 use App\Enums\Checks\Status;
 use App\Enums\Monitors\MonitorType;
-use App\Jobs\Checks\DummyCheckJob;
 use App\Jobs\TriggerAlertJob;
 use App\Models\Anomaly;
 use App\Models\Check;
 use App\Models\Monitor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Bus;
 
 uses(RefreshDatabase::class);
 

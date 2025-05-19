@@ -83,4 +83,4 @@ class UpdatesList extends Component
             'updates' => $updates,
         ]);
     }
-} 
+}

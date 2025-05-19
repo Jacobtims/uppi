@@ -4,8 +4,8 @@ namespace Database\Factories;
 
 use App\Enums\StatusPage\UpdateStatus;
 use App\Enums\StatusPage\UpdateType;
-use App\Models\User;
 use App\Models\Update;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,8 +18,8 @@ class UpdateFactory extends Factory
     public function definition(): array
     {
         $from = now()->subDays(value: fake()->numberBetween(1, 30));
-        $title = fake()->sentence();    
-        $slug = now()->format('YmdHis') . '-' . str($title)->slug() . '-' . fake()->randomNumber(6, true);
+        $title = fake()->sentence();
+        $slug = now()->format('YmdHis').'-'.str($title)->slug().'-'.fake()->randomNumber(6, true);
 
         return [
             'user_id' => User::factory(),

@@ -2,21 +2,21 @@
 
 namespace App\Models;
 
-use App\Enums\StatusPage\UpdateType;
 use App\Enums\StatusPage\UpdateStatus;
+use App\Enums\StatusPage\UpdateType;
+use App\Observers\UpdateObserver;
+use App\Observers\UserIdObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Observers\UpdateObserver;
-use App\Observers\UserIdObserver;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 #[ObservedBy([UserIdObserver::class, UpdateObserver::class])]
 class Update extends Model
 {
-    use HasUlids, HasFactory;
+    use HasFactory, HasUlids;
 
     protected $guarded = [];
 

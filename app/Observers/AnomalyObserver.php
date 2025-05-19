@@ -20,4 +20,4 @@ class AnomalyObserver
             dispatch(new CloseMonitorUpdatesJob($anomaly));
         }
     }
-} 
+}

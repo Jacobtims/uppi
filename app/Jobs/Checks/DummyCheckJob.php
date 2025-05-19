@@ -18,6 +18,7 @@ class DummyCheckJob extends CheckJob
     protected function performCheck(): array
     {
         usleep(random_int(100000, 123456));
+
         return [
             'status' => $this->returnStatus,
             'response_code' => 200,

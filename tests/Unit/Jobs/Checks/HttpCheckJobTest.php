@@ -43,8 +43,8 @@ it('marks check as failed when http request fails', function () {
 
 it('handles connection exceptions', function () {
     Http::fake([
-        '*' => function() {
-            throw new ConnectionException();
+        '*' => function () {
+            throw new ConnectionException;
         },
     ]);
 

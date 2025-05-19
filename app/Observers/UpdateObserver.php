@@ -9,6 +9,6 @@ class UpdateObserver
 {
     public function creating(Update $model): void
     {
-        $model->slug = $model->slug ?? now()->format('YmdHis') . '-' . str($model->title)->slug() . '-' . Str::random(6);
+        $model->slug = $model->slug ?? now()->format('YmdHis').'-'.str($model->title)->slug().'-'.Str::random(6);
     }
 }

@@ -14,21 +14,20 @@ beforeEach(function () {
     Bus::fake();
 });
 
-test('it dispatches create update job when anomaly is created', function () {    
+test('it dispatches create update job when anomaly is created', function () {
     $user = User::factory()->create();
     $monitor = Monitor::factory()->for($user)->create();
 
     $anomaly = Anomaly::factory()->for($monitor)->create();
 
-    Bus::assertDispatched(CreateMonitorUpdateJob::class, fn ($job) => 
-        $job->anomaly->is($anomaly) && empty($job->anomaly->ended_at)
+    Bus::assertDispatched(CreateMonitorUpdateJob::class, fn ($job) => $job->anomaly->is($anomaly) && empty($job->anomaly->ended_at)
     );
 });
 
 test('it only dispatches close job when anomaly is resolved', function () {
     $user = User::factory()->create();
     $monitor = Monitor::factory()->for($user)->create();
-    
+
     // Create anomaly without triggering observer
     Bus::fake();
     $anomaly = Anomaly::factory()
@@ -42,8 +41,7 @@ test('it only dispatches close job when anomaly is resolved', function () {
     $anomaly->update(['ended_at' => now()]);
 
     // Should only dispatch close job, not create a new update
-    Bus::assertDispatched(CloseMonitorUpdatesJob::class, fn ($job) => 
-        $job->anomaly->is($anomaly)
+    Bus::assertDispatched(CloseMonitorUpdatesJob::class, fn ($job) => $job->anomaly->is($anomaly)
     );
     Bus::assertNotDispatched(CreateMonitorUpdateJob::class);
 });
@@ -51,7 +49,7 @@ test('it only dispatches close job when anomaly is resolved', function () {
 test('it does not dispatch jobs when other fields are updated', function () {
     $user = User::factory()->create();
     $monitor = Monitor::factory()->for($user)->create();
-    
+
     // Create anomaly without triggering observer
     Bus::fake();
     $anomaly = Anomaly::factory()->for($monitor)->create();
@@ -63,4 +61,4 @@ test('it does not dispatch jobs when other fields are updated', function () {
 
     Bus::assertNotDispatched(CloseMonitorUpdatesJob::class);
     Bus::assertNotDispatched(CreateMonitorUpdateJob::class);
-}); 
+});

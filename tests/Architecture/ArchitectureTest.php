@@ -29,7 +29,7 @@ arch()
         'dd',
         'dump',
         'var_dump',
-        'print_r'
+        'print_r',
     ]);
 
 // Layer dependencies
@@ -39,4 +39,3 @@ arch()
     ->toBeClasses()
     ->ignoring(App\CacheTasks\RefreshStrategy::class)
     ->ignoring(App\CacheTasks\CacheTask::class);
-

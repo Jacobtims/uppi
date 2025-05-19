@@ -17,7 +17,6 @@ return [
 
     'marketing' => env('MARKETING_ENABLED', false),
 
-    
     /*
     |--------------------------------------------------------------------------
     | Application Environment
@@ -42,7 +41,7 @@ return [
     |
     */
 
-    'debug' => (bool)env('APP_DEBUG', false),
+    'debug' => (bool) env('APP_DEBUG', false),
 
     /*
     |--------------------------------------------------------------------------

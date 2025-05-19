@@ -28,7 +28,7 @@ class DispatchMonitorChecks extends Command
     {
         $monitors = Monitor::query()
             ->where('is_enabled', true)
-            ->when(!$this->option('force'), function ($query) {
+            ->when(! $this->option('force'), function ($query) {
                 $query->where('next_check_at', '<=', now());
             })
             ->when($this->option('monitor-id'), function ($query, $monitorId) {

@@ -4,10 +4,9 @@ namespace App\Livewire\StatusPage;
 
 use App\CacheTasks\StatusPageHistoryAggregator;
 use App\Models\StatusPageItem;
-use Illuminate\Support\Collection;
+use Carbon\Carbon;
 use Livewire\Attributes\Lazy;
 use Livewire\Component;
-use Carbon\Carbon;
 
 #[Lazy]
 class MonitorStatus extends Component
@@ -50,7 +49,7 @@ class MonitorStatus extends Component
 
         $todayStatus = [];
         if ($todayChecks->isNotEmpty()) {
-            $todayStatus[now()->format('Y-m-d')] = !$todayAnomalies;
+            $todayStatus[now()->format('Y-m-d')] = ! $todayAnomalies;
         }
 
         // Merge historical and today's data

@@ -13,7 +13,7 @@ class TcpCheckJob extends CheckJob
     public function __construct($monitor, ?TcpConnectionService $tcpService = null)
     {
         parent::__construct($monitor);
-        $this->tcpService = $tcpService ?? new TcpConnectionService();
+        $this->tcpService = $tcpService ?? new TcpConnectionService;
     }
 
     protected function performCheck(): array

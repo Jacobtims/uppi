@@ -6,14 +6,15 @@ use App\Enums\Checks\Status;
 use App\Observers\CheckObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 #[ObservedBy(CheckObserver::class)]
 class Check extends Model
 {
-    use HasUlids, SoftDeletes, HasFactory;
+    use HasFactory, HasUlids, SoftDeletes;
 
     protected $guarded = [];
 

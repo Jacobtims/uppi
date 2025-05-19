@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('checks', function (Blueprint $table) {
             // Add index for soft delete with checked_at
             $table->index(['deleted_at', 'checked_at']);
-            
+
             // Add composite index for the status page history aggregator query
             $table->index(['monitor_id', 'checked_at', 'deleted_at']);
         });
@@ -30,4 +30,4 @@ return new class extends Migration
             $table->dropIndex(['monitor_id', 'checked_at', 'deleted_at']);
         });
     }
-}; 
+};

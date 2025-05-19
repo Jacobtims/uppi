@@ -10,6 +10,7 @@ class CacheTaskRegistry
         ResponseTimeAggregator::class,
         StatusPageHistoryAggregator::class,
     ];
+
     private Collection $tasks;
 
     public function __construct()

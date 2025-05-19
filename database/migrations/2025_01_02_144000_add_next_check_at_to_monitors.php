@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -21,7 +21,7 @@ return new class extends Migration
                 ->update([
                     'next_check_at' => $monitor->last_checked_at
                         ? date('Y-m-d H:i:s', strtotime($monitor->last_checked_at) + ($monitor->interval * 60))
-                        : now()
+                        : now(),
                 ]);
         }
     }

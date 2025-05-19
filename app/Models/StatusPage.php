@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Auth;
 #[ObservedBy(UserIdObserver::class)]
 class StatusPage extends Model
 {
-    use HasUlids, HasFactory;
+    use HasFactory, HasUlids;
 
     protected $guarded = [];
 

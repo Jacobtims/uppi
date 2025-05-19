@@ -45,7 +45,8 @@ it('creates a check record', function () {
 
 it('handles exceptions gracefully', function () {
     $monitor = createMonitor();
-    $job = new class($monitor) extends DummyCheckJob {
+    $job = new class($monitor) extends DummyCheckJob
+    {
         protected function performCheck(): array
         {
             throw new Exception('Test exception');

@@ -2,11 +2,11 @@
 
 namespace App\Enums\StatusPage;
 
-use Filament\Support\Contracts\HasLabel;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
+use Filament\Support\Contracts\HasLabel;
 
-enum UpdateStatus: string implements HasLabel, HasColor, HasIcon
+enum UpdateStatus: string implements HasColor, HasIcon, HasLabel
 {
     case NEW = 'new';
     case UNDER_INVESTIGATION = 'under_investigation';
@@ -16,8 +16,9 @@ enum UpdateStatus: string implements HasLabel, HasColor, HasIcon
     case MONITORING = 'monitoring';
     case POST_INCIDENT = 'post_incident';
     case COMPLETED = 'completed';
-    
-    public function getLabel(): string|null {
+
+    public function getLabel(): ?string
+    {
         return match ($this) {
             self::NEW => 'New',
             self::UNDER_INVESTIGATION => 'Under Investigation',
@@ -30,7 +31,8 @@ enum UpdateStatus: string implements HasLabel, HasColor, HasIcon
         };
     }
 
-    public function getColor(): array|string|null {
+    public function getColor(): array|string|null
+    {
         return match ($this) {
             self::NEW => 'danger',
             self::UNDER_INVESTIGATION => 'danger',
@@ -43,7 +45,8 @@ enum UpdateStatus: string implements HasLabel, HasColor, HasIcon
         };
     }
 
-    public function getIcon(): string|null {
+    public function getIcon(): ?string
+    {
         return match ($this) {
             self::NEW => 'heroicon-o-exclamation-triangle',
             self::UNDER_INVESTIGATION => 'heroicon-o-magnifying-glass',

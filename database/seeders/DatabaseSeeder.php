@@ -22,19 +22,19 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         \Illuminate\Support\Facades\Notification::fake();
-        
+
         // Create test users
         $janyk = User::factory()->create([
             'name' => 'Janyk Steenbeek',
             'email' => 'janyk@webmethod.nl',
             'is_admin' => true,
         ]);
-        
+
         $testUser = User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@test.com',
         ]);
-        
+
         // Create various monitors
         $monitors = [
             Monitor::create([
@@ -75,7 +75,7 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $testUser->id,
             ]),
         ];
-        
+
         // Create different types of alerts
         $alerts = [
             Alert::create([
@@ -112,7 +112,7 @@ class DatabaseSeeder extends Seeder
                 'user_id' => $testUser->id,
             ]),
         ];
-        
+
         // Attach alerts to monitors
         foreach ($monitors as $monitor) {
             // Attach all alerts belonging to the monitor's user
@@ -120,31 +120,31 @@ class DatabaseSeeder extends Seeder
                 Alert::where('user_id', $monitor->user_id)->pluck('id')
             );
         }
-        
+
         // Create some standalone test anomalies and triggers
         $this->createTestAnomalies($monitors[0], $alerts[0]); // Google with Email
         $this->createTestAnomalies($monitors[1], $alerts[1]); // Nonexistant with Slack
         $this->createTestAnomalies($monitors[2], $alerts[2]); // DNS with SMS
-        
+
         $now = now();
-        
+
         // Generate historical data for each monitor
         foreach ($monitors as $monitor) {
             $lastStatus = Status::OK;
             $activeAnomaly = null;
-            
+
             // Generate data for last 14 days
             for ($i = 13; $i >= 0; $i--) {
                 $date = $now->copy()->subDays($i);
-                
+
                 // Generate checks for each hour
                 for ($hour = 0; $hour < 24; $hour++) {
                     $checkTime = $date->copy()->hour($hour);
-                    
+
                     // Determine check status based on scenarios
                     $status = $this->determineCheckStatus($monitor, $lastStatus, $hour);
                     $lastStatus = $status;
-                    
+
                     // Create the check
                     $check = Check::create([
                         'monitor_id' => $monitor->id,
@@ -156,25 +156,25 @@ class DatabaseSeeder extends Seeder
                         'created_at' => $checkTime,
                         'updated_at' => $checkTime,
                     ]);
-                    
+
                     // Handle anomaly creation and closure
-                    if ($status === Status::FAIL && !$activeAnomaly) {
+                    if ($status === Status::FAIL && ! $activeAnomaly) {
                         $activeAnomaly = $this->createAnomaly($monitor, $check, $checkTime);
                         $check->anomaly()->associate($activeAnomaly);
                         $check->save();
-                        
+
                         // Create alert triggers
                         $this->createAlertTriggers($monitor, $activeAnomaly, AlertTriggerType::DOWN, $check);
                     } elseif ($status === Status::OK && $activeAnomaly) {
                         $activeAnomaly->ended_at = $checkTime;
                         $activeAnomaly->save();
-                        
+
                         $check->anomaly()->associate($activeAnomaly);
                         $check->save();
-                        
+
                         // Create recovery triggers
                         $this->createAlertTriggers($monitor, $activeAnomaly, AlertTriggerType::RECOVERY, $check);
-                        
+
                         $activeAnomaly = null;
                     } elseif ($activeAnomaly) {
                         $check->anomaly()->associate($activeAnomaly);
@@ -186,75 +186,75 @@ class DatabaseSeeder extends Seeder
 
         // Generate status pages
         StatusPage::factory()->count(1)->recycle([$janyk])->create();
-        
+
         // Fill with random updates
         User::factory()
-        ->count(10)
-        ->create()
-        ->each(function (User $user) {
-            // Create monitors first
-            $monitors = Monitor::factory()
-            ->count(5)
-            ->recycle([$user])
-            ->create();
-            
-            // Create alerts that can be attached to monitors
-            $alerts = Alert::factory()
-            ->count(3)
-            ->recycle([$user])
-            ->create();
-            
-            // Attach random alerts to monitors
-            $monitors->each(function ($monitor) use ($alerts) {
-                $monitor->alerts()->attach(
-                    $alerts->random(rand(1, $alerts->count()))->pluck('id')
-                );
+            ->count(10)
+            ->create()
+            ->each(function (User $user) {
+                // Create monitors first
+                $monitors = Monitor::factory()
+                    ->count(5)
+                    ->recycle([$user])
+                    ->create();
+
+                // Create alerts that can be attached to monitors
+                $alerts = Alert::factory()
+                    ->count(3)
+                    ->recycle([$user])
+                    ->create();
+
+                // Attach random alerts to monitors
+                $monitors->each(function ($monitor) use ($alerts) {
+                    $monitor->alerts()->attach(
+                        $alerts->random(rand(1, $alerts->count()))->pluck('id')
+                    );
+                });
+
+                // Create anomalies for random monitors
+                $monitors->each(function (Monitor $monitor) {
+                    Check::factory()->count(rand(3, 10))->recycle([$monitor])->create();
+                });
+
+                // Create regular updates
+                Update::factory()
+                    ->count(5)
+                    ->recycle([$user])
+                    ->create();
             });
-            
-            // Create anomalies for random monitors
-            $monitors->each(function (Monitor $monitor) {
-                Check::factory()->count(rand(3, 10))->recycle([$monitor])->create();
-            });
-            
-            // Create regular updates
-            Update::factory()
-            ->count(5)
-            ->recycle([$user])
-            ->create();
-        });
     }
-    
+
     protected function createTestAnomalies(Monitor $monitor, Alert $alert): void
     {
         $now = now();
-        
+
         // Create a very short anomaly (5 minutes)
         $shortAnomaly = Anomaly::create([
             'monitor_id' => $monitor->id,
             'started_at' => $now->copy()->subHours(2),
             'ended_at' => $now->copy()->subHours(2)->addMinutes(5),
         ]);
-        
+
         // Create a medium anomaly (2 hours)
         $mediumAnomaly = Anomaly::create([
             'monitor_id' => $monitor->id,
             'started_at' => $now->copy()->subDays(2),
             'ended_at' => $now->copy()->subDays(2)->addHours(2),
         ]);
-        
+
         // Create a long anomaly (1 day)
         $longAnomaly = Anomaly::create([
             'monitor_id' => $monitor->id,
             'started_at' => $now->copy()->subDays(5),
             'ended_at' => $now->copy()->subDays(4),
         ]);
-        
+
         // Create an ongoing anomaly
         $ongoingAnomaly = Anomaly::create([
             'monitor_id' => $monitor->id,
             'started_at' => $now->copy()->subHours(1),
         ]);
-        
+
         // Create triggers for each anomaly
         foreach ([$shortAnomaly, $mediumAnomaly, $longAnomaly, $ongoingAnomaly] as $anomaly) {
             // Create down trigger
@@ -270,7 +270,7 @@ class DatabaseSeeder extends Seeder
                 ],
                 'triggered_at' => now(),
             ]);
-            
+
             // Create recovery trigger if anomaly is closed
             if ($anomaly->ended_at) {
                 AlertTrigger::create([
@@ -291,7 +291,7 @@ class DatabaseSeeder extends Seeder
             }
         }
     }
-    
+
     protected function determineCheckStatus(Monitor $monitor, Status $lastStatus, int $hour): Status
     {
         // Create patterns of failures
@@ -305,11 +305,11 @@ class DatabaseSeeder extends Seeder
             // 70% chance to continue failing if already failing
             return rand(0, 100) < 70 ? Status::FAIL : Status::OK;
         }
-        
+
         // 95% uptime for other cases
         return rand(0, 100) < 95 ? Status::OK : Status::FAIL;
     }
-    
+
     protected function createAnomaly(Monitor $monitor, Check $check, Carbon $startTime): Anomaly
     {
         return Anomaly::create([
@@ -319,7 +319,7 @@ class DatabaseSeeder extends Seeder
             'updated_at' => $startTime,
         ]);
     }
-    
+
     protected function createAlertTriggers(Monitor $monitor, Anomaly $anomaly, AlertTriggerType $type, ?Check $check = null): void
     {
         foreach ($monitor->alerts as $alert) {
@@ -327,13 +327,13 @@ class DatabaseSeeder extends Seeder
                 'monitor_name' => $monitor->name,
                 'monitor_target' => $monitor->address,
             ];
-            
+
             if ($type === AlertTriggerType::RECOVERY) {
                 $metadata['started_at'] = $anomaly->started_at->format('Y-m-d H:i:s');
                 $metadata['ended_at'] = $anomaly->ended_at->format('Y-m-d H:i:s');
                 $metadata['downtime_duration'] = $anomaly->started_at->diffForHumans($anomaly->ended_at, true);
             }
-            
+
             AlertTrigger::create([
                 'anomaly_id' => $anomaly->id,
                 'alert_id' => $alert->id,

@@ -1,12 +1,11 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
+use Livewire\Livewire;
+
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\assertDatabaseMissing;
-use Livewire\Livewire;
 
 test('registration page can be rendered', function () {
     $this->get('/register')
@@ -31,7 +30,6 @@ test('new users can register', function () {
 
     $user = User::where('email', 'test@example.com')->first();
     expect(Hash::check('passwordPassword', $user->password))->toBeTrue();
-
 
     $this->assertAuthenticated();
 });

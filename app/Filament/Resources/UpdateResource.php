@@ -5,9 +5,7 @@ namespace App\Filament\Resources;
 use App\Enums\StatusPage\UpdateStatus;
 use App\Enums\StatusPage\UpdateType;
 use App\Filament\Resources\UpdateResource\Pages;
-use App\Filament\Resources\UpdateResource\RelationManagers;
 use App\Models\Update;
-use Filament\Actions\Modal\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -30,13 +28,15 @@ class UpdateResource extends Resource
     protected static function getStatusCollection(Get $get): Collection
     {
         $type = $get('type');
-        if (!$type) return collect([]);
+        if (! $type) {
+            return collect([]);
+        }
 
         $updateType = is_string($type) ? UpdateType::tryFrom($type) : $type;
-        
+
         return collect(UpdateStatus::cases())
             ->filter(fn ($status) => in_array(
-                $status->value, 
+                $status->value,
                 array_column($updateType->getAvailableStatuses(), 'value')
             ));
     }
@@ -45,7 +45,6 @@ class UpdateResource extends Resource
     {
         return parent::getEloquentQuery()->where('user_id', auth()->id());
     }
-    
 
     public static function form(Form $form): Form
     {
@@ -70,21 +69,23 @@ class UpdateResource extends Resource
                             ->required()
                             ->inline()
                             ->afterStateUpdated(function ($record, $state) {
-                                if(! $record) return;
+                                if (! $record) {
+                                    return;
+                                }
                                 $record->update(['status' => $state]);
 
                                 Notification::make()
-                                    ->title('Status updated to ' . $state)
+                                    ->title('Status updated to '.$state)
                                     ->success()
                                     ->send();
                             })
-                            ->columnSpanFull()
+                            ->columnSpanFull(),
                     ]),
-                    Forms\Components\Section::make('Content')
+                Forms\Components\Section::make('Content')
                     ->heading(null)
                     ->schema([
                         Forms\Components\Grid::make()
-                        ->columns(3)
+                            ->columns(3)
                             ->schema([
                                 Forms\Components\Grid::make()
                                     ->schema([
@@ -110,8 +111,11 @@ class UpdateResource extends Resource
                                             ->live()
                                             ->prefixIcon(function (Get $get) {
                                                 $type = $get('type');
-                                                if(!$type) return null;
+                                                if (! $type) {
+                                                    return null;
+                                                }
                                                 $updateType = is_string($type) ? UpdateType::tryFrom($type) : $type;
+
                                                 return $updateType?->getIcon();
                                             })
                                             ->default(state: UpdateType::UPDATE)
@@ -130,8 +134,6 @@ class UpdateResource extends Resource
                             ]),
                     ]),
 
-                
-
                 Forms\Components\Section::make('Impact')
                     ->collapsible()
                     ->icon('heroicon-o-clock')
@@ -144,23 +146,23 @@ class UpdateResource extends Resource
                             ->helperText('When does this update end?'),
                         Forms\Components\Select::make('monitors')
                             ->multiple()
-                            ->relationship('monitors', 'name',modifyQueryUsing: fn (Builder $query) => $query->where('user_id', auth()->id()))
+                            ->relationship('monitors', 'name', modifyQueryUsing: fn (Builder $query) => $query->where('user_id', auth()->id()))
                             ->helperText('What monitors are impacted?'),
                     ])->columns(2),
 
-                    Forms\Components\Section::make('Metadata')
+                Forms\Components\Section::make('Metadata')
                     ->collapsible()
                     ->icon('heroicon-o-cog')
                     ->schema([
                         Forms\Components\Select::make('status_pages')
-                        ->multiple()
-                        ->relationship(
-                            'statusPages', 
-                            'name',
-                            modifyQueryUsing: fn (Builder $query) => $query->where('user_id', auth()->id()))
-                        ->preload()
-                        ->searchable()
-                        ->helperText('Select the status pages to which this update should be added'),
+                            ->multiple()
+                            ->relationship(
+                                'statusPages',
+                                'name',
+                                modifyQueryUsing: fn (Builder $query) => $query->where('user_id', auth()->id()))
+                            ->preload()
+                            ->searchable()
+                            ->helperText('Select the status pages to which this update should be added'),
                         Forms\Components\TextInput::make('slug')
                             ->required()
                             ->live()
@@ -168,7 +170,7 @@ class UpdateResource extends Resource
                             ->maxLength(255)
                             ->helperText('The URL-friendly version of the title'),
 
-                            Forms\Components\Toggle::make('is_published')
+                        Forms\Components\Toggle::make('is_published')
                             ->label('Published')
                             ->helperText('Make this update visible to everyone')
                             ->default(true),
@@ -205,8 +207,8 @@ class UpdateResource extends Resource
                 Tables\Columns\TextColumn::make('monitors.name')
                     ->label('Monitors')
                     ->wrap(),
-                    Tables\Columns\TextColumn::make('statusPages.name')
-                    ->label('Status Pages') 
+                Tables\Columns\TextColumn::make('statusPages.name')
+                    ->label('Status Pages')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -215,7 +217,7 @@ class UpdateResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
-                    ->options(UpdateStatus::class)
+                    ->options(UpdateStatus::class),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

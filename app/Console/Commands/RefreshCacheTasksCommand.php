@@ -9,6 +9,7 @@ use Illuminate\Console\Command;
 class RefreshCacheTasksCommand extends Command
 {
     protected $signature = 'cache:refresh-tasks';
+
     protected $description = 'Dispatch jobs to refresh all cache tasks that are due for refresh';
 
     public function __construct(
@@ -28,7 +29,7 @@ class RefreshCacheTasksCommand extends Command
                             return;
                         }
 
-                        $this->info("Dispatching refresh jobs for: " . class_basename($taskClass) . " (User: {$user->id})");
+                        $this->info('Dispatching refresh jobs for: '.class_basename($taskClass)." (User: {$user->id})");
                         $taskClass::refreshForUser($user->id);
                     });
             });

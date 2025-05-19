@@ -21,11 +21,10 @@ abstract class CheckJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected float $startTime;
+
     protected float $endTime;
 
-    public function __construct(protected Monitor $monitor)
-    {
-    }
+    public function __construct(protected Monitor $monitor) {}
 
     public function handle(): void
     {
@@ -57,22 +56,22 @@ abstract class CheckJob implements ShouldQueue
     {
         $this->endTime = microtime(true);
 
-        if (!$exception instanceof ConnectionException) {
+        if (! $exception instanceof ConnectionException) {
             Log::error("Failed to perform monitor check {$this->monitor->id}: {$exception->getMessage()}");
             Sentry::captureException($exception);
         }
 
-            $check = $this->createCheck([
-                'status' => Status::FAIL,
-                'output' => $exception->getMessage(),
-            ]);
+        $check = $this->createCheck([
+            'status' => Status::FAIL,
+            'output' => $exception->getMessage(),
+        ]);
 
-            $this->updateMonitorStatus($check->status);
+        $this->updateMonitorStatus($check->status);
     }
 
     protected function createCheck(array $result): Check
     {
-        
+
         $check = new Check([
             'status' => $result['status'] ?? Status::FAIL,
             'response_time' => $this->calculateResponseTime(),
@@ -97,7 +96,7 @@ abstract class CheckJob implements ShouldQueue
 
         // Only update status if we have enough checks and they all have the same status
         if ($recentChecks->count() >= $this->monitor->consecutive_threshold) {
-            $allSameStatus = $recentChecks->every(fn($check) => $check->status === $newStatus);
+            $allSameStatus = $recentChecks->every(fn ($check) => $check->status === $newStatus);
 
             if ($allSameStatus) {
                 $this->monitor->status = $newStatus;

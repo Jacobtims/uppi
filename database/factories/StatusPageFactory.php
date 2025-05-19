@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class StatusPageFactory extends Factory
 {
     protected $model = StatusPage::class;
+
     /**
      * Define the model's default state.
      *

@@ -41,7 +41,7 @@ class HttpCheckJob extends CheckJob
                 ]),
             ];
         }
-        
+
         return [
             'status' => $response->successful() ? Status::OK : Status::FAIL,
             'response_code' => $response->status(),

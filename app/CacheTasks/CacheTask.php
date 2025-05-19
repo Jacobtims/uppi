@@ -7,10 +7,13 @@ use Illuminate\Support\Facades\Cache;
 abstract class CacheTask
 {
     protected ?string $userId = null;
+
     protected ?string $id = null;
 
     abstract public function key(): string;
+
     abstract public function execute(): mixed;
+
     abstract public static function getTtl(): int;
 
     /**
@@ -24,12 +27,14 @@ abstract class CacheTask
     public function forUser(string $userId): static
     {
         $this->userId = $userId;
+
         return $this;
     }
 
     public function forId(string $id): static
     {
         $this->id = $id;
+
         return $this;
     }
 
