@@ -35,7 +35,7 @@ enum MonitorType: string implements HasIcon, HasLabel
             self::HTTP => 'HTTP',
             self::TCP => 'TCP',
             self::DUMMY => '',
-            self::PULSE => 'Pulse',
+            self::PULSE => 'Check-in',
         };
     }
 
